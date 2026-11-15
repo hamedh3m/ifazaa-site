@@ -400,3 +400,15 @@ footer.closing > .wrap { grid-template-rows: auto auto !important; row-gap: 64px
 @media (max-width: 639px) { .req { padding: 20px; } }
 .req:last-child { grid-column: 1 / -1; }
 @media (min-width: 1024px) { .req:last-child .req-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; } .req:last-child .req-list li:nth-child(2) { border-top: 0; padding-top: 0; } .req:last-child .req-list li:nth-child(2)::before { top: .85em; } }
+/* detail pages: the hero sizes to its content, so a tall phone hero never runs into the next section */
+main > .hero.sub-hero { height: auto !important; min-height: 0 !important; padding: calc(var(--nav, 72px) + 48px) 0 88px; }
+.sub-hero .hero-text.hero-split { height: auto; }
+@media (min-width: 1024px) { .sub-hero .hero-visual { min-height: 520px; } }
+@media (max-width: 639px) { main > .hero.sub-hero { padding: calc(56px + 32px) 0 56px; } }
+@media (max-width: 1023px) {
+  .sub-hero .hero-visual.sub-visual { flex: none !important; height: auto !important; min-height: 0 !important; display: flex; flex-direction: column; }
+  .sub-visual .sheet--hero { position: relative; inset: auto; width: min(78%, 420px); height: auto; min-height: 300px; }
+  .sub-visual .sub-chat { position: relative; inset: auto; width: min(82%, 440px); margin-top: -40px; margin-inline-start: auto; }
+  .sub-visual .sub-wa { position: relative; inset: auto; width: 100%; max-width: 560px; }
+  .sub-visual .sheet--report { position: relative; inset: auto; width: min(60%, 320px); margin-top: -24px; }
+}

@@ -372,3 +372,7 @@ main > .hero.hero--fz { min-height: 0 !important; padding: calc(var(--nav, 72px)
 .sheet--big { width: 280px; height: 320px; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 50px -24px rgba(0,0,0,.7); }
 .sheet--big .sheet__day { font-size: 150px; flex: 1; display: grid; place-items: center; }
 .sheet--big .sheet__name { font-size: 22px; }
+/* the closing footer sizes to its content now: its rows must be auto, or the big name falls onto the links */
+footer.closing > .wrap { grid-template-rows: auto auto !important; row-gap: 64px; }
+.close__word { margin-top: 24px; overflow: visible; }
+@media (max-width: 639px) { footer.closing > .wrap { row-gap: 40px; } }

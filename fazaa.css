@@ -282,3 +282,93 @@ html[dir="rtl"]:not([data-motion="off"]) .link:focus-visible::after { transform:
   .ly-collage .pc-chat { padding: 10px 12px; gap: 6px; }
   .ly-collage .bub { font-size: 12.5px; padding: 7px 10px; }
 }
+
+/* =========== v3: calmer rhythm, a hero that plays, a day with Fazaa =========== */
+/* sections size to their content with one even rhythm (no forced full-screen sections) */
+main > :is(section, .section), footer.closing { height: auto !important; min-height: 0 !important; padding: 104px 0 104px; }
+main > :is(section, .section) > :is(.wrap, .container) { height: auto; }
+main > .hero.hero--fz { min-height: 0 !important; padding: calc(var(--nav, 72px) + 56px) 0 96px; }
+#day, #who, #prices { background: var(--p-surface); }
+.section-head { margin-bottom: 48px; }
+.section-head h2 { margin: 0; }
+.section-head p { margin: 12px 0 0; font-size: 19px; color: var(--p-muted); max-width: 40em; }
+@media (max-width: 639px) {
+  main > :is(section, .section), footer.closing { padding: 72px 0 72px; }
+  main > .hero.hero--fz { padding: calc(56px + 32px) 0 64px; }
+  .section-head { margin-bottom: 32px; }
+  .section-head p { font-size: 17px; }
+}
+
+/* hero */
+.fz-hero { align-items: center; row-gap: 48px; }
+.fz-copy h1 { font-size: clamp(40px, 4.6vw, 64px); line-height: 1.28; margin: 0; }
+.fz-lead { font-size: 21px; line-height: 1.75; color: var(--p-ink); margin: 24px 0 0; max-width: 30em; }
+.fz-copy .btn-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+.fz-fact { margin: 18px 0 0; font-size: 15px; font-weight: 700; color: var(--cal-red); }
+.fz-demo { position: relative; padding-bottom: 40px; }
+.fz-phone { background: #efeae2; border-radius: 28px; overflow: hidden; border: 8px solid #1b1b1f; box-shadow: 0 30px 60px -30px rgba(27,27,31,.55); max-width: 400px; margin-inline-start: auto; }
+.fz-phone__bar { display: flex; align-items: center; gap: 10px; background: #f6f5f3; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,.06); }
+.fz-phone__bar b { display: block; font-size: 15px; }
+.fz-phone__bar small { font-size: 12px; color: #4a4a52; }
+.fz-phone__chat { display: flex; flex-direction: column; gap: 10px; padding: 16px 14px 22px; min-height: 360px; }
+.fz-day { align-self: center; font-size: 12px; background: #fff; color: #4a4a52; padding: 3px 10px; border-radius: 8px; }
+.fz-phone .bub { font-size: 15px; }
+.fz-phone .bub--me { background: #fff; color: var(--cal-ink); }
+.fz-phone .bub--bot { background: #d9fdd3; }
+.fz-typing { align-self: flex-end; display: none; gap: 4px; background: #d9fdd3; padding: 10px 12px; border-radius: 14px; }
+.fz-typing i { width: 6px; height: 6px; border-radius: 50%; background: #3a7a46; opacity: .5; }
+.fz-ticket { position: absolute; inset-inline-start: -8px; bottom: 0; width: 170px; height: auto; border-radius: 12px; overflow: hidden; padding-bottom: 14px;
+  box-shadow: 0 24px 40px -18px rgba(27,27,31,.5); transform: rotate(-4deg); }
+.fz-ticket .sheet__day { font-size: 72px; }
+
+/* the conversation plays once on load (Emil: ease-out, short, nothing in the way of reading) */
+@media (prefers-reduced-motion: no-preference) {
+  .fz-m, .fz-ticket { animation: fz-in 420ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+  .fz-m1 { animation-delay: 500ms; }
+  .fz-typing { display: inline-flex; animation: fz-typing 1100ms ease both; }
+  .fz-t1 { animation-delay: 1000ms; }
+  .fz-m2 { animation-delay: 2100ms; }
+  .fz-m3 { animation-delay: 3200ms; }
+  .fz-t2 { animation-delay: 3700ms; }
+  .fz-m4 { animation-delay: 4800ms; }
+  .fz-ticket { animation-name: fz-ticket; animation-duration: 600ms; animation-delay: 5400ms; }
+  .fz-typing i { animation: fz-dot 900ms ease-in-out infinite; }
+  .fz-typing i:nth-child(2) { animation-delay: 150ms; } .fz-typing i:nth-child(3) { animation-delay: 300ms; }
+  @keyframes fz-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes fz-ticket { from { opacity: 0; transform: rotate(-4deg) translateY(16px) scale(.96); } to { opacity: 1; transform: rotate(-4deg); } }
+  @keyframes fz-typing { 0% { opacity: 0; max-height: 0; padding-block: 0; } 10%, 85% { opacity: 1; max-height: 40px; padding-block: 10px; } 100% { opacity: 0; max-height: 0; padding-block: 0; margin-block: -5px; } }
+  @keyframes fz-dot { 0%, 100% { opacity: .35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-2px); } }
+}
+@media (max-width: 1023px) {
+  .fz-phone { margin-inline: auto; }
+  .fz-ticket { inset-inline-start: 0; width: 140px; }
+}
+
+/* a day with Fazaa: six tear-off sheets, the hour as the big numeral */
+.day { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.day__sheet { position: relative; background: var(--cal-paper); border-radius: 12px; overflow: hidden; padding: 40px 22px 22px;
+  display: grid; grid-template-columns: auto 1fr; column-gap: 16px; align-items: start;
+  box-shadow: 0 1px 2px rgba(27,27,31,.06), 0 14px 30px -18px rgba(27,27,31,.35); }
+.day__sheet::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 22px; background: var(--cal-board);
+  background-image: radial-gradient(circle at 30% 50%, #d9d9d6 0 3px, transparent 3.5px), radial-gradient(circle at 70% 50%, #d9d9d6 0 3px, transparent 3.5px); }
+.day__h { grid-row: 1 / span 4; font-family: var(--font-display); font-size: 84px; line-height: 1; color: var(--cal-ink); min-width: 1.1em; text-align: center; }
+.day__ap { font-size: 13px; font-weight: 700; color: var(--p-muted); }
+.day__sheet b { font-size: 19px; line-height: 1.5; }
+.day__sheet > span:not(.day__h):not(.day__ap) { font-size: 15px; color: var(--cal-ink); line-height: 1.7; }
+.day__sheet.is-red .day__h { color: var(--cal-red); }
+.day__sheet.is-red { outline: 2px solid var(--cal-red); outline-offset: -2px; }
+.tag { justify-self: start; margin-top: 10px; font-style: normal; font-size: 12px; font-weight: 800; padding: 3px 10px; border-radius: 999px; }
+.tag--sec { background: #1b1b1f; color: #fff; }
+.tag--rec { background: #d9fdd3; color: #14532d; }
+@media (max-width: 1023px) { .day { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) {
+  .day { grid-template-columns: 1fr; gap: 14px; }
+  .day__h { font-size: 64px; }
+}
+
+/* the trial band: one big sheet */
+.biz-grid { align-items: center; }
+.biz-visual { padding-bottom: 0; display: grid; place-items: center; }
+.sheet--big { width: 280px; height: 320px; border-radius: 16px; overflow: hidden; box-shadow: 0 30px 50px -24px rgba(0,0,0,.7); }
+.sheet--big .sheet__day { font-size: 150px; flex: 1; display: grid; place-items: center; }
+.sheet--big .sheet__name { font-size: 22px; }

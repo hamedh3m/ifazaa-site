@@ -381,3 +381,22 @@ footer.closing > .wrap { grid-template-rows: auto auto !important; row-gap: 64px
 .plans--biz td[colspan] { white-space: normal; font-weight: 700; color: var(--p-muted); }
 .buy-once { margin-top: 20px; }
 @media (max-width: 639px) { .plans--biz td { white-space: normal; font-size: 15px; } }
+
+/* ---------- شروط التأسيس ---------- */
+.doc-hero { padding-top: calc(var(--nav, 72px) + 64px) !important; }
+.doc-hero h1 { font-size: clamp(40px, 4.4vw, 60px); line-height: 1.3; margin: 0; }
+.req-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.req { background: var(--p-surface); border: 1px solid var(--cal-rule); border-radius: 16px; padding: 28px; }
+.req:first-child { grid-column: 1 / -1; }
+.req h3 { margin: 0 0 14px; font-size: 22px; }
+.req-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.req-list li { position: relative; padding: 12px 22px 12px 0; border-top: 1px solid var(--cal-rule); line-height: 1.8; }
+.req-list li:first-child { border-top: 0; padding-top: 0; }
+.req-list li::before { content: ""; position: absolute; inset-inline-start: 0; top: calc(12px + .85em); width: 10px; height: 2px; background: var(--cal-red); }
+.req-list li:first-child::before { top: .85em; }
+.req-note { margin: 14px 0 0; color: var(--cal-ink); background: var(--sand-soft, #fbefd6); border-radius: 10px; padding: 10px 14px; }
+.req-cta { margin-top: 40px; }
+@media (max-width: 1023px) { .req-grid { grid-template-columns: 1fr; } }
+@media (max-width: 639px) { .req { padding: 20px; } }
+.req:last-child { grid-column: 1 / -1; }
+@media (min-width: 1024px) { .req:last-child .req-list { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; } .req:last-child .req-list li:nth-child(2) { border-top: 0; padding-top: 0; } .req:last-child .req-list li:nth-child(2)::before { top: .85em; } }

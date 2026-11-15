@@ -246,3 +246,39 @@ html[dir="rtl"]:not([data-motion="off"]) .link:focus-visible::after { transform:
   .sheet--hero { position: relative; inset: auto; width: 78%; height: auto; min-height: 300px; }
   .sub-chat { position: relative; inset: auto; width: 82%; margin-top: -40px; margin-inline-start: auto; }
 }
+
+/* ---------- two faces: reception + secretary ---------- */
+.face { display: flex; flex-direction: column; gap: 18px; }
+.face h3 { margin: 0; font-size: 22px; }
+.face-chat { border-radius: var(--r-lg, 16px); box-shadow: 0 1px 2px rgba(27,27,31,.06), 0 12px 28px -14px rgba(27,27,31,.28); }
+.pc-wa .bub--me { background: #ffffff; color: var(--cal-ink); box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.pc-wa .bub--bot { background: #d9fdd3; }
+.pc-wa { background: #efeae2; }
+.pc-review .rv-q { display: block; border-top: 1px solid var(--cal-rule); padding-top: 8px; font-size: 14px; color: var(--cal-ink); }
+.pc-review .rv-a { display: block; border-top: 1px dashed var(--cal-rule); padding-top: 8px; font-size: 14px; color: var(--cal-ink); }
+.pc-review .rv-a i { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--cal-red); margin-bottom: 2px; }
+.ly-collage .sheet--brief { padding-inline: 18px; }
+
+/* ---------- prices: two ways to buy ---------- */
+.price-h { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 21px; }
+.buy-ways { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.sheet--way { height: auto; align-items: stretch; text-align: start; gap: 8px; border-radius: 12px; padding: 36px 18px 18px;
+  box-shadow: 0 1px 2px rgba(27,27,31,.06), 0 12px 26px -16px rgba(27,27,31,.35); }
+.sheet--way .sheet__name { font-size: 20px; }
+.sheet--way p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--cal-ink); }
+.price-note { margin: 14px 0 0; color: var(--cal-ink); }
+@media (max-width: 639px) {
+  .buy-ways { grid-template-columns: 1fr; }
+}
+.way-list { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 8px; }
+.way-list li { position: relative; padding-inline-start: 20px; font-size: 15px; border-top: 1px solid var(--cal-rule); padding-top: 8px; }
+.way-list li::before { content: ""; position: absolute; inset-inline-start: 0; top: calc(8px + .75em); width: 10px; height: 2px; background: var(--cal-red); }
+.price-ind { padding-inline-start: 0; }
+@media (min-width: 1024px) { .price-ind { padding-inline-start: 48px; } .faq-visual { padding-inline-start: 0; } }
+@media (max-width: 639px) {
+  .pc-sheet .sheet__day { font-size: 64px; flex: 0 0 auto; }
+  .pc-sheet .sheet { padding: 28px 10px 10px; }
+  .pc-sheet .sheet__greg { display: none; }
+  .ly-collage .pc-chat { padding: 10px 12px; gap: 6px; }
+  .ly-collage .bub { font-size: 12.5px; padding: 7px 10px; }
+}

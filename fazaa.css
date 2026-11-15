@@ -376,3 +376,8 @@ main > .hero.hero--fz { min-height: 0 !important; padding: calc(var(--nav, 72px)
 footer.closing > .wrap { grid-template-rows: auto auto !important; row-gap: 64px; }
 .close__word { margin-top: 24px; overflow: visible; }
 @media (max-width: 639px) { footer.closing > .wrap { row-gap: 40px; } }
+.plans--biz tbody th small { display: block; font-size: 13px; font-weight: 400; color: var(--p-muted); margin-top: 2px; }
+.plans--biz td { white-space: nowrap; font-weight: 800; }
+.plans--biz td[colspan] { white-space: normal; font-weight: 700; color: var(--p-muted); }
+.buy-once { margin-top: 20px; }
+@media (max-width: 639px) { .plans--biz td { white-space: normal; font-size: 15px; } }

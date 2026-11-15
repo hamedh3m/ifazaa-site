@@ -412,3 +412,7 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
   .sub-visual .sub-wa { position: relative; inset: auto; width: 100%; max-width: 560px; }
   .sub-visual .sheet--report { position: relative; inset: auto; width: min(60%, 320px); margin-top: -24px; }
 }
+
+/* logo tile (option 5) */
+.nav__logo img.logo-tile{height:30px;width:30px;border-radius:0;flex:none}
+.footer .nav__logo img.logo-tile{height:1.05em;width:1.05em;vertical-align:-.04em}

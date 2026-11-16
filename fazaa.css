@@ -437,3 +437,5 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
   .film__v--reel{display:block;max-height:78vh;width:auto;margin:0 auto}
   .film__play{padding-bottom:9%}
 }
+.footer--dark .socials a{color:#f7f7f5;border-color:rgba(247,247,245,.25)}
+.footer--dark .socials a:hover{border-color:rgba(247,247,245,.6)}

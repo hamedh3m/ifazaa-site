@@ -132,6 +132,27 @@
     </div>
   </section>
 
+  <section class="section fz-film" id="film" aria-labelledby="film-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="film-h">فزعة في نص دقيقة</h2>
+        <p>شغّل الصوت وشوف كيف يرتب لك يومك.</p>
+      </div>
+      <div class="film" data-film>
+        <video class="film__v film__v--wide" preload="none" playsinline poster="assets/video/poster-wide.jpg" aria-label="فيديو تعريفي بفزعة">
+          <source src="assets/video/fazaa-wide.mp4" type="video/mp4">
+        </video>
+        <video class="film__v film__v--reel" preload="none" playsinline poster="assets/video/poster-reel.jpg" aria-label="فيديو تعريفي بفزعة">
+          <source src="assets/video/fazaa-reel.mp4" type="video/mp4">
+        </video>
+        <button class="film__play" type="button" aria-label="شغّل الفيديو">
+          <span class="film__btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+          <span class="film__len">نص دقيقة، بالصوت</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="day" aria-labelledby="day-h">
     <div class="wrap">
       <div class="section-head">
@@ -337,6 +358,11 @@
     </div>
   </div>
 </footer>
+<script>
+document.querySelectorAll('[data-film]').forEach(f=>{const b=f.querySelector('.film__play');
+  b.addEventListener('click',()=>{const v=[...f.querySelectorAll('video')].find(x=>getComputedStyle(x).display!=='none');
+    f.classList.add('is-playing');v.controls=true;v.play();v.addEventListener('ended',()=>{f.classList.remove('is-playing');v.controls=false;v.load()},{once:true});});});
+</script>
 <script type="module" src="assets/system.js"></script>
 <script type="module" src="assets/motion/motion.js"></script>
 <script type="module" src="assets/layout/layout.js"></script>

@@ -532,10 +532,10 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .tier-card:active{transform:scale(.98)}
 .tier-card:focus-visible{outline:3px solid #1b1b1f;outline-offset:3px}
 .tier-card--prime{--tc:#c8102e}.tier-card--pro{--tc:#0d7a45}.tier-card--elite{--tc:#1d2b5e}
-.tier-card__top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tier-card__top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}
 .tier-card__name{font-family:var(--font-display,inherit);font-size:30px;font-weight:800;line-height:1.1}
 .tier-card__name b{font-family:Inter,system-ui,sans-serif;letter-spacing:.01em}
-.tier-card__for{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:999px;font-size:14px;font-weight:700}
+.tier-card__for{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:6px 12px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap}
 .tier-card__desc{margin:0;font-size:17px;line-height:1.75;color:rgba(255,255,255,.95);flex:1}
 .tier-card__meta{font-size:14px;color:rgba(255,255,255,.8)}
 .tier-card__btn{align-self:flex-start;background:#fff;color:var(--tc);font-weight:800;font-size:16px;padding:12px 22px;border-radius:999px}
@@ -553,3 +553,5 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .launch-bar__dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-inline-end:8px;vertical-align:middle}
 .launch-chip{display:inline-block;align-self:flex-start;width:fit-content;margin-bottom:12px;padding:5px 12px;border-radius:999px;background:#fff4d6;color:#7a5200;font-weight:800;font-size:14px;border:1px solid #f1d58a}
 .tier-card__meta b{color:#fff;font-weight:800}
+.tier-card__name{white-space:nowrap}
+@media (max-width:420px){.tier-card__name{font-size:26px}}

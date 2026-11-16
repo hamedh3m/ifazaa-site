@@ -443,3 +443,5 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .btn--ghost-inv{background:transparent;color:#f7f7f5;border:1px solid rgba(247,247,245,.35)}
 .btn--ghost-inv:hover{border-color:rgba(247,247,245,.7);background:rgba(247,247,245,.06)}
 @media (min-width:768px){.close-ctas{flex-wrap:nowrap;flex:none}}
+.close-wa{display:inline-flex;align-items:center;gap:6px;color:#f7f7f5;font-weight:700;white-space:nowrap}
+.close-wa img{width:18px;height:18px}

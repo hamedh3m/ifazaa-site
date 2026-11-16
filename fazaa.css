@@ -517,3 +517,6 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .film--portrait{max-width:420px;border-width:6px;border-radius:28px}
 .film--portrait .film__v--reel{display:block;max-height:78vh;width:auto;margin:0 auto}
 .film--portrait .film__play{padding-bottom:9%}
+
+.nav__link[aria-current="page"]{color:var(--cal-red);font-weight:700}
+@media (max-width:1023px){.nav__link[aria-current="page"]::after{display:none}}

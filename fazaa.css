@@ -555,3 +555,6 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .tier-card__meta b{color:#fff;font-weight:800}
 .tier-card__name{white-space:nowrap}
 @media (max-width:420px){.tier-card__name{font-size:26px}}
+
+.sub-more{margin:22px 0 0;padding:16px 20px;border-radius:16px;background:#fff4d6;border:1px solid #f1d58a;color:#4a3500;font-weight:700;line-height:1.8;max-width:820px}
+.sub-more .link{color:#c8102e;font-weight:800}

@@ -47,7 +47,7 @@
 </style>
 <link rel="stylesheet" href="assets/ui/base.css">
 <link rel="stylesheet" href="assets/ui/chat/fragment.css">
-<link rel="stylesheet" href="fazaa.css">
+<link rel="stylesheet" href="fazaa.css?v=f1">
 <script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
 <script src="assets/backgrounds/backgrounds.js"></script>
 <script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
@@ -142,12 +142,13 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="film-h">شوف فزعة بالفيديو</h2>
-        <p>فيديوين قصار. شغّل الصوت.</p>
+        <p>ثلاث فيديوهات قصيرة. شغّل الصوت.</p>
       </div>
       <!-- film2 -->
       <div class="film-tabs" role="tablist" aria-label="الفيديوهات">
         <button class="film-tab" type="button" role="tab" id="ft1" aria-controls="fp1" aria-selected="true">يوم مع فزعة</button>
         <button class="film-tab" type="button" role="tab" id="ft2" aria-controls="fp2" aria-selected="false" tabindex="-1">بدل عشر تطبيقات</button>
+        <button class="film-tab" type="button" role="tab" id="ft3" aria-controls="fp3" aria-selected="false" tabindex="-1">قصة فهد</button>
       </div>
       <!-- /film2 -->
       <div class="film" data-film id="fp1" role="tabpanel" aria-labelledby="ft1">
@@ -168,6 +169,14 @@
         </video>
         <video class="film__v film__v--reel" preload="none" playsinline poster="assets/video/poster-apps-reel.jpg?v=2" aria-label="فيديو: مساعد واحد بدل عشر تطبيقات">
           <source src="assets/video/fazaa-apps-reel.mp4?v=1" type="video/mp4">
+        </video>
+        <button class="film__play" type="button" aria-label="شغّل الفيديو">
+          <span class="film__btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+        </button>
+      </div>
+      <div class="film film--portrait" data-film id="fp3" role="tabpanel" aria-labelledby="ft3" hidden>
+        <video class="film__v film__v--reel" preload="none" playsinline poster="assets/video/poster-fahad1-reel.jpg?v=1" aria-label="فيديو: قصة فهد، يوم الأربعاء">
+          <source src="assets/video/fazaa-fahad1-reel.mp4?v=1" type="video/mp4">
         </video>
         <button class="film__play" type="button" aria-label="شغّل الفيديو">
           <span class="film__btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>

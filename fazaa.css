@@ -513,3 +513,7 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .film.is-loading .film__play{cursor:progress}
 @keyframes film-spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.film.is-loading .film__btn::after{animation-duration:2s}}
+
+.film--portrait{max-width:420px;border-width:6px;border-radius:28px}
+.film--portrait .film__v--reel{display:block;max-height:78vh;width:auto;margin:0 auto}
+.film--portrait .film__play{padding-bottom:9%}

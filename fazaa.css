@@ -445,3 +445,19 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 @media (min-width:768px){.close-ctas{flex-wrap:nowrap;flex:none}}
 .close-wa{display:inline-flex;align-items:center;gap:6px;color:#f7f7f5;font-weight:700;white-space:nowrap}
 .close-wa img{width:18px;height:18px}
+
+/* footer contact tiles */
+.ct-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ct{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 12px;border-radius:14px;background:rgba(247,247,245,.04);border:1px solid rgba(247,247,245,.1);color:#f7f7f5;text-decoration:none;transition:background 160ms ease,border-color 160ms ease,transform 160ms cubic-bezier(.23,1,.32,1)}
+.ct:hover{background:rgba(247,247,245,.08);border-color:rgba(247,247,245,.22)}
+.ct:active{transform:scale(.98)}
+.ct:focus-visible{outline:2px solid #f7f7f5;outline-offset:2px}
+.ct__ic{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff}
+.ct__ic svg{width:20px;height:20px}
+.ct--wa .ct__ic{background:#25d366}.ct--mail .ct__ic{background:#c8102e}.ct--tg .ct__ic{background:#26a5e4}
+.ct--ig .ct__ic{background:radial-gradient(circle at 30% 110%,#fdd65b 0%,#f3643c 35%,#d6249f 65%,#5b4fe9 100%)}
+.ct--sc .ct__ic{background:#fffc00;color:#1b1b1f}
+.ct__tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ct__tx small{font-size:14px;color:rgba(247,247,245,.62);font-weight:700}
+.ct__tx bdi{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+@media (max-width:420px){.ct-grid{grid-template-columns:1fr}}

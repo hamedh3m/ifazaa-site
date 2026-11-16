@@ -604,3 +604,11 @@ footer.closing.closing--slim{padding-top:56px !important}
 .can{margin:32px 0 0;font-size:17px;line-height:1.9;color:var(--p-muted);max-width:72ch}.can b{color:var(--p-ink);font-weight:800}
 .faq--page{margin-top:4px}.doc .faq--page .faq__item h3{font-size:18px}
 .doc .faq--page .faq__item:first-child{border-top:0;padding-top:0}
+
+/* "what you get" matches "how to start": a small title, then a compact list */
+.sub-two h2{font-size:22px;margin:0 0 16px;line-height:1.3}
+.sub-gains{margin:0;display:grid;gap:12px}
+.sub-gains li{padding:0;padding-inline-start:44px;border:0;font-size:inherit;line-height:1.6;min-height:30px;padding-top:2px}
+[dir="ltr"] .sub-gains li{padding:2px 0 0 44px}
+.sub-gains li::before{inset-inline-start:9px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--cal-red)}
+@media (max-width:767px){.sub-two .span-5{margin-top:32px}}

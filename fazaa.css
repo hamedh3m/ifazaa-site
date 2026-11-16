@@ -463,3 +463,4 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 @media (max-width:420px){.ct-grid{grid-template-columns:1fr}}
 .sub-tg{align-self:center;font-weight:700}
 .fz-tg{margin-top:12px}
+.ct--tt .ct__ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}

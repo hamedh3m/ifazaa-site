@@ -582,3 +582,29 @@ html[data-theme="dark"] .tier-card{box-shadow:0 18px 40px -26px rgba(0,0,0,.8)}
 footer.closing.closing--slim{padding-top:56px !important}
 .close-terms{margin:14px 0 0;font-size:15px}.close-terms a{color:inherit;text-decoration:underline;text-underline-offset:4px;opacity:.85}
 html[data-theme="dark"] .idea__say{background:#2a2a2e;color:var(--p-ink)}
+
+/* contact: two main cards, then a quiet row of social icons */
+.footer__contact .ct-grid{grid-template-columns:1fr;gap:10px}
+.ct-socials{display:flex;gap:10px;margin-top:14px}
+.ct-soc{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;border:1px solid rgba(247,247,245,.12);background:rgba(247,247,245,.04);transition:background 160ms ease,border-color 160ms ease,transform 160ms cubic-bezier(.23,1,.32,1)}
+.ct-soc:hover{background:rgba(247,247,245,.09);border-color:rgba(247,247,245,.24)}
+.ct-soc:active{transform:scale(.96)}
+.ct-soc:focus-visible{outline:2px solid #f7f7f5;outline-offset:2px}
+.ct-soc .ct__ic{width:32px;height:32px;border-radius:9px}
+.ct-soc .ct__ic svg{width:18px;height:18px}
+@media (min-width:640px) and (max-width:1023px){.footer__contact .ct-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* document pages: privacy, terms, 404 */
+.doc-page{padding-top:calc(var(--nav) + 56px) !important}
+.doc{max-width:68ch}
+.doc h1{font-size:clamp(34px,5vw,52px);line-height:1.15;margin:0 0 10px}
+.doc__date{margin:0 0 28px;color:var(--p-muted);font-size:15px}
+.doc__lead{font-size:19px;line-height:1.8;margin:0 0 8px}
+.doc h2{font-size:22px;margin:40px 0 12px;padding-top:24px;border-top:1px solid var(--cal-rule)}
+.doc p,.doc li{font-size:17px;line-height:1.85}
+.doc p{margin:0 0 12px}
+.doc ul{margin:0 0 12px;padding-inline-start:22px;display:grid;gap:8px}
+.doc li::marker{color:var(--p-accent)}
+.doc .btn-row{margin-top:28px}
+@media (max-width:639px){.doc-page{padding-top:calc(var(--nav) + 32px) !important}.doc__lead{font-size:17px}.doc p,.doc li{font-size:16px}}
+.doc a{color:var(--p-accent);text-decoration:underline;text-underline-offset:4px;font-weight:700}

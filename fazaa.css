@@ -461,3 +461,5 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .ct__tx small{font-size:14px;color:rgba(247,247,245,.62);font-weight:700}
 .ct__tx bdi{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
 @media (max-width:420px){.ct-grid{grid-template-columns:1fr}}
+.sub-tg{align-self:center;font-weight:700}
+.fz-tg{margin-top:12px}

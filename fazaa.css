@@ -505,3 +505,11 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .film-tab[aria-selected="true"]{background:var(--p-ink);color:var(--p-bg);border-color:var(--p-ink)}
 .film-tab:focus-visible{outline:3px solid var(--cal-red);outline-offset:2px}
 .film[hidden]{display:none}
+
+/* loading state on the play button */
+.film__btn{position:relative}
+.film.is-loading .film__btn svg{opacity:0}
+.film.is-loading .film__btn::after{content:"";position:absolute;inset:26px;border-radius:50%;border:4px solid rgba(255,255,255,.35);border-top-color:#fff;animation:film-spin .8s linear infinite}
+.film.is-loading .film__play{cursor:progress}
+@keyframes film-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.film.is-loading .film__btn::after{animation-duration:2s}}

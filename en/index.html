@@ -146,10 +146,10 @@
       </div>
       <div class="film" data-film>
         <video class="film__v film__v--wide" preload="none" playsinline poster="/assets/video/poster-wide-en.jpg" aria-label="Fazaa intro video">
-          <source src="/assets/video/fazaa-wide-en.mp4?v=1" type="video/mp4">
+          <source src="/assets/video/fazaa-wide.mp4?v=3" type="video/mp4">
         </video>
         <video class="film__v film__v--reel" preload="none" playsinline poster="/assets/video/poster-reel-en.jpg" aria-label="Fazaa intro video">
-          <source src="/assets/video/fazaa-reel-en.mp4?v=1" type="video/mp4">
+          <source src="/assets/video/fazaa-reel.mp4?v=3" type="video/mp4">
         </video>
         <button class="film__play" type="button" aria-label="Play the video">
           <span class="film__btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
@@ -327,7 +327,13 @@
       const n=tabs[(i+(document.dir==='rtl'?d:-d)+tabs.length)%tabs.length];n.focus();show(n);});});})();
 document.querySelectorAll('[data-film]').forEach(f=>{const b=f.querySelector('.film__play');
   b.addEventListener('click',()=>{const v=[...f.querySelectorAll('video')].find(x=>getComputedStyle(x).display!=='none');
-    f.classList.add('is-playing');v.controls=true;v.play();v.addEventListener('ended',()=>{f.classList.remove('is-playing');v.controls=false;v.load()},{once:true});});});
+    if(f.classList.contains('is-loading'))return;
+    f.classList.add('is-loading');b.setAttribute('aria-busy','true');
+    const started=()=>{f.classList.remove('is-loading');b.removeAttribute('aria-busy');f.classList.add('is-playing');v.controls=true;};
+    v.addEventListener('playing',started,{once:true});
+    v.preload='auto';const pr=v.play();
+    if(pr&&pr.catch)pr.catch(()=>{v.removeEventListener('playing',started);f.classList.remove('is-loading');b.removeAttribute('aria-busy');v.controls=true;f.classList.add('is-playing');});
+    v.addEventListener('ended',()=>{f.classList.remove('is-playing');v.controls=false;v.load()},{once:true});});});
 </script>
 <script type="module" src="/assets/system.js"></script>
 <script type="module" src="/assets/motion/motion.js"></script>

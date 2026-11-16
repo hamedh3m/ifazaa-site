@@ -146,12 +146,12 @@
       </div>
       <!-- film2 -->
       <div class="film-tabs" role="tablist" aria-label="الفيديوهات">
-        <button class="film-tab" type="button" role="tab" id="ft1" aria-controls="fp1" aria-selected="true">يوم مع فزعة</button>
+        <button class="film-tab" type="button" role="tab" id="ft3" aria-controls="fp3" aria-selected="true">قصة فهد</button>
+        <button class="film-tab" type="button" role="tab" id="ft1" aria-controls="fp1" aria-selected="false" tabindex="-1">يوم مع فزعة</button>
         <button class="film-tab" type="button" role="tab" id="ft2" aria-controls="fp2" aria-selected="false" tabindex="-1">بدل عشر تطبيقات</button>
-        <button class="film-tab" type="button" role="tab" id="ft3" aria-controls="fp3" aria-selected="false" tabindex="-1">قصة فهد</button>
       </div>
       <!-- /film2 -->
-      <div class="film" data-film id="fp1" role="tabpanel" aria-labelledby="ft1">
+      <div class="film" data-film id="fp1" role="tabpanel" aria-labelledby="ft1" hidden>
         <video class="film__v film__v--wide" preload="none" playsinline poster="assets/video/poster-wide.jpg" aria-label="فيديو تعريفي بفزعة">
           <source src="assets/video/fazaa-wide.mp4?v=3" type="video/mp4">
         </video>
@@ -174,7 +174,7 @@
           <span class="film__btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
         </button>
       </div>
-      <div class="film film--portrait" data-film id="fp3" role="tabpanel" aria-labelledby="ft3" hidden>
+      <div class="film film--portrait" data-film id="fp3" role="tabpanel" aria-labelledby="ft3">
         <video class="film__v film__v--reel" preload="none" playsinline poster="assets/video/poster-fahad1-reel.jpg?v=2" aria-label="فيديو: قصة فهد، يوم الأربعاء">
           <source src="assets/video/fazaa-fahad1-reel.mp4?v=2" type="video/mp4">
         </video>

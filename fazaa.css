@@ -621,3 +621,4 @@ html[data-theme="dark"] .idea__say{background:#2a2a2e;color:var(--p-ink)}
 .can__list li{padding:8px 14px;border-radius:999px;border:1px solid var(--cal-rule);background:var(--p-surface);font-weight:700;font-size:15px;line-height:1.4}
 @media (max-width:767px){.ex-grid{grid-template-columns:1fr}.ex__chat .bub{font-size:14px}}
 .pc-chat__who{color:var(--cal-ink)}
+.can{margin:32px 0 0;font-size:17px;line-height:1.9;color:var(--p-muted);max-width:72ch}.can b{color:var(--p-ink);font-weight:800}

@@ -25,11 +25,6 @@
 <link rel="stylesheet" href="assets/system.css">
 <link rel="stylesheet" href="assets/motion/motion.css">
 <link rel="stylesheet" href="assets/layout/layout.css">
-<script>(function(){var d=document.documentElement,m="auto";try{m=localStorage.getItem("fz-theme")||"auto"}catch(e){}
-function apply(){var t=m;if(m==="auto"){var h=new Date().getHours();t=(h>=18||h<6)?"dark":"light"}d.setAttribute("data-theme",t);d.setAttribute("data-theme-mode",m);
-var b=document.querySelector(".theme-btn");if(b){var l=b.querySelector(".theme-btn__label");if(l)l.textContent=b.getAttribute("data-l-"+m);b.setAttribute("aria-label",b.getAttribute("data-aria")+": "+b.getAttribute("data-l-"+m))}}
-apply();setInterval(function(){if(m==="auto")apply()},300000);
-document.addEventListener("DOMContentLoaded",function(){apply();document.querySelectorAll(".theme-btn").forEach(function(b){b.addEventListener("click",function(){m={auto:"light",light:"dark",dark:"auto"}[m]||"auto";try{localStorage.setItem("fz-theme",m)}catch(e){}apply()})})})})();</script>
 <style>
 :root {
   --p-bg: #f7f7f5; --p-surface: #ffffff; --p-ink: #1b1b1f; --p-muted: #5e5e66;
@@ -46,7 +41,7 @@ document.addEventListener("DOMContentLoaded",function(){apply();document.querySe
   --ly-scale: 0.98;
 }
 </style>
-<link rel="stylesheet" href="fazaa.css?v=f14">
+<link rel="stylesheet" href="fazaa.css?v=f15">
 <script>document.documentElement.classList.add('m-enter');setTimeout(()=>document.documentElement.classList.add('m-enter-done'),700)</script>
 <script>document.documentElement.classList.add('mo-js');setTimeout(()=>document.documentElement.classList.add('mo-safe'),2500)</script>
 <script data-goatcounter="https://ifazaa.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -64,7 +59,6 @@ document.addEventListener("DOMContentLoaded",function(){apply();document.querySe
       <div class="nav__item"><a class="nav__link" href="asila.html">الأسئلة الشائعة</a></div>
     </nav>
     <div class="nav__actions">
-      <button class="theme-btn" type="button" data-aria="الإضاءة" data-l-auto="تلقائي" data-l-light="نهاري" data-l-dark="ليلي" aria-label="الإضاءة"><svg class="theme-btn__ic theme-btn__ic--auto" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor" stroke="none"/></svg><svg class="theme-btn__ic theme-btn__ic--light" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.5"/><path d="M10 1.5v2.5M10 16v2.5M1.5 10h2.5M16 10h2.5M4 4l1.8 1.8M14.2 14.2 16 16M4 16l1.8-1.8M14.2 5.8 16 4"/></svg><svg class="theme-btn__ic theme-btn__ic--dark" viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 12.5A7 7 0 0 1 7.5 3.5a7 7 0 1 0 9 9z"/></svg><span class="theme-btn__label">تلقائي</span></button>
       <a class="nav__lang" href="/en/sharikat.html" hreflang="en" lang="en">English</a>
     </div>
     <button class="nav__toggle" type="button" aria-expanded="false" aria-label="القائمة">

@@ -319,6 +319,13 @@
   </div>
 </footer>
 <script>
+(()=>{const tabs=[...document.querySelectorAll('.film-tab')];if(!tabs.length)return;
+  const show=tb=>{tabs.forEach(x=>{const on=x===tb;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;
+    const pnl=document.getElementById(x.getAttribute('aria-controls'));pnl.hidden=!on;
+    if(!on){pnl.querySelectorAll('video').forEach(v=>{if(!v.paused)v.pause()});}});};
+  tabs.forEach((tb,i)=>{tb.addEventListener('click',()=>show(tb));
+    tb.addEventListener('keydown',e=>{const d={ArrowLeft:1,ArrowRight:-1}[e.key];if(d===undefined)return;
+      const n=tabs[(i+(document.dir==='rtl'?d:-d)+tabs.length)%tabs.length];n.focus();show(n);});});})();
 document.querySelectorAll('[data-film]').forEach(f=>{const b=f.querySelector('.film__play');
   b.addEventListener('click',()=>{const v=[...f.querySelectorAll('video')].find(x=>getComputedStyle(x).display!=='none');
     f.classList.add('is-playing');v.controls=true;v.play();v.addEventListener('ended',()=>{f.classList.remove('is-playing');v.controls=false;v.load()},{once:true});});});

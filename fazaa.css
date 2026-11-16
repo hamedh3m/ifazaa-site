@@ -546,3 +546,10 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .tier-badge b{font-family:Inter,system-ui,sans-serif}
 .tier-badge span{font-weight:700;opacity:.9}
 .tier-badge--prime{--tc:#c8102e}.tier-badge--pro{--tc:#0d7a45}.tier-badge--elite{--tc:#1d2b5e}
+
+/* soft-launch notice */
+.launch-bar{margin:var(--nav) 0 0;padding:7px 16px;background:#1b1b1f;color:#fff;font-size:14px;line-height:1.5;text-align:center}
+.launch-bar b{color:#ffd166;margin-inline-end:6px}
+.launch-bar__dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-inline-end:8px;vertical-align:middle}
+.launch-chip{display:inline-block;align-self:flex-start;width:fit-content;margin-bottom:12px;padding:5px 12px;border-radius:999px;background:#fff4d6;color:#7a5200;font-weight:800;font-size:14px;border:1px solid #f1d58a}
+.tier-card__meta b{color:#fff;font-weight:800}

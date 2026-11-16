@@ -622,3 +622,5 @@ html[data-theme="dark"] .idea__say{background:#2a2a2e;color:var(--p-ink)}
 @media (max-width:767px){.ex-grid{grid-template-columns:1fr}.ex__chat .bub{font-size:14px}}
 .pc-chat__who{color:var(--cal-ink)}
 .can{margin:32px 0 0;font-size:17px;line-height:1.9;color:var(--p-muted);max-width:72ch}.can b{color:var(--p-ink);font-weight:800}
+.faq--page{margin-top:4px}.doc .faq--page .faq__item h3{font-size:18px}
+.doc .faq--page .faq__item:first-child{border-top:0;padding-top:0}

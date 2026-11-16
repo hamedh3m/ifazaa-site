@@ -464,3 +464,11 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 .sub-tg{align-self:center;font-weight:700}
 .fz-tg{margin-top:12px}
 .ct--tt .ct__ic{background:#000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+
+/* language switch */
+.nav__lang{font-size:14px;font-weight:700;color:var(--p-ink);text-decoration:none;padding:10px 12px;border-radius:999px;min-height:44px;display:inline-flex;align-items:center}
+.nav__lang:hover{background:color-mix(in srgb,var(--p-ink) 7%,transparent)}
+.nav__lang:focus-visible{outline:2px solid var(--p-accent);outline-offset:2px}
+.nav__lang[lang="ar"]{font-family:"Almarai",system-ui,sans-serif}
+[dir="ltr"] .ct__tx bdi{text-align:left}
+.nav.is-open .nav__actions .nav__lang{justify-content:center;font-size:var(--t-body);order:2}

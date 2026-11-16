@@ -439,3 +439,7 @@ main > .hero.sub-hero { height: auto !important; min-height: 0 !important; paddi
 }
 .footer--dark .socials a{color:#f7f7f5;border-color:rgba(247,247,245,.25)}
 .footer--dark .socials a:hover{border-color:rgba(247,247,245,.6)}
+.close-ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn--ghost-inv{background:transparent;color:#f7f7f5;border:1px solid rgba(247,247,245,.35)}
+.btn--ghost-inv:hover{border-color:rgba(247,247,245,.7);background:rgba(247,247,245,.06)}
+@media (min-width:768px){.close-ctas{flex-wrap:nowrap;flex:none}}

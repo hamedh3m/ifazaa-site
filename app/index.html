@@ -303,6 +303,7 @@ html.i18n-wait body{visibility:hidden}
 .pap .left{font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(37,211,102,.12);color:#6fe6a5;white-space:nowrap}
 .pap .left.warn{background:rgba(255,184,0,.14);color:#ffc94d}.pap .left.bad{background:rgba(224,33,59,.16);color:#ff6b7e}
 .pap button{color:var(--muted);padding:6px}.pap button svg{width:18px;height:18px}
+.native #buy,.native #sms-buy,.native #fam-buy,.native #pap-buy,.native #open-install,.native [data-sheet="s-plans"] small,.native .g-slot,.native #biz,.native .tier .pr,.native #push-note{display:none!important}
 .safe li{position:relative;padding-inline-start:22px;color:#d8d8dc}
 .safe li::before{content:"✓";position:absolute;inset-inline-start:0;color:#6fe6a5;font-weight:800}
 .stp{margin-top:14px;padding:14px;border-radius:20px;background:var(--s1);border:1px solid var(--line)}
@@ -722,6 +723,10 @@ html.i18n-wait body{visibility:hidden}
   const newToken = () => { const b = new Uint8Array(32); crypto.getRandomValues(b); return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
   if (!S.token || !/^[A-Za-z0-9_-]{43}$/.test(S.token)) { S.token = newToken(); save(); }
   let lastId = 0, reminders = [];
+  // تطبيق الآيفون (Capacitor): نفس الصفحة، مع تنبيهات ودخول أبل من الجوال نفسه
+  const CAP = window.Capacitor, NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
+  const NP = NATIVE ? (CAP.Plugins || {}) : {};
+  if (NATIVE) document.documentElement.classList.add("native");
   async function api(path, opt = {}) {
     let r;
     try {
@@ -789,7 +794,7 @@ html.i18n-wait body{visibility:hidden}
     const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
     msgs.scrollTop = msgs.scrollHeight;
     try {
-      const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "" }) });
+      const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "", client: NATIVE ? "ios" : "web" }) });
       ty.remove();
       const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
       S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
@@ -1188,7 +1193,7 @@ html.i18n-wait body{visibility:hidden}
     document.head.appendChild(sc);
   }));
   function gButton(el) {
-    if (!el || el.dataset.done) return;
+    if (!el || el.dataset.done || NATIVE) return;
     loadGoogle().then(() => {
       const w = Math.min(400, Math.max(220, el.clientWidth || 300));
       google.accounts.id.renderButton(el, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale: L("ar", "en"), width: w });
@@ -1220,7 +1225,13 @@ html.i18n-wait body{visibility:hidden}
   }));
   async function onApple() {
     let res;
-    try { await loadApple(); res = await AppleID.auth.signIn(); }
+    if (NATIVE && NP.SignInWithApple) {
+      try {
+        const n = await NP.SignInWithApple.authorize({ clientId: "com.ifazaa.app", redirectURI: "https://ifazaa.com/app/", scopes: "email name" });
+        const rr = n.response || {};
+        res = { authorization: { id_token: rr.identityToken }, user: rr.givenName ? { name: { firstName: rr.givenName } } : null };
+      } catch { return; }
+    } else try { await loadApple(); res = await AppleID.auth.signIn(); }
     catch (e) { if (!(e && e.error === "popup_closed_by_user")) toast(L("ما قدرنا نفتح الدخول بآبل، جرب مرة ثانية", "We couldn't open Sign in with Apple, please try again")); return; }
     let r;
     try { r = await api("/auth/apple", { method: "POST", body: JSON.stringify({ id_token: res.authorization.id_token, user: res.user || null, name: S.name || $("#onb-name").value.trim() }) }); }
@@ -1255,12 +1266,36 @@ html.i18n-wait body{visibility:hidden}
     await api("/push/subscribe", { method: "POST", body: JSON.stringify({ ...sub.toJSON(), name: S.name || "", test: !!test, lang: L("ar", "en") }) });
   }
   function syncPushUI() {
+    if (NATIVE) {
+      $("#push-btn").textContent = S.pushOn ? L("✅ التنبيهات شغالة", "✅ Notifications are on") : S.pushDenied ? L("التنبيهات مقفلة من الإعدادات", "Notifications are blocked in Settings") : L("🔔 فعّل التنبيهات", "🔔 Turn on notifications");
+      $("#pushbar").hidden = !!(S.pushOn || S.pushDenied || S.hidePush || !S.onb);
+      return;
+    }
     const on = pushOK && Notification.permission === "granted";
     $("#push-btn").textContent = on ? L("✅ التنبيهات شغالة", "✅ Notifications are on") : ("Notification" in window && Notification.permission === "denied") ? L("التنبيهات مقفلة من إعدادات الجوال", "Notifications are blocked in your phone settings") : L("🔔 فعّل التنبيهات", "🔔 Turn on notifications");
     const canAsk = pushOK && Notification.permission === "default" && (!ios || standalone);
     $("#pushbar").hidden = !(canAsk && !S.hidePush && S.onb);
   }
+  let apnsWired = false;
+  async function nativePush(test) {
+    const P = NP.PushNotifications; if (!P) throw new Error("push");
+    let perm = (await P.checkPermissions()).receive;
+    if (perm === "prompt" || perm === "prompt-with-rationale") perm = (await P.requestPermissions()).receive;
+    if (perm !== "granted") { S.pushDenied = true; save(); throw new Error("denied"); }
+    S.pushDenied = false; S.pushOn = true; save();
+    if (!apnsWired) {
+      apnsWired = true;
+      P.addListener("registration", t => { api("/push/apns", { method: "POST", body: JSON.stringify({ token: t.value, name: S.name || "", test: !!S.pushTest, lang: L("ar", "en") }) }).catch(() => {}); S.pushTest = false; });
+      P.addListener("pushNotificationActionPerformed", () => { go("chat"); lastId = 0; loadHistory(); });
+    }
+    S.pushTest = !!test; await P.register();
+  }
   async function enablePush() {
+    if (NATIVE) {
+      try { await nativePush(true); toast(L("تم ✅ بيوصلك تنبيه تجريبي الحين", "Done ✅ a test notification is on its way")); }
+      catch (e) { toast(e.message === "denied" ? L("ما انفتحت التنبيهات. تقدر تفتحها من الإعدادات ← فزعة", "Notifications weren't turned on. You can enable them in Settings → Fazaa") : L("ما قدرت أفعّل التنبيهات، جرب مرة ثانية", "I couldn't turn on notifications, please try again")); }
+      syncPushUI(); return;
+    }
     const HOME_FIRST = L("ثبّت التطبيق على الشاشة الرئيسية أول", "Add the app to your home screen first");
     if (!pushOK) { toast(ios && !standalone ? HOME_FIRST : L("جوالك ما يدعم التنبيهات هنا", "Your phone doesn't support notifications here")); return; }
     if (ios && !standalone) { toast(HOME_FIRST); return; }
@@ -1302,16 +1337,18 @@ html.i18n-wait body{visibility:hidden}
   };
   $("#install-open").onclick = openInstall;
   $("#open-install").onclick = openInstall;
-  if (!standalone && !S.hideInstall) $("#install").hidden = false;
+  if (!standalone && !S.hideInstall && !NATIVE) $("#install").hidden = false;
   $("#install-x").onclick = () => { S.hideInstall = true; save(); $("#install").hidden = true; };
 
+  if (NATIVE) { const gp = $("#g-in p"); if (gp) gp.textContent = L("ادخل بحساب أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.", "Sign in with Apple so you never lose your chats and reminders, and can open them from any device."); }
   // ---------- boot ----------
   if (!S.onb) showOnb();
   updateHello(); renderChat(); renderMe(); loadHistory();
   if (S.onb) joinFamily();
   syncPushUI();
-  if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
-  if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
+  else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
+  if (!NATIVE && "serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 })();
 </script>
 </body>

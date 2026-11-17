@@ -286,7 +286,7 @@ svg{display:block}
           <textarea id="inp" rows="1" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
           <button class="send" id="send" type="button" aria-label="أرسل"><svg id="send-ic"><use href="#i-mic"/></svg></button>
         </div>
-        <p class="demo-note">نسخة تجريبية للشكل، والردود تجريبية</p>
+        <p class="demo-note">نسخة تجريبية · حساب التطبيق منفصل عن تيليجرام للحين</p>
       </div>
     </section>
 
@@ -347,7 +347,7 @@ svg{display:block}
     <h2 class="h2">كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً</h2>
     <p class="sub">ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.</p>
     <div class="ref-card">
-      <div class="ref-top"><div class="badge">فزعة<br>Prime</div><div><small>ربعك اللي سجلوا</small><strong id="ref-n">٠ من ٣</strong></div></div>
+      <div class="ref-top"><div class="badge">فزعة<br>Prime</div><div><small>ربعك اللي بدوا</small><strong id="ref-n">٠ من ٣</strong></div></div>
       <div class="bars"><div><i></i><span>الشهر ١</span></div><div><i></i><span>الشهر ٢</span></div><div><i></i><span>الشهر ٣</span></div><div><i></i><span>وأكثر</span></div></div>
       <p style="margin-top:18px">باقي لك ٣ أشخاص على شهرك الجاي</p>
     </div>
@@ -372,7 +372,7 @@ svg{display:block}
   <div class="body">
     <label class="field"><span>اسمك</span><input id="set-name" autocomplete="given-name" maxlength="30"></label>
     <label class="field"><span>وقت موجز يومك</span><input id="set-brief" type="time" value="07:00"></label>
-    <p class="note">التنبيهات: بتوصلك على جوالك بعد ما نربط النسخة بعقل فزعة الحقيقي.</p>
+    <p class="note">التذكيرات تطلع لك في المحادثة لما تفتح التطبيق. وتنبيهات الجوال قريباً.</p>
   </div>
 </section>
 
@@ -418,7 +418,7 @@ svg{display:block}
   // ---------- storage (safe) ----------
   const KEY = "fazaa-app-v1";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
-  let S = Object.assign({ name: "", msgs: [], tasks: [], onb: false, hideInstall: false, brief: "07:00" }, load());
+  let S = Object.assign({ name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: "" }, load());
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 
   // ---------- toast / confirm ----------
@@ -462,47 +462,23 @@ svg{display:block}
   };
   const toLatin = s => s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
 
-  // ---------- demo brain ----------
-  function parseReminder(text) {
-    const t = toLatin(text);
-    const now = new Date(); let d = new Date(now), set = false;
-    if (/بكر[ةه]|بكرا/.test(t)) { d.setDate(d.getDate() + 1); d.setHours(9, 0, 0, 0); set = true; }
-    if (/بعد بكر/.test(t)) { d = new Date(now); d.setDate(d.getDate() + 2); d.setHours(9, 0, 0, 0); set = true; }
-    const di = DAYS.findIndex(x => t.includes(x.replace("ال", "")) || t.includes(x));
-    if (di >= 0 && !/بكر/.test(t)) { d = new Date(now); let add = (di - now.getDay() + 7) % 7 || 7; d.setDate(d.getDate() + add); d.setHours(9, 0, 0, 0); set = true; }
-    const hm = t.match(/(?:الساعة|ساعة)\s*(\d{1,2})(?::(\d{2}))?/) || t.match(/(\d{1,2})(?::(\d{2}))?\s*(?:الصبح|ص|العصر|المغرب|الليل|م|بالليل|الظهر)/);
-    if (hm) {
-      let h = +hm[1], m = +(hm[2] || 0);
-      if (/العصر|المغرب|الليل|بالليل|\sم(\s|$)|الظهر/.test(t) && h < 12) h += 12;
-      if (/الظهر/.test(t) && h === 24) h = 12;
-      d.setHours(h, m, 0, 0); set = true;
-      if (!/بكر|بعد/.test(t) && di < 0 && d <= now) d.setDate(d.getDate() + 1);
-    } else if (/العصر/.test(t)) { d.setHours(16, 0, 0, 0); set = true; if (d <= now && !/بكر/.test(t)) d.setDate(d.getDate() + 1); }
-    if (!set) { d = new Date(now.getTime() + 60 * 60 * 1000); d.setSeconds(0, 0); }
-    let title = text.replace(/^(فزعة[،,]?\s*)?(لو سمحت\s*)?(ذكرني|ذكّرني|ذكرنى)\s*(إني|اني|أني|ب|بـ)?\s*/, "")
-      .replace(/\s*(بكر[ةه]|بكرا|بعد بكر[ةه]|اليوم|الساعة\s*[\d٠-٩:]+|[\d٠-٩]{1,2}(:[\d٠-٩]{2})?\s*(الصبح|ص|العصر|المغرب|الليل|م|الظهر)|العصر|يوم\s+\S+)\s*/g, " ").trim();
-    if (!title) title = "تذكير";
-    return { title, at: d.getTime(), repeat: /كل يوم|يومي/.test(t) ? "يومياً" : /كل سن[ةه]/.test(t) ? "كل سنة" : "" };
+  // ---------- server (عقل فزعة الحقيقي) ----------
+  const API = "https://h3m.tail450117.ts.net/fz-app/api";
+  const newToken = () => { const b = new Uint8Array(32); crypto.getRandomValues(b); return btoa(String.fromCharCode(...b)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); };
+  if (!S.token || !/^[A-Za-z0-9_-]{43}$/.test(S.token)) { S.token = newToken(); save(); }
+  let lastId = 0, reminders = [];
+  async function api(path, opt = {}) {
+    let r;
+    try {
+      r = await fetch(API + path, { ...opt, headers: { "Authorization": "Bearer " + S.token, ...(opt.body ? { "Content-Type": "application/json" } : {}) } });
+    } catch { throw new Error("offline"); }
+    if (r.status === 429) throw new Error("rate");
+    if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
+    return r.json();
   }
-
-  function think(text) {
-    const t = text.trim();
-    if (/ذكرني|ذكّرني|ذكرنى|نبهني|موعد/.test(t)) {
-      const r = parseReminder(t); r.id = Date.now();
-      S.tasks.push(r); save();
-      return { text: `أبشر ✅ سجلت لك: <b>${esc(r.title)}</b>\nأذكرك ${fmtWhen(new Date(r.at))}${r.repeat ? " · " + r.repeat : ""}.`, card: { t: r.title, w: fmtWhen(new Date(r.at)) } };
-    }
-    if (/وش عندي|مواعيدي|وش مواعيد|جدولي/.test(t)) {
-      const up = S.tasks.filter(x => x.at > Date.now() - 36e5).sort((a, b) => a.at - b.at);
-      if (!up.length) return { text: "ما عندك مواعيد مسجلة للحين. قل لي مثلاً: «ذكرني بموعد الأسنان بكرة الساعة ٤ العصر»." };
-      return { text: "عندك:\n" + up.slice(0, 6).map(x => `• ${esc(x.title)}: ${fmtWhen(new Date(x.at))}`).join("\n") };
-    }
-    if (/^(هلا|السلام|مرحبا|اهلين|أهلين|هاي|صباح|مساء)/.test(t)) return { text: `هلا والله${S.name ? " " + esc(S.name) : ""} 🤝 وش أقدر أفزع لك فيه؟ موعد تبي أذكرك فيه؟ رسالة تبيني أكتبها؟` };
-    if (/اكتب|رسال[ةه]|تهنئ[ةه]|ايميل|إيميل|اعتذار/.test(t)) return { text: "في النسخة الكاملة أكتبها لك جاهزة تنسخها وترسلها. هذي نسخة تجريبية للشكل بس، وجرب تقول لي «ذكرني…» عشان تشوف كيف أسجل التذكيرات." };
-    if (/شكرا|شكراً|يعطيك|تسلم/.test(t)) return { text: "العفو، أنا موجود 🙏" };
-    return { text: "هذي نسخة تجريبية للشكل والتنقل، والردود الحقيقية بتوصل لما نربطها بعقل فزعة. جرب تقول: «ذكرني أتصل على عبدالعزيز بكرة العصر» أو «وش عندي؟»." };
-  }
-  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const errText = e => e.message === "rate" ? "شوي شوي 🙏 جرب بعد دقيقة" : e.message === "offline" ? "فزعة مو متصل الحين، جرب بعد شوي" : "صار خلل بسيط، جرب مرة ثانية";
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="text-decoration:underline">$1</a>');
 
   // ---------- chat ui ----------
   const msgs = $("#msgs"), inp = $("#inp"), send = $("#send");
@@ -513,10 +489,9 @@ svg{display:block}
   function bubble(m) {
     const el = document.createElement("div");
     el.className = "m " + (m.me ? "me" : "bot");
-    el.innerHTML = (m.me ? esc(m.text) : m.text) +
-      (m.card ? `<div class="card-in"><i>⏰</i><div><b>${esc(m.card.t)}</b><br><span style="opacity:.7">${m.card.w}</span></div></div>` : "") +
-      `<time>${fmtTime(new Date(m.ts))}</time>`;
+    el.innerHTML = linkify(m.text) + `<time>${fmtTime(new Date(m.ts))}</time>`;
     msgs.appendChild(el);
+    return el;
   }
   function renderChat() {
     $$("#msgs .m, #msgs .typing").forEach(x => x.remove());
@@ -524,33 +499,63 @@ svg{display:block}
     S.msgs.forEach(bubble);
     msgs.scrollTop = S.msgs.length ? msgs.scrollHeight : 0;
   }
-  function submit(text) {
-    text = (text || inp.value).trim(); if (!text) return;
+  const fromServer = m => ({ me: m.role === "user", text: String(m.text).replace(/^🎙️ /, ""), ts: Date.parse(m.at) || Date.now() });
+  async function loadHistory() {
+    try {
+      const r = await api("/messages?after=0");
+      S.msgs = r.messages.map(fromServer); lastId = r.messages.length ? r.messages[r.messages.length - 1].id : 0;
+      save(); renderChat();
+    } catch {}
+  }
+  async function poll() {
+    if (document.hidden) return;
+    try {
+      const r = await api("/messages?after=" + lastId);
+      if (!r.messages.length) return;
+      $("#empty").style.display = "none";
+      r.messages.forEach(m => { const x = fromServer(m); S.msgs.push(x); bubble(x); if (!x.me && /⏰/.test(x.text)) toast("⏰ وصلك تذكير"); });
+      lastId = r.messages[r.messages.length - 1].id; S.msgs = S.msgs.slice(-80); save();
+      msgs.scrollTop = msgs.scrollHeight;
+    } catch {}
+  }
+  setInterval(poll, 20000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) poll(); });
+  let busy = false;
+  async function submit(text) {
+    text = (text || inp.value).trim(); if (!text || busy) return;
+    busy = true;
     inp.value = ""; grow(); syncSend();
     $("#empty").style.display = "none";
     const me = { me: true, text, ts: Date.now() }; S.msgs.push(me); bubble(me); save();
     const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
     msgs.scrollTop = msgs.scrollHeight;
-    setTimeout(() => {
+    try {
+      const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "" }) });
       ty.remove();
-      const r = think(text), bot = { me: false, text: r.text, card: r.card, ts: Date.now() };
-      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); save(); bubble(bot);
-      msgs.scrollTop = msgs.scrollHeight;
-    }, 700 + Math.min(900, text.length * 12));
+      const bot = { me: false, text: r.reply || "تمام 👍", ts: Date.now() };
+      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
+      lastId = Math.max(lastId, r.last || 0); save();
+    } catch (e) {
+      ty.remove(); toast(errText(e));
+      S.msgs.pop(); save(); renderChat(); inp.value = text; grow(); syncSend();
+    }
+    busy = false;
+    msgs.scrollTop = msgs.scrollHeight;
   }
   const grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, inp.scrollHeight) + "px"; };
   const syncSend = () => { const has = !!inp.value.trim(); send.classList.toggle("go", has); $("#send-ic").innerHTML = `<use href="#${has ? "i-send" : "i-mic"}"/>`; send.setAttribute("aria-label", has ? "أرسل" : "فويس"); };
   inp.addEventListener("input", () => { grow(); syncSend(); });
   inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); submit(); } });
-  send.addEventListener("click", () => inp.value.trim() ? submit() : toast("الفويس بيشتغل في النسخة الكاملة"));
+  send.addEventListener("click", () => inp.value.trim() ? submit() : toast("الفويس قريباً في التطبيق، وهو شغال على تيليجرام"));
 
   // ---------- today (stories) ----------
   let si = 0, stimer;
   function storyData() {
     const now = new Date(), h = now.getHours();
     const greet = h < 12 ? "صباح الخير" : h < 18 ? "مساك الله بالخير" : "مساء الخير";
-    const today = S.tasks.filter(x => new Date(x.at).toDateString() === now.toDateString()).sort((a, b) => a.at - b.at);
-    const next = S.tasks.filter(x => x.at > now.getTime()).sort((a, b) => a.at - b.at);
+    const R = reminders.map(x => ({ title: x.title, at: Date.parse(x.at) }));
+    const today = R.filter(x => new Date(x.at).toDateString() === now.toDateString()).sort((a, b) => a.at - b.at);
+    const next = R.filter(x => x.at > now.getTime()).sort((a, b) => a.at - b.at);
     return [
       { c: "st-1", k: greet + (S.name ? " يا " + S.name : ""), h: today.length ? `عندك ${AR(today.length)} ${today.length === 1 ? "شي" : "أشياء"} اليوم` : "يومك فاضي للحين",
         list: today.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.at))]), p: today.length ? "" : "قل لي أي موعد أو شي تبي تتذكره، وأنا أرتبه لك." },
@@ -571,7 +576,7 @@ svg{display:block}
     $("#story-n").textContent = AR(si + 1) + " من " + AR(D.length);
     clearTimeout(stimer); stimer = setTimeout(() => { if ($("#v-today").classList.contains("on")) showStory(si + 1); }, 6000);
   }
-  const startStories = () => showStory(0);
+  const startStories = async () => { showStory(0); try { reminders = (await api("/reminders")).reminders; showStory(0); } catch {} };
 
   // ---------- tasks ----------
   const taskIdeas = [
@@ -579,10 +584,11 @@ svg{display:block}
     ["حبة الضغط", "كل يوم · ١٠:٠٠ ص", "ذكرني كل يوم الساعة ١٠ الصبح بحبة الضغط"],
     ["قبل نهاية الشهر: وش باقي من الميزانية", "كل شهر · يوم ٢٥", "ذكرني يوم ٢٥ أشيك على الميزانية"]
   ];
-  function renderTasks() {
-    const up = S.tasks.slice().sort((a, b) => a.at - b.at);
+  const REP = { daily: "يومياً", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
+  function drawTasks() {
+    const up = reminders.slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
     $("#task-list").innerHTML = up.length ? `<p class="sec-t">تذكيراتك</p>` + up.map(x => `
-      <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${x.repeat ? " · " + x.repeat : ""}</span></div>
+      <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${REP[x.repeat] ? " · " + REP[x.repeat] : ""}</span></div>
       <button class="del" data-del="${x.id}" aria-label="احذف"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       + `<button class="btn btn-ghost" id="new-task" style="margin-top:14px"><svg><use href="#i-plus"/></svg>جديد</button>`
       : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>ما عندك شي مجدول للحين</h3><button class="btn btn-primary" id="new-task"><svg><use href="#i-plus"/></svg>سوّ واحد جديد</button></div>`;
@@ -590,15 +596,31 @@ svg{display:block}
     $("#new-task").onclick = () => { go("chat"); inp.value = "ذكرني "; grow(); syncSend(); inp.focus(); };
     $$("[data-idea]").forEach(b => b.onclick = () => { go("chat"); submit(b.dataset.idea); });
     $$("[data-del]").forEach(b => b.onclick = async () => {
-      if (await ask("تحذف هالتذكير؟", "بينحذف ولا يوصلك.", "احذف")) { S.tasks = S.tasks.filter(x => String(x.id) !== b.dataset.del); save(); renderTasks(); toast("انحذف"); }
+      if (!(await ask("تحذف هالتذكير؟", "بينحذف ولا يوصلك.", "احذف"))) return;
+      try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); toast("انحذف"); }
+      catch (e) { toast(errText(e)); }
     });
+  }
+  async function renderTasks() {
+    drawTasks();
+    try { reminders = (await api("/reminders")).reminders; drawTasks(); } catch (e) { toast(errText(e)); }
   }
 
   // ---------- account ----------
+  let invite = "";
   function renderMe() {
     $("#me-name").textContent = S.name || "ضيف";
     $("#av").textContent = (S.name || "ف").trim()[0];
     $("#set-name").value = S.name || "";
+    api("/me").then(m => {
+      const paid = m.plan && m.plan !== "free";
+      $("#plan-chip").textContent = paid ? "Prime" : "مجاني";
+      $("#me-plan").textContent = paid ? ("Prime" + (m.plan_until ? " · لين " + AR(m.plan_until.slice(0, 10)) : ""))
+        : `المجانية · ${AR(m.msgs)} من ${AR(m.msgs_limit)} رسالة · ${AR(m.reminders_month)} من ${AR(m.reminders_limit)} تذكير هالشهر`;
+      const n = m.refs || 0; $("#ref-n").textContent = AR(n % 3) + " من ٣"; $("#ref-small").textContent = AR(n % 3) + " من ٣";
+      $$(".bars i").forEach((b, k) => b.classList.toggle("on", k < Math.floor(n / 3)));
+      invite = m.invite || "";
+    }).catch(() => {});
   }
   $("#set-name").addEventListener("change", e => { S.name = e.target.value.trim(); save(); renderMe(); updateHello(); toast("انحفظ"); });
   $("#set-brief").value = S.brief; $("#set-brief").addEventListener("change", e => { S.brief = e.target.value; save(); toast("انحفظ"); });
@@ -606,7 +628,7 @@ svg{display:block}
   $("#apps").innerHTML = apps.map(([i, n, s, live]) => `<button class="app-t${live ? " live" : ""}" type="button"><span class="ai"><svg><use href="#${i}"/></svg></span><b>${n}</b><small>${s}</small></button>`).join("");
   $$("#apps .app-t").forEach(b => b.onclick = () => toast(b.classList.contains("live") ? "تيليجرام شغال" : "هالربط قريباً"));
   $("#share").onclick = async () => {
-    const text = "جرّب فزعة، مساعد ذكي يذكّرك ويرتب يومك، وفيه باقة مجانية:", url = "https://ifazaa.com";
+    const text = "جرّب فزعة، مساعد ذكي يذكّرك ويرتب يومك، وفيه باقة مجانية:", url = invite || "https://ifazaa.com";
     try { if (navigator.share) { await navigator.share({ title: "فزعة", text, url }); return; } } catch { return; }
     open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
   };
@@ -614,11 +636,12 @@ svg{display:block}
   $("#biz").onclick = e => { e.preventDefault(); open(WA + encodeURIComponent("السلام عليكم، أبي أعرف عن فزعة لمؤسستي/شركتي"), "_blank", "noopener"); };
   $("#help").onclick = () => open(WA + encodeURIComponent("السلام عليكم، عندي سؤال عن تطبيق فزعة"), "_blank", "noopener");
   $("#wipe").onclick = async () => {
-    if (await ask("تحذف كل بياناتك؟", "بتنحذف محادثاتك وتذكيراتك واسمك من هالجهاز نهائياً.", "احذف كل شي")) {
-      try { localStorage.removeItem(KEY); } catch {}
-      S = { name: "", msgs: [], tasks: [], onb: false, hideInstall: false, brief: "07:00" };
-      closeSheets(); renderChat(); go("chat"); showOnb(); toast("انحذفت بياناتك");
-    }
+    if (!(await ask("تحذف كل بياناتك؟", "بتنحذف محادثاتك وتذكيراتك عندنا وفي هالجهاز نهائياً.", "احذف كل شي"))) return;
+    try { await api("/delete", { method: "POST", body: JSON.stringify({ confirm: true }) }); }
+    catch (e) { toast(errText(e)); return; }
+    try { localStorage.removeItem(KEY); } catch {}
+    S = { name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: newToken() }; save(); lastId = 0; reminders = [];
+    closeSheets(); renderChat(); go("chat"); showOnb(); toast("انحذفت بياناتك");
   };
 
   // ---------- onboarding ----------
@@ -641,7 +664,7 @@ svg{display:block}
 
   // ---------- boot ----------
   if (!S.onb) showOnb();
-  updateHello(); renderChat(); renderMe();
+  updateHello(); renderChat(); renderMe(); loadHistory();
   if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 })();
 </script>

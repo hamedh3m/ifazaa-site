@@ -320,7 +320,7 @@ svg{display:block}
           <textarea id="inp" rows="1" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
           <button class="send" id="send" type="button" aria-label="أرسل"><svg id="send-ic"><use href="#i-mic"/></svg></button>
         </div>
-        <p class="demo-note">نسخة تجريبية · حساب التطبيق منفصل عن تيليجرام للحين</p>
+        <p class="demo-note">نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»</p>
       </div>
     </section>
 
@@ -346,7 +346,7 @@ svg{display:block}
       <div class="gbox" id="g-in" hidden><b>احفظ حسابك</b><p>ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.</p><div class="g-slot" id="g-me"></div></div>
       <div class="gbox g-out" id="g-out" hidden><span id="g-email"></span><button type="button" id="g-signout">تسجيل خروج</button></div>
       <div class="menu">
-        <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small>تيليجرام، Gmail، التقويم…</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">٠ من ٣</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>ترقّى لـ Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
@@ -373,6 +373,7 @@ svg{display:block}
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>ربط التطبيقات</h1><span style="width:42px"></span></header>
   <div class="body">
     <p class="sub">كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.</p>
+    <div class="gbox" id="tg-box"><b>اربط تيليجرام</b><p>يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.</p><button class="btn btn-primary" type="button" id="tg-link">اربط تيليجرام</button></div>
     <div class="grid3" id="apps"></div>
     <div class="pay"><div class="cc"></div><div><b>خلّ فزعة يدفع عنك</b><span>فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً</span></div></div>
   </div>
@@ -689,14 +690,42 @@ svg{display:block}
       $$(".bars i").forEach((b, k) => b.classList.toggle("on", k < Math.floor(n / 3)));
       invite = m.invite || "";
       if ((m.email || "") !== S.email) { S.email = m.email || ""; save(); syncGoogleUI(); }
+      tgLinked = !!m.telegram; syncTg();
     }).catch(() => {});
     syncGoogleUI();
   }
   $("#set-name").addEventListener("change", e => { S.name = e.target.value.trim(); save(); renderMe(); updateHello(); toast("انحفظ"); });
   $("#set-brief").value = S.brief; $("#set-brief").addEventListener("change", e => { S.brief = e.target.value; save(); toast("انحفظ"); });
-  const apps = [["a-tg","تيليجرام","متصل",1],["a-wa","واتساب","قريباً"],["a-gmail","Gmail","قريباً"],["a-cal","تقويم قوقل","قريباً"],["a-outlook","Outlook","قريباً"],["a-drive","قوقل درايف","قريباً"],["a-tasks","مهام قوقل","قريباً"],["a-notion","Notion","قريباً"],["a-slack","Slack","قريباً"],["a-icloud","تقويم آيفون","قريباً"]];
+  const apps = [["a-tg","تيليجرام","اربط",1],["a-wa","واتساب","قريباً"],["a-gmail","Gmail","قريباً"],["a-cal","تقويم قوقل","قريباً"],["a-outlook","Outlook","قريباً"],["a-drive","قوقل درايف","قريباً"],["a-tasks","مهام قوقل","قريباً"],["a-notion","Notion","قريباً"],["a-slack","Slack","قريباً"],["a-icloud","تقويم آيفون","قريباً"]];
   $("#apps").innerHTML = apps.map(([i, n, s, live]) => `<button class="app-t${live ? " live" : ""}" type="button"><span class="ai"><svg><use href="#${i}"/></svg></span><b>${n}</b><small>${s}</small></button>`).join("");
-  $$("#apps .app-t").forEach(b => b.onclick = () => toast(b.classList.contains("live") ? "تيليجرام شغال" : "هالربط قريباً"));
+  $$("#apps .app-t").forEach(b => b.onclick = () => b.classList.contains("live") ? linkTelegram() : toast("هالربط قريباً"));
+  // ---------- ربط تيليجرام ----------
+  let tgLinked = false, tgWait = 0;
+  function syncTg() {
+    $("#tg-box").hidden = tgLinked;
+    $("#tg-small").textContent = tgLinked ? "تيليجرام مربوط ✅" : "اربط تيليجرام عشان يصير حساب واحد";
+    const tile = $("#apps .app-t.live small"); if (tile) tile.textContent = tgLinked ? "مربوط" : "اربط";
+  }
+  async function linkTelegram() {
+    if (tgLinked) { toast("تيليجرام مربوط بحسابك ✅"); return; }
+    let r;
+    try { r = await api("/link/telegram", { method: "POST" }); } catch (e) { toast(errText(e)); return; }
+    if (r.linked) { tgLinked = true; syncTg(); toast("تيليجرام مربوط بحسابك ✅"); return; }
+    if (!(await ask("اربط تيليجرام", "بيفتح لك بوت فزعة في تيليجرام. اضغط «Start» وارجع هنا، والربط يصير لحاله.", "افتح تيليجرام"))) return;
+    const w = open(r.url, "_blank", "noopener"); if (!w) location.href = r.url;
+    clearInterval(tgWait); let n = 0;
+    tgWait = setInterval(async () => {
+      if (++n > 45) { clearInterval(tgWait); return; }
+      try {
+        const m = await api("/me");
+        if (m.telegram) {
+          clearInterval(tgWait); tgLinked = true; syncTg(); renderMe(); lastId = 0; await loadHistory();
+          toast("تم ✅ صار حسابك واحد مع تيليجرام");
+        }
+      } catch {}
+    }, 4000);
+  }
+  $("#tg-link").onclick = linkTelegram;
   $("#share").onclick = async () => {
     const text = "جرّب فزعة، مساعد ذكي يذكّرك ويرتب يومك، وفيه باقة مجانية:", url = invite || "https://ifazaa.com";
     try { if (navigator.share) { await navigator.share({ title: "فزعة", text, url }); return; } } catch { return; }

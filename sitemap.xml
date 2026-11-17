@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://ifazaa.com/</loc></url>
-  <url><loc>https://ifazaa.com/afrad.html</loc></url>
-  <url><loc>https://ifazaa.com/mashari.html</loc></url>
-  <url><loc>https://ifazaa.com/sharikat.html</loc></url>
-  <url><loc>https://ifazaa.com/shurut.html</loc></url>
+  <url><loc>https://ifazaa.com/biz.html</loc></url>
   <url><loc>https://ifazaa.com/asila.html</loc></url>
   <url><loc>https://ifazaa.com/privacy.html</loc></url>
   <url><loc>https://ifazaa.com/terms.html</loc></url>
+  <url><loc>https://ifazaa.com/shurut.html</loc></url>
   <url><loc>https://ifazaa.com/en/</loc></url>
+  <url><loc>https://ifazaa.com/en/biz.html</loc></url>
   <url><loc>https://ifazaa.com/en/asila.html</loc></url>
   <url><loc>https://ifazaa.com/en/privacy.html</loc></url>
   <url><loc>https://ifazaa.com/en/terms.html</loc></url>
-  <url><loc>https://ifazaa.com/en/afrad.html</loc></url>
-  <url><loc>https://ifazaa.com/en/mashari.html</loc></url>
-  <url><loc>https://ifazaa.com/en/sharikat.html</loc></url>
   <url><loc>https://ifazaa.com/en/shurut.html</loc></url>
 </urlset>

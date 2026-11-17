@@ -229,10 +229,25 @@ svg{display:block}
 .confirm .btn+.btn{margin-top:10px}
 .install{margin:0 0 10px;padding:12px 14px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:14px;display:flex;gap:10px;align-items:center}
 .install[hidden]{display:none}
+.install .inst-go{width:auto;height:auto;margin-inline-start:auto;padding:8px 14px;border-radius:999px;background:var(--ink);color:#111;font-weight:700;font-size:13px;flex:none}
+.install .inst-go+button{margin-inline-start:0}
+.steps{list-style:none;display:grid;gap:12px;margin-top:20px;counter-reset:st}
+.steps li{counter-increment:st;display:flex;gap:14px;align-items:center;padding:16px;border-radius:20px;background:var(--s1);border:1px solid var(--line);font-size:16px;line-height:1.5}
+.steps li::before{content:counter(st,arabic-indic);flex:none;width:32px;height:32px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;display:grid;place-items:center}
+.steps .ico{flex:none;margin-inline-start:auto;width:44px;height:44px;border-radius:12px;background:var(--s2);display:grid;place-items:center}
+.steps .ico svg{width:24px;height:24px}
+.steps b{color:#fff}
+.plat{display:flex;gap:8px;margin-top:18px}
+.plat button{flex:1;padding:10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:700;font-size:14px}
+.plat button[aria-pressed="true"]{background:var(--ink);color:#111;border-color:var(--ink)}
+.arrow-hint{position:fixed;z-index:70;bottom:calc(var(--bot) + 8px);left:50%;transform:translateX(-50%);font-size:34px;animation:bob2 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes bob2{50%{transform:translate(-50%,8px)}}
 .install b{display:block}
 .install span{color:var(--muted);font-size:13px}
 .install button{margin-inline-start:auto;color:var(--muted);flex:none;width:30px;height:30px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+[hidden]{display:none!important}
+#install-x{display:grid;place-items:center}#install-x svg{width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -256,6 +271,9 @@ svg{display:block}
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4M12 16.8v.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-addsq" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8.5v7M8.5 12h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="18.5" r="1.8" fill="currentColor"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8M5 12.5v6A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="a-wa" viewBox="0 0 24 24"><path fill="#25d366" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/><path fill="#fff" d="M17.3 16.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.1Z"/></symbol>
   <symbol id="a-tg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2aabee"/><path fill="#fff" d="m17.6 7.3-11 4.3c-.8.3-.7.7-.1.9l2.8.9 1.1 3.4c.1.4.3.5.5.5s.4-.1.5-.3l1.4-1.3 2.8 2.1c.5.3.9.1 1-.5l1.9-8.8c.2-.8-.3-1.1-.9-.9Zm-7 5.8-.2 2.4-1-3 5.9-3.8Z"/></symbol>
@@ -283,7 +301,7 @@ svg{display:block}
           <div class="orb"><svg style="border-radius:12px"><use href="#logo"/></svg></div>
           <h2 id="hello">هلا! وش أفزع لك اليوم؟</h2>
           <p>اكتب أو تكلم بكلامك العادي.</p>
-          <div class="install" id="install" hidden><div><b>ثبّت فزعة على شاشتك</b><span id="install-how">اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»</span></div><button type="button" id="install-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
+          <div class="install" id="install" hidden><div><b>ثبّت فزعة على شاشتك</b><span>يفتح مثل أي تطبيق وتوصلك التنبيهات</span></div><button type="button" class="inst-go" id="install-open">وريني كيف</button><button type="button" id="install-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
           <div class="chips" id="chips"></div>
         </div>
       </div>
@@ -322,6 +340,7 @@ svg{display:block}
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>ترقّى لـ Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
       <div class="menu">
+        <button id="open-install"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-dl"/></svg></span><span class="lbl">ثبّت التطبيق على شاشتك</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-settings"><span class="mi" style="background:var(--s2)"><svg><use href="#i-gear"/></svg></span><span class="lbl">الإعدادات</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-privacy"><span class="mi" style="background:var(--s2)"><svg><use href="#i-lock"/></svg></span><span class="lbl">الخصوصية وبياناتك</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button id="help"><span class="mi" style="background:var(--s2)"><svg><use href="#i-help"/></svg></span><span class="lbl">تواصل معنا</span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -382,6 +401,32 @@ svg{display:block}
     <label class="field"><span>تنبيهات الجوال</span></label>
     <button class="btn btn-ghost" id="push-btn" type="button">🔔 فعّل التنبيهات</button>
     <p class="note" id="push-note">التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.</p>
+  </div>
+</section>
+
+<section class="sheet" id="s-install" aria-label="ثبّت التطبيق">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>ثبّت فزعة</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <h2 class="h2">فزعة على شاشتك بثواني</h2>
+    <p class="sub">بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.</p>
+    <div class="plat" role="group" aria-label="نوع الجهاز"><button type="button" data-plat="ios">آيفون</button><button type="button" data-plat="and">أندرويد</button><button type="button" data-plat="pc">كمبيوتر</button></div>
+    <button class="btn btn-red" id="inst-native" type="button" style="margin-top:18px" hidden><svg><use href="#i-dl"/></svg>ثبّت الحين</button>
+    <ol class="steps" id="inst-ios" hidden>
+      <li><span>اضغط زر <b>المشاركة</b> تحت في الشاشة (في Safari)</span><span class="ico"><svg><use href="#i-share"/></svg></span></li>
+      <li><span>انزل شوي واختر <b>«إضافة إلى الشاشة الرئيسية»</b></span><span class="ico"><svg><use href="#i-addsq"/></svg></span></li>
+      <li><span>اضغط <b>«إضافة»</b> فوق، وافتح فزعة من أيقونته</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
+    </ol>
+    <ol class="steps" id="inst-and" hidden>
+      <li><span>اضغط النقاط الثلاث <b>⋮</b> فوق في Chrome</span><span class="ico"><svg><use href="#i-dots"/></svg></span></li>
+      <li><span>اختر <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b></span><span class="ico"><svg><use href="#i-addsq"/></svg></span></li>
+      <li><span>اضغط <b>«تثبيت»</b>، وتلقى فزعة مع تطبيقاتك</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
+    </ol>
+    <ol class="steps" id="inst-pc" hidden>
+      <li><span>في Chrome أو Edge، اضغط أيقونة <b>التثبيت</b> في آخر شريط العنوان</span><span class="ico"><svg><use href="#i-dl"/></svg></span></li>
+      <li><span>أو من القائمة <b>⋮</b> اختر <b>«تثبيت فزعة»</b></span><span class="ico"><svg><use href="#i-dots"/></svg></span></li>
+      <li><span>يطلع لك فزعة على سطح المكتب وفي قائمة البرامج</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
+    </ol>
+    <p class="note" id="inst-done" hidden>✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.</p>
   </div>
 </section>
 
@@ -693,13 +738,35 @@ svg{display:block}
   $("#push-btn").onclick = enablePush;
   $("#push-x").onclick = () => { S.hidePush = true; save(); syncPushUI(); };
 
-  // ---------- install hint ----------
+  // ---------- install guide ----------
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
-  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  if (!standalone && !S.hideInstall) {
-    $("#install").hidden = false;
-    if (!ios) $("#install-how").textContent = "من قائمة المتصفح ⋮ اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»";
+  const ua = navigator.userAgent;
+  const ios = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const android = /android/i.test(ua);
+  let deferred = null;
+  addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; $("#inst-native").hidden = false; });
+  addEventListener("appinstalled", () => { deferred = null; S.hideInstall = true; save(); $("#install").hidden = true; toast("تم ✅ فزعة صار على شاشتك"); });
+  function setPlat(p) {
+    $$(".plat button").forEach(b => b.setAttribute("aria-pressed", b.dataset.plat === p));
+    ["ios", "and", "pc"].forEach(k => { $("#inst-" + k).hidden = k !== p; });
   }
+  $$(".plat button").forEach(b => b.onclick = () => setPlat(b.dataset.plat));
+  function openInstall() {
+    setPlat(ios ? "ios" : android ? "and" : "pc");
+    $("#inst-done").hidden = !standalone;
+    $("#inst-native").hidden = !deferred;
+    openSheet("s-install");
+  }
+  $("#inst-native").onclick = async () => {
+    if (!deferred) return;
+    deferred.prompt();
+    const { outcome } = await deferred.userChoice.catch(() => ({}));
+    deferred = null; $("#inst-native").hidden = true;
+    if (outcome === "accepted") { history.back(); }
+  };
+  $("#install-open").onclick = openInstall;
+  $("#open-install").onclick = openInstall;
+  if (!standalone && !S.hideInstall) $("#install").hidden = false;
   $("#install-x").onclick = () => { S.hideInstall = true; save(); $("#install").hidden = true; };
 
   // ---------- boot ----------

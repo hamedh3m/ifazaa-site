@@ -745,6 +745,7 @@ html.i18n-wait body{visibility:hidden}
   // تطبيق الآيفون (Capacitor): نفس الصفحة، مع تنبيهات ودخول أبل من الجوال نفسه
   const CAP = window.Capacitor, NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
   const NP = NATIVE ? (CAP.Plugins || {}) : {};
+  const PLAT = NATIVE && CAP.getPlatform ? CAP.getPlatform() : "web";       // ios | android | web
   if (NATIVE) document.documentElement.classList.add("native");
   async function api(path, opt = {}) {
     let r;
@@ -813,7 +814,7 @@ html.i18n-wait body{visibility:hidden}
     const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
     msgs.scrollTop = msgs.scrollHeight;
     try {
-      const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "", client: NATIVE ? "ios" : "web" }) });
+      const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "", client: PLAT }) });
       ty.remove();
       const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
       S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
@@ -1300,7 +1301,7 @@ html.i18n-wait body{visibility:hidden}
   }
   let apnsWired = false;
   async function nativePush(test) {
-    const P = NP.PushNotifications; if (!P) throw new Error("push");
+    const P = PLAT === "ios" ? NP.PushNotifications : null; if (!P) throw new Error("push");   // أندرويد: التنبيهات بعد ربط Firebase
     let perm = (await P.checkPermissions()).receive;
     if (perm === "prompt" || perm === "prompt-with-rationale") perm = (await P.requestPermissions()).receive;
     if (perm !== "granted") { S.pushDenied = true; save(); throw new Error("denied"); }

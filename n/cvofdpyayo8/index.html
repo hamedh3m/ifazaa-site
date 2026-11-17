@@ -321,6 +321,21 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
 .bub--in{align-self:flex-start;background:rgba(255,255,255,.9);color:#111;border-end-start-radius:5px}
 .bub--out{align-self:flex-end;background:rgba(9,9,10,.55);border:1px solid rgba(255,255,255,.14);border-end-end-radius:5px}
 .r5 .bub{font-size:14px}.r5 .bub--in{color:#111}.r5 .bub--out{color:#fff}
+
+/* app band */
+.appband{display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center;padding:44px;border-radius:var(--r-xl);background:radial-gradient(80% 120% at 0% 0%,rgba(224,33,59,.22),transparent 60%),#121214;border:1px solid var(--line);overflow:hidden}
+.appband .soon{margin-bottom:14px}
+.replaced{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.replaced s{text-decoration:line-through;text-decoration-color:var(--red2);text-decoration-thickness:2px;color:var(--muted);font-size:14px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.stores{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.store{display:flex;flex-direction:column;padding:9px 18px;border-radius:14px;border:1px solid rgba(245,245,242,.25);direction:ltr;text-align:left}
+.store b{font-size:16px}.store small{font-size:11px;color:var(--muted);direction:rtl;text-align:left}
+.appband__vis{display:grid;place-items:center}
+.mockphone{width:210px;aspect-ratio:9/18;border-radius:34px;border:6px solid #26262a;background:linear-gradient(180deg,#1a1a1d,#0e0e10);display:flex;flex-direction:column;gap:10px;padding:26px 14px;box-shadow:0 40px 80px -30px rgba(224,33,59,.45)}
+.mp-logo{width:46px;height:46px;border-radius:14px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:24px;margin:0 auto 14px}
+.mp-bub{align-self:flex-start;max-width:90%;padding:8px 11px;border-radius:14px;background:#f5f5f2;color:#111;font-size:13px}
+.mp-bub--bot{align-self:flex-end;background:#26262a;color:#fff}
+@media (max-width:860px){.appband{grid-template-columns:1fr;padding:28px 22px}.mockphone{width:180px}}
 </style>
 </head>
 <body>
@@ -426,6 +441,21 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
         <article class="r5"><div class="stage stage--green"><div style="width:100%;display:grid;gap:8px"><span class="mini mini--rt">ذكرني بحبة الضغط وسجّل إذا أخذتها<em>كل يوم · ١٠:٠٠ ص</em></span><span class="mini mini--rt">وش باقي من الميزانية؟<em>كل شهر · يوم ٢٥</em></span></div></div>
           <h3>يشتغل لحاله <span class="soon">قريباً</span></h3><p>قل له مرة وحدة، ويسويها كل يوم أو كل شهر في وقتها.</p></article>
       </div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="app" style="padding-top:20px">
+    <div class="wrap">
+      <div class="appband rv">
+        <div class="appband__txt">
+          <span class="soon">قريباً</span>
+          <h2 class="sec-h">تطبيق فزعة على آيفون وأندرويد</h2>
+          <p class="sec-p">تطبيق واحد يغنيك عن تطبيقات كثيرة تدفع عليها اشتراكات كل شهر.</p>
+          <div class="replaced"><s>التذكيرات</s><s>الملاحظات</s><s>التقويم</s><s>المهام</s><s>حساب السعرات</s><s>الميزانية</s></div>
+          <div class="stores"><span class="store"><b>App Store</b><small>قريباً</small></span><span class="store"><b>Google Play</b><small>قريباً</small></span></div>
+        </div>
+        <div class="appband__vis" aria-hidden="true"><div class="mockphone"><span class="mp-logo">ف</span><span class="mp-bub">ذكرني أجدد الإقامة قبل شهر</span><span class="mp-bub mp-bub--bot">أبشر ✅ سجلته</span></div></div>
+      </div>
     </div>
   </section>
 

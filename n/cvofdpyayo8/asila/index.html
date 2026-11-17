@@ -336,6 +336,14 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
 .faqpage{padding:140px 0 80px}
 @media (max-width:900px){.biz-hero{grid-template-columns:1fr}.steps4{grid-template-columns:1fr 1fr}.fl--biz{position:static;width:auto;margin:12px auto 0;max-width:400px;animation:none}}
 @media (max-width:560px){.steps4{grid-template-columns:1fr}.contact-card{padding:32px 20px}}
+
+/* v4: moving rows */
+.row5{display:block;overflow:hidden;padding:44px 0 10px;margin-inline:calc(50% - 50vw);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.row5__track{display:flex;gap:18px;width:max-content;animation:marq var(--dur,70s) linear infinite}
+.row5:hover .row5__track,.row5:focus-within .row5__track,.row5.hold .row5__track{animation-play-state:paused}
+.row5 .r5{flex:none;width:320px}
+@media (max-width:600px){.row5 .r5{width:270px}}
+@media (prefers-reduced-motion:reduce){.row5{overflow-x:auto;mask-image:none;-webkit-mask-image:none}.row5__track{animation:none}}
 </style>
 </head>
 <body>
@@ -382,7 +390,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     <div class="fgrid">
       <div><a class="logo" href="../"><i>ف</i>فزعة</a><p style="margin-top:14px;max-width:34ch">مساعد ذكي لحياتك وشغلك، يكبر معك: للأفراد والمؤسسات والشركات.</p></div>
       <div><h5>الباقات</h5><ul><li><a href="../#plans">مجاني</a></li><li><a href="../#plans">Prime</a></li><li><a href="../biz/">Pro</a></li><li><a href="../biz/">Elite</a></li></ul></div>
-      <div><h5>فزعة</h5><ul><li><a href="../#invite">ادعُ صاحبك</a></li><li><a href="/privacy.html">سياسة الخصوصية</a></li><li><a href="/terms.html">الشروط والأحكام</a></li><li><a href="../asila/">الأسئلة الشائعة</a></li></ul></div>
+      <div><h5>فزعة</h5><ul><li><a href="../#invite">ادعُ صاحبك</a></li><li><a href="../privacy/">سياسة الخصوصية</a></li><li><a href="../terms/">الشروط والأحكام</a></li><li><a href="../asila/">الأسئلة الشائعة</a></li></ul></div>
       <div><h5>تواصل معنا</h5><ul>
         <li><a class="ct" data-wa="السلام عليكم، أبي أعرف عن فزعة" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg><bdi dir="ltr">0530004565</bdi></a></li>
         <li><a class="ct" href="mailto:info@ifazaa.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>info@ifazaa.com</a></li>
@@ -426,6 +434,18 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     document.getElementById("cards").scrollTo({ left: 0, behavior: "smooth" });
   }));
 
+
+  // صفوف تتحرك لحالها: نكرر البطاقات عشان الحركة ما تنقطع، وتوقف لما تلمسها
+  document.querySelectorAll(".row5__track").forEach(t => {
+    const orig = [...t.children];
+    const clone = n => { const c = n.cloneNode(true); c.setAttribute("aria-hidden", "true"); t.appendChild(c); };
+    for (let k = 0; k < 4 && t.scrollWidth < innerWidth * 1.1; k++) orig.forEach(clone);   // نعبي عرض الشاشة
+    [...t.children].forEach(clone);                                                        // ونكرر الكل مرة عشان الحركة ما تنقطع
+    t.style.setProperty("--dur", (t.children.length * 4.5) + "s");
+    const row = t.parentElement;
+    row.addEventListener("touchstart", () => row.classList.add("hold"), { passive: true });
+    row.addEventListener("touchend", () => setTimeout(() => row.classList.remove("hold"), 1500), { passive: true });
+  });
   // videos: one plays at a time
   const vids = [...document.querySelectorAll(".phone video")];
   document.querySelectorAll(".phone").forEach(p => {

@@ -307,6 +307,20 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
 .stage--blue{background:radial-gradient(120% 90% at 30% 10%,#2a4a7a,#101c30 60%,#080c14)}
 .k5{display:block;color:rgba(255,255,255,.7);font-size:13px;margin-top:70px}
 .b5{display:block;font-size:22px;font-weight:800;margin:4px 0 10px}
+
+/* v4: moving rows */
+.row5{display:block;overflow:hidden;padding:44px 0 10px;margin-inline:calc(50% - 50vw);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.row5__track{display:flex;gap:18px;width:max-content;animation:marq var(--dur,70s) linear infinite}
+.row5:hover .row5__track,.row5:focus-within .row5__track,.row5.hold .row5__track{animation-play-state:paused}
+.row5 .r5{flex:none;width:320px}
+@media (max-width:600px){.row5 .r5{width:270px}}
+@media (prefers-reduced-motion:reduce){.row5{overflow-x:auto;mask-image:none;-webkit-mask-image:none}.row5__track{animation:none}}
+
+.chatmini{width:100%;display:flex;flex-direction:column;gap:8px}
+.bub{max-width:85%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.5}
+.bub--in{align-self:flex-start;background:rgba(255,255,255,.9);color:#111;border-end-start-radius:5px}
+.bub--out{align-self:flex-end;background:rgba(9,9,10,.55);border:1px solid rgba(255,255,255,.14);border-end-end-radius:5px}
+.r5 .bub{font-size:14px}.r5 .bub--in{color:#111}.r5 .bub--out{color:#fff}
 </style>
 </head>
 <body>
@@ -340,19 +354,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
   <section class="hero">
     <div class="wrap">
       <span class="eyebrow rv"><b></b>خفّف عن نفسك</span>
-      <h1 class="h1 rv">كل شي يعتمد عليك
-        <span class="ic ic--cal" aria-hidden="true"><span></span><b>١٧</b></span>
-        خلّه على فزعة يفزع لك
-      </h1>
-
-      <div class="ask rv" role="group" aria-label="جرّب تكلم فزعة">
-        <div class="ask__row"><span>وش تبي فزعة يسوي لك اليوم؟</span><a data-wa="السلام عليكم، أبي أبدأ فزعة المجاني" href="#" aria-label="ابدأ"><svg><use href="#i-send"/></svg></a></div>
-        <div class="chips">
-          <a data-wa="أبي أجرب: ذكرني أتصل على عبدالعزيز أبارك له" href="#">ذكرني أتصل على عبدالعزيز أبارك له</a>
-          <a data-wa="أبي أجرب: استمارتي تنتهي ١٠ يناير" href="#">استمارتي تنتهي ١٠ يناير</a>
-          <a data-wa="أبي أجرب: رتب لي يومي بكرة" href="#">رتب لي يومي بكرة</a>
-        </div>
-      </div>
+      <h1 class="h1 rv">كل شي يعتمد عليك، خلّه على فزعة يفزع لك</h1>
 
       <div class="hero__cta rv">
         <a class="pill pill--light" data-wa="السلام عليكم، أبي أبدأ فزعة المجاني" href="#">ابدأ مجاناً</a>
@@ -403,38 +405,32 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     <div class="wrap">
       <h2 class="sec-h rv">يتابع، وينبّهك، وينفّذ عنك</h2>
       <p class="sec-p rv">بدون تطبيق جديد ولا أوامر تحفظها. تكلمه كتابة أو فويس أو صورة، بكلامك العادي.</p>
-      <div class="row5">
-        <article class="r5">
-          <div class="stage stage--green"><div class="track">
-            <div>موعد الأسنان<small>بكرة ٤ م</small></div><div>تجديد الإقامة<small>بعد ٢٣ يوم</small></div>
-            <div>فاتورة الكهرباء<small>قبل ٢٥ الشهر</small></div><div>قسط السيارة<small>يوم ٢٧</small></div></div></div>
-          <h3>يتابع</h3><p>مواعيدك وأوراقك وفواتيرك، كلها في باله عشان ما تشيل همها.</p>
-        </article>
-        <article class="r5">
-          <div class="stage stage--red"><div style="width:100%">
-            <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>٣:٠٠ م</span></div><p>⏰ باقي ساعة على موعد الأسنان</p></div></div>
-            <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>١٠:٠٠ ص</span></div><p>💊 وقت حبة الضغط</p></div></div>
-            <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>أمس</span></div><p>📄 جوازك ينتهي بعد شهر، أذكرك قبلها بأسبوع؟</p></div></div></div></div>
-          <h3>ينبّهك</h3><p>قبل الموعد، وقبل ما تنتهي أوراقك، وكل سنة بالمناسبات.</p>
-        </article>
-        <article class="r5">
-          <div class="stage stage--sand"><div class="check">
-            <div><em>✓</em>تهنئة لخالد بالمولود جاهزة</div><div><em>✓</em>قارنت لك ٣ عروض جوال</div>
-            <div><em>✓</em>عشاء من الموجود: كبسة دجاج</div><div><em>✓</em>ميزانية الشهر مرتبة</div></div></div>
-          <h3>ينفّذ</h3><p>يكتب ويدوّر ويقارن ويرتب. وما يرسل شي باسمك إلا بموافقتك.</p>
-        </article>
-        <article class="r5">
-          <div class="stage stage--wine"><div style="width:100%"><span class="bars4"><i class="on"></i><i></i><i></i><i></i></span>
-            <small class="k5">صباح الخير</small><b class="b5">عندك ٣ أشياء اليوم</b><span class="mini">اجتماع الفريق<em>١١ ص</em></span></div></div>
-          <h3>يومك كل صبح <span class="soon">قريباً</span></h3><p>موجز قصير بمواعيدك وتذكيراتك أول ما تصحى.</p>
-        </article>
-        <article class="r5">
-          <div class="stage stage--blue"><div style="width:100%;display:grid;gap:8px">
-            <span class="mini mini--rt">ذكرني بحبة الضغط وسجّل إذا أخذتها<em>كل يوم · ١٠:٠٠ ص</em></span>
-            <span class="mini mini--rt">وش باقي من الميزانية؟<em>كل شهر · يوم ٢٥</em></span></div></div>
-          <h3>يشتغل لحاله <span class="soon">قريباً</span></h3><p>قل له مرة وحدة، ويسويها كل يوم أو كل شهر في وقتها.</p>
-        </article>
-      </div>
+      <div class="row5" aria-label="وش يسوي فزعة"><div class="row5__track">
+        <article class="r5"><div class="stage stage--green"><div class="track"><div>موعد الأسنان<small>بكرة ٤ م</small></div><div>تجديد الإقامة<small>بعد ٢٣ يوم</small></div><div>فاتورة الكهرباء<small>قبل ٢٥ الشهر</small></div><div>قسط السيارة<small>يوم ٢٧</small></div></div></div>
+          <h3>يتابع</h3><p>مواعيدك وأوراقك وفواتيرك، كلها في باله عشان ما تشيل همها.</p></article>
+        <article class="r5"><div class="stage stage--red"><div style="width:100%"><div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>٣:٠٠ م</span></div><p>⏰ باقي ساعة على موعد الأسنان</p></div></div><div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>١٠:٠٠ ص</span></div><p>💊 وقت حبة الضغط</p></div></div><div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>أمس</span></div><p>📄 جوازك ينتهي بعد شهر، أذكرك قبلها بأسبوع؟</p></div></div></div></div>
+          <h3>ينبّهك</h3><p>قبل الموعد، وقبل ما تنتهي أوراقك، وكل سنة بالمناسبات.</p></article>
+        <article class="r5"><div class="stage stage--sand"><div class="check"><div><em>✓</em>تهنئة لخالد بالمولود جاهزة</div><div><em>✓</em>قارنت لك ٣ عروض جوال</div><div><em>✓</em>رد قروب العايلة جاهز</div><div><em>✓</em>إيميل الإجازة لمديرك جاهز</div></div></div>
+          <h3>ينفّذ</h3><p>يكتب ويدوّر ويقارن ويرتب. وما يرسل شي باسمك إلا بموافقتك.</p></article>
+        <article class="r5"><div class="stage stage--wine"><div class="chatmini"><p class="bub bub--in">كيف أرفض سلفة لصديقي بدون ما يزعل؟</p><p class="bub bub--out">جهزت لك رد لطيف يحفظ الود بينكم 👇</p></div></div>
+          <h3>رسالة صعبة</h3><p>تهنئة أو اعتذار أو رفض بأدب، بدال ما تحتار.</p></article>
+        <article class="r5"><div class="stage stage--blue"><div class="chatmini"><p class="bub bub--in">كم سعرات هالصحن؟ 📷</p><p class="bub bub--out">تقريباً ٦٥٠ سعرة و٣٥غ بروتين، سجلتها في يومك.</p></div></div>
+          <h3>صحتك</h3><p>دواك، وسعرات صحنك من صورة، وموعد النادي.</p></article>
+        <article class="r5"><div class="stage stage--green"><div class="chatmini"><p class="bub bub--in">عندي دجاج ورز وطماطم، وش أطبخ؟</p><p class="bub bub--out">كبسة دجاج، وهذي الطريقة والكميات 👇</p></div></div>
+          <h3>وش أطبخ اليوم؟</h3><p>من الموجود عندك، مع الطريقة والكميات.</p></article>
+        <article class="r5"><div class="stage stage--sand"><div class="chatmini"><p class="bub bub--in">اختبر ولدي في درس الكسور</p><p class="bub bub--out">يلا: كم يساوي نص + ربع؟ 😄</p></div></div>
+          <h3>العيال</h3><p>التطعيمات والاختبارات ومواعيد المدرسة.</p></article>
+        <article class="r5"><div class="stage stage--red"><div class="chatmini"><p class="bub bub--in">راتبي ٩ آلاف، رتب لي الشهر</p><p class="bub bub--out">البيت ٣٬٥٠٠، الأكل ٢٬٠٠٠، والتوفير ١٬٥٠٠…</p></div></div>
+          <h3>ميزانية الشهر</h3><p>وين راحت فلوسك، وكم يبقى لآخر الشهر.</p></article>
+        <article class="r5"><div class="stage stage--blue"><div class="chatmini"><p class="bub bub--in">وين ألقى أرخص سماعة AirPods؟</p><p class="bub bub--out">قارنت ٥ متاجر، وهذا الأرخص مع الرابط 👇</p></div></div>
+          <h3>أرخص سعر</h3><p>يدوّر في المتاجر ويرسل لك الأرخص.</p></article>
+        <article class="r5"><div class="stage stage--wine"><div class="chatmini"><p class="bub bub--in">رايح إسطنبول ٥ أيام مع العايلة</p><p class="bub bub--out">جدول يوم بيوم وقائمة الشنطة جاهزة ✈️</p></div></div>
+          <h3>سفرتك جاهزة</h3><p>برنامج يوم بيوم وقائمة الشنطة.</p></article>
+        <article class="r5"><div class="stage stage--wine"><div style="width:100%"><span class="bars4"><i class="on"></i><i></i><i></i><i></i></span><small class="k5">صباح الخير</small><b class="b5">عندك ٣ أشياء اليوم</b><span class="mini">اجتماع الفريق<em>١١ ص</em></span></div></div>
+          <h3>يومك كل صبح <span class="soon">قريباً</span></h3><p>موجز قصير بمواعيدك وتذكيراتك أول ما تصحى.</p></article>
+        <article class="r5"><div class="stage stage--green"><div style="width:100%;display:grid;gap:8px"><span class="mini mini--rt">ذكرني بحبة الضغط وسجّل إذا أخذتها<em>كل يوم · ١٠:٠٠ ص</em></span><span class="mini mini--rt">وش باقي من الميزانية؟<em>كل شهر · يوم ٢٥</em></span></div></div>
+          <h3>يشتغل لحاله <span class="soon">قريباً</span></h3><p>قل له مرة وحدة، ويسويها كل يوم أو كل شهر في وقتها.</p></article>
+      </div></div>
     </div>
   </section>
 
@@ -480,7 +476,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     <div class="fgrid">
       <div><a class="logo" href="#"><i>ف</i>فزعة</a><p style="margin-top:14px;max-width:34ch">مساعد ذكي لحياتك وشغلك، يكبر معك: للأفراد والمؤسسات والشركات.</p></div>
       <div><h5>الباقات</h5><ul><li><a href="#plans">مجاني</a></li><li><a href="#plans">Prime</a></li><li><a href="biz/">Pro</a></li><li><a href="biz/">Elite</a></li></ul></div>
-      <div><h5>فزعة</h5><ul><li><a href="#invite">ادعُ صاحبك</a></li><li><a href="/privacy.html">سياسة الخصوصية</a></li><li><a href="/terms.html">الشروط والأحكام</a></li><li><a href="asila/">الأسئلة الشائعة</a></li></ul></div>
+      <div><h5>فزعة</h5><ul><li><a href="#invite">ادعُ صاحبك</a></li><li><a href="privacy/">سياسة الخصوصية</a></li><li><a href="terms/">الشروط والأحكام</a></li><li><a href="asila/">الأسئلة الشائعة</a></li></ul></div>
       <div><h5>تواصل معنا</h5><ul>
         <li><a class="ct" data-wa="السلام عليكم، أبي أعرف عن فزعة" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg><bdi dir="ltr">0530004565</bdi></a></li>
         <li><a class="ct" href="mailto:info@ifazaa.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>info@ifazaa.com</a></li>
@@ -524,6 +520,18 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     document.getElementById("cards").scrollTo({ left: 0, behavior: "smooth" });
   }));
 
+
+  // صفوف تتحرك لحالها: نكرر البطاقات عشان الحركة ما تنقطع، وتوقف لما تلمسها
+  document.querySelectorAll(".row5__track").forEach(t => {
+    const orig = [...t.children];
+    const clone = n => { const c = n.cloneNode(true); c.setAttribute("aria-hidden", "true"); t.appendChild(c); };
+    for (let k = 0; k < 4 && t.scrollWidth < innerWidth * 1.1; k++) orig.forEach(clone);   // نعبي عرض الشاشة
+    [...t.children].forEach(clone);                                                        // ونكرر الكل مرة عشان الحركة ما تنقطع
+    t.style.setProperty("--dur", (t.children.length * 4.5) + "s");
+    const row = t.parentElement;
+    row.addEventListener("touchstart", () => row.classList.add("hold"), { passive: true });
+    row.addEventListener("touchend", () => setTimeout(() => row.classList.remove("hold"), 1500), { passive: true });
+  });
   // videos: one plays at a time
   const vids = [...document.querySelectorAll(".phone video")];
   document.querySelectorAll(".phone").forEach(p => {

@@ -336,6 +336,18 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
 .faqpage{padding:140px 0 80px}
 @media (max-width:900px){.biz-hero{grid-template-columns:1fr}.steps4{grid-template-columns:1fr 1fr}.fl--biz{position:static;width:auto;margin:12px auto 0;max-width:400px;animation:none}}
 @media (max-width:560px){.steps4{grid-template-columns:1fr}.contact-card{padding:32px 20px}}
+
+/* v4: moving rows */
+.row5{display:block;overflow:hidden;padding:44px 0 10px;margin-inline:calc(50% - 50vw);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.row5__track{display:flex;gap:18px;width:max-content;animation:marq var(--dur,70s) linear infinite}
+.row5:hover .row5__track,.row5:focus-within .row5__track,.row5.hold .row5__track{animation-play-state:paused}
+.row5 .r5{flex:none;width:320px}
+@media (max-width:600px){.row5 .r5{width:270px}}
+@media (prefers-reduced-motion:reduce){.row5{overflow-x:auto;mask-image:none;-webkit-mask-image:none}.row5__track{animation:none}}
+
+.stage .bub--in{background:rgba(255,255,255,.9);color:#111}
+.stage .bub--out{background:rgba(9,9,10,.55);border:1px solid rgba(255,255,255,.14)}
+.r5 .bub{font-size:14px}.r5 .bub--in{color:#111}.r5 .bub--out{color:#fff}
 </style>
 </head>
 <body>
@@ -372,9 +384,6 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
         <span class="eyebrow rv"><b></b>للمؤسسات والشركات</span>
         <h1 class="h1 h1--biz rv">مساعد يرد على عملائك، ويرفع لك كل شي</h1>
         <p class="lead rv">يرد على عملائك ٢٤ ساعة ويحجز لهم، ويرفع لك تقرير كل صبح، ويشتغل لك أنت بكلامك. وللشركات: مساعد لكل قسم.</p>
-        <div class="hero__cta hero__cta--start rv">
-          <a class="pill pill--light" data-wa="السلام عليكم، أبي عرض فزعة لمؤسستي/شركتي" href="#"><svg><use href="#i-wa"/></svg>كلمنا ونعطيك عرض</a>
-        </div>
         <p class="hero__note rv">السعر حسب احتياجك. نفهم شغلك أول، وبعدها نعطيك العرض.</p>
       </div>
       <div class="biz-hero__vis rv" aria-hidden="true">
@@ -396,7 +405,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
   <section class="sec" id="biz-how" style="padding-top:40px">
     <div class="wrap">
       <h2 class="sec-h rv">لمؤسستك: يكلم عملاءك، ويشتغل لك أنت</h2>
-      <div class="row5">
+      <div class="row5"><div class="row5__track">
         <article class="r5"><div class="stage stage--green"><div class="chatmini"><p class="bub bub--in">كم سعر القص؟ وعندكم موعد بكرة العصر؟</p><p class="bub bub--out">القص ٦٠ ريال، وبكرة فاضي ٤ و٥:٣٠ 👍</p></div></div>
           <h3>يرد على عملائك ٢٤ ساعة</h3><p>بأسعارك وأوقاتك وموقعك وعروضك، حتى بعد ما تسكر.</p></article>
         <article class="r5"><div class="stage stage--red"><div style="width:100%">
@@ -411,14 +420,14 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
         <article class="r5"><div class="stage stage--wine"><div class="check">
             <div><em>✓</em>شكوى عميل وصلتك مع ملخص</div><div><em>✓</em>رد تقييم قوقل ماب جاهز</div><div><em>✓</em>إيميل المورد جاهز</div></div></div>
           <h3>يحوّل لك ويكتب لك</h3><p>الشكوى والطلب الخاص يوصلك فوراً، والإيميلات والردود جاهزة تراجعها.</p></article>
-      </div>
+      </div></div>
     </div>
   </section>
 
   <section class="sec" style="padding-top:20px">
     <div class="wrap">
       <h2 class="sec-h rv">لشركتك: مساعد رئيسي، ومساعد لكل قسم</h2>
-      <div class="row5">
+      <div class="row5"><div class="row5__track">
         <article class="r5"><div class="stage stage--wine"><div style="width:100%"><div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>٨:٠٠ ص</span></div><p>مبيعات أمس ١٢٬٤٠٠ ريال، أقل ٨٪ من الأسبوع الماضي. وعندك ٤ إيميلات مهمة.</p></div></div></div></div>
           <h3>ملخص كل صبح</h3><p>المبيعات والحجوزات والإيميلات المهمة من أنظمتك، برسالة وحدة.</p></article>
         <article class="r5"><div class="stage stage--green"><div class="track"><div>التسويق<small>٣ منشورات جاهزة</small></div><div>المالية<small>تقرير المصاريف</small></div><div>العمليات<small>مهمتين متأخرة</small></div></div></div>
@@ -427,7 +436,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
           <h3>اجتماعات ومهام</h3><p>جدول أعمال قبل الاجتماع وملخص بعده، ويتابع كل واحد بمهمته.</p></article>
         <article class="r5"><div class="stage stage--red"><div class="chatmini"><p class="bub bub--out">قسم التسويق جهز ٣ منشورات للأسبوع. أنشرها؟</p><p class="bub bub--in">الأول والثالث تمام، الثاني عدله</p></div></div>
           <h3>كل شي بموافقتك</h3><p>أي شي يطلع برا الشركة يمر عليك أول، ما ينرسل شي بدون إذنك.</p></article>
-      </div>
+      </div></div>
       <p class="more rv">هذي أمثلة بس. عندك شي ثاني تحتاجه؟ قل لنا ونشوفه لك.</p>
     </div>
   </section>
@@ -441,6 +450,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
         <li class="rv"><b>نعطيك عرض</b><span>حسب احتياجك وحجم شغلك، وتقرر براحتك.</span></li>
         <li class="rv"><b>نجربه معك ويبدأ</b><span>نربطه برقمك ونجربه معك قبل ما يكلم أي عميل.</span></li>
       </ol>
+      <p class="more rv">وش نحتاج منك عشان نبدأ؟ <a href="../shurut/" style="text-decoration:underline">شروط التأسيس</a></p>
     </div>
   </section>
 
@@ -464,7 +474,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     <div class="fgrid">
       <div><a class="logo" href="../"><i>ف</i>فزعة</a><p style="margin-top:14px;max-width:34ch">مساعد ذكي لحياتك وشغلك، يكبر معك: للأفراد والمؤسسات والشركات.</p></div>
       <div><h5>الباقات</h5><ul><li><a href="../#plans">مجاني</a></li><li><a href="../#plans">Prime</a></li><li><a href="./">Pro</a></li><li><a href="./">Elite</a></li></ul></div>
-      <div><h5>فزعة</h5><ul><li><a href="../#invite">ادعُ صاحبك</a></li><li><a href="/privacy.html">سياسة الخصوصية</a></li><li><a href="/terms.html">الشروط والأحكام</a></li><li><a href="../asila/">الأسئلة الشائعة</a></li></ul></div>
+      <div><h5>فزعة</h5><ul><li><a href="../#invite">ادعُ صاحبك</a></li><li><a href="../privacy/">سياسة الخصوصية</a></li><li><a href="../terms/">الشروط والأحكام</a></li><li><a href="../asila/">الأسئلة الشائعة</a></li></ul></div>
       <div><h5>تواصل معنا</h5><ul>
         <li><a class="ct" data-wa="السلام عليكم، أبي أعرف عن فزعة" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg><bdi dir="ltr">0530004565</bdi></a></li>
         <li><a class="ct" href="mailto:info@ifazaa.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>info@ifazaa.com</a></li>
@@ -508,6 +518,18 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     document.getElementById("cards").scrollTo({ left: 0, behavior: "smooth" });
   }));
 
+
+  // صفوف تتحرك لحالها: نكرر البطاقات عشان الحركة ما تنقطع، وتوقف لما تلمسها
+  document.querySelectorAll(".row5__track").forEach(t => {
+    const orig = [...t.children];
+    const clone = n => { const c = n.cloneNode(true); c.setAttribute("aria-hidden", "true"); t.appendChild(c); };
+    for (let k = 0; k < 4 && t.scrollWidth < innerWidth * 1.1; k++) orig.forEach(clone);   // نعبي عرض الشاشة
+    [...t.children].forEach(clone);                                                        // ونكرر الكل مرة عشان الحركة ما تنقطع
+    t.style.setProperty("--dur", (t.children.length * 4.5) + "s");
+    const row = t.parentElement;
+    row.addEventListener("touchstart", () => row.classList.add("hold"), { passive: true });
+    row.addEventListener("touchend", () => setTimeout(() => row.classList.remove("hold"), 1500), { passive: true });
+  });
   // videos: one plays at a time
   const vids = [...document.querySelectorAll(".phone video")];
   document.querySelectorAll(".phone").forEach(p => {

@@ -768,7 +768,7 @@ html.i18n-wait body{visibility:hidden}
   $("#set-name").addEventListener("change", e => { S.name = e.target.value.trim(); save(); renderMe(); updateHello(); toast(L("انحفظ", "Saved")); });
   $("#set-brief").value = S.brief; $("#set-brief").addEventListener("change", e => { S.brief = e.target.value; save(); toast(L("انحفظ", "Saved")); });
   const soon = L("قريباً", "Soon");
-  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),"tg"],["a-icloud",L("تقويم آيفون","iPhone Calendar"),L("اربط","Link"),"cal"],["a-gmail","Gmail",soon,"o:gmail"],["a-cal",L("تقويم قوقل","Google Calendar"),soon,"o:gcal"],["a-outlook","Outlook",soon,"o:outlook"],["a-drive",L("قوقل درايف","Google Drive"),soon,"o:gdrive"],["a-tasks",L("مهام قوقل","Google Tasks"),soon,"o:gtasks"],["a-notion","Notion",soon,"o:notion"],["a-wa",L("واتساب","WhatsApp"),soon],["a-slack","Slack",soon]];
+  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),"tg"],["a-icloud",L("تقويم آيفون","iPhone Calendar"),L("اربط","Link"),"cal"],["a-gmail","Gmail",soon,"o:gmail"],["a-cal",L("تقويم قوقل","Google Calendar"),soon,"o:gcal"],["a-outlook","Outlook",soon,"o:outlook"],["a-drive",L("قوقل درايف","Google Drive"),soon,"o:gdrive"],["a-tasks",L("مهام قوقل","Google Tasks"),soon,"o:gtasks"],["a-notion","Notion",soon,"o:notion"],["a-wa",L("واتساب","WhatsApp"),soon],["a-slack","Slack",soon,"o:slack"]];
   $("#apps").innerHTML = apps.map(([i, n, s, act]) => `<button class="app-t${act && !act.startsWith("o:") ? " live" : ""}"${act ? ` data-act="${act}"` : ""} type="button"><span class="ai"><svg><use href="#${i}"/></svg></span><b>${n}</b><small>${s}</small></button>`).join("");
   $$("#apps .app-t").forEach(b => b.onclick = () => b.dataset.act === "tg" ? linkTelegram() : b.dataset.act === "cal" ? openCal() : (b.dataset.act || "").startsWith("o:") && b.classList.contains("live") ? oauthTap(b.dataset.act.slice(2)) : toast(L("هالربط قريباً", "This connection is coming soon")));
   // ---------- تقويم الجوال (رابط اشتراك) ----------
@@ -811,7 +811,7 @@ html.i18n-wait body{visibility:hidden}
   async function oauthTap(base) {
     const s = svcOf(base), name = $(`#apps .app-t[data-act="o:${base}"] b`).textContent;
     if (conn[s]) {
-      const acct = (conn.accounts || {})[{ notion: "notion", outlook: "microsoft" }[s] || "google"] || "";
+      const acct = (conn.accounts || {})[{ notion: "notion", outlook: "microsoft", slack: "slack" }[s] || "google"] || "";
       if (!(await ask(L("تفك ربط ", "Disconnect ") + name + L("؟", "?"), (acct ? acct + " · " : "") + L("فزعة بيوقف يوصل له، وننحذف مفاتيح الربط عندنا.", "Fazaa will stop accessing it, and we delete the connection keys."), L("فك الربط", "Disconnect")))) return;
       try { await api("/disconnect/" + s, { method: "POST" }); toast(L("انفك الربط", "Disconnected")); } catch (e) { toast(errText(e)); }
       return loadConn();

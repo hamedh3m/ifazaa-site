@@ -295,6 +295,14 @@ html.i18n-wait body{visibility:hidden}
 .cmp td:last-child{background:rgba(224,33,59,.06)}
 .soon-t{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(201,184,154,.15);color:var(--sand);white-space:nowrap}
 .safe{list-style:none;display:grid;gap:8px;margin:16px 0 4px;padding:14px 16px;border-radius:18px;background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.22);font-size:14px}
+.fam-ok{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:14px;color:#d8d8dc;line-height:1.6}
+.fam-ok input{width:20px;height:20px;margin-top:2px;accent-color:#25d366;flex:none}
+.fam-rel{flex-wrap:wrap}.fam-rel button{flex:1 1 40%}
+.pap{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.pap div{flex:1}.pap p{font-weight:700}.pap small{color:var(--muted);font-size:13px}
+.pap .left{font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(37,211,102,.12);color:#6fe6a5;white-space:nowrap}
+.pap .left.warn{background:rgba(255,184,0,.14);color:#ffc94d}.pap .left.bad{background:rgba(224,33,59,.16);color:#ff6b7e}
+.pap button{color:var(--muted);padding:6px}.pap button svg{width:18px;height:18px}
 .safe li{position:relative;padding-inline-start:22px;color:#d8d8dc}
 .safe li::before{content:"✓";position:absolute;inset-inline-start:0;color:#6fe6a5;font-weight:800}
 .stp{margin-top:14px;padding:14px;border-radius:20px;background:var(--s1);border:1px solid var(--line)}
@@ -344,6 +352,8 @@ html.i18n-wait body{visibility:hidden}
   <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-addsq" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8.5v7M8.5 12h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="18.5" r="1.8" fill="currentColor"/></symbol>
+  <symbol id="i-fam" viewBox="0 0 24 24"><circle cx="8.5" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 19.5c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5M14 15c.8-.5 1.6-.7 2.5-.7 2.3 0 4 1.5 4.5 4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="11" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 15.5c.5-1.3 1.6-2 3-2s2.5.7 3 2M14.5 10h3.5M14.5 13.5h2.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8M5 12.5v6A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="a-wa" viewBox="0 0 24 24"><path fill="#25d366" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Z"/><path fill="#fff" d="M17.3 16.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.3.5-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.1Z"/></symbol>
   <symbol id="a-tg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2aabee"/><path fill="#fff" d="m17.6 7.3-11 4.3c-.8.3-.7.7-.1.9l2.8.9 1.1 3.4c.1.4.3.5.5.5s.4-.1.5-.3l1.4-1.3 2.8 2.1c.5.3.9.1 1-.5l1.9-8.8c.2-.8-.3-1.1-.9-.9Zm-7 5.8-.2 2.4-1-3 5.9-3.8Z"/></symbol>
@@ -409,6 +419,8 @@ html.i18n-wait body{visibility:hidden}
       <div class="gbox g-out" id="g-out" hidden><span id="g-email"></span><button type="button" id="g-signout">تسجيل خروج</button></div>
       <div class="menu">
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">أوراقي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">٠ من ٣</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>ترقّى لـ Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
@@ -477,6 +489,52 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
+<section class="sheet" id="s-family" aria-label="شخص من أهلك">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>شخص من أهلك</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <h2 class="h2">شخص من أهلك معك بنفس الاشتراك</h2>
+    <p class="sub">أضف شخص واحد من أهلك ياخذ Prime معك بدون زيادة. وبعدها تقدر تقول لفزعة «ذكّر أمي بالدواء الساعة ٩» ويوصلها التذكير على جوالها.</p>
+    <ul class="safe">
+      <li>كل واحد محادثاته وبياناته له، محد يشوفها</li>
+      <li>الثاني يشوف بس التذكيرات اللي سجلتها أنت له</li>
+      <li>تقدرون تحفظون أوراق بعض وتوصلكم تذكيراتها</li>
+      <li>تفك الربط متى ما بغيت</li>
+    </ul>
+    <div class="gbox" id="fam-prime" hidden><b>هذي من ميزات Prime</b><p>اشترك في Prime وأضف معك شخص من أهلك بنفس الاشتراك.</p><button class="btn btn-red" type="button" id="fam-buy">ترقّى لـ Prime</button></div>
+    <div id="fam-new" hidden>
+      <p class="sec-t">وش يقرب لك؟</p>
+      <div class="plat fam-rel" role="group" aria-label="القرابة"><button type="button" data-rel="spouse">زوج/زوجة</button><button type="button" data-rel="child">ابن/بنت</button><button type="button" data-rel="parent">أب/أم</button><button type="button" data-rel="sibling">أخ/أخت</button></div>
+      <label class="fam-ok"><input type="checkbox" id="fam-ok"> <span>أقر إنه من أهلي من الدرجة الأولى، وأعرف إن الربط ينلغى لو ما كان كذا.</span></label>
+      <button class="btn btn-primary" type="button" id="fam-make" style="margin-top:14px">جهّز رابط الدعوة</button>
+    </div>
+    <div id="fam-wait" hidden>
+      <div class="gbox"><b>رابط الدعوة جاهز</b><p>أرسله له. أول ما يفتحه ويوافق، يصير معك في Prime. الرابط يشتغل مرة وحدة، لمدة ٧ أيام.</p>
+      <button class="btn btn-primary" type="button" id="fam-share"><svg><use href="#i-share"/></svg>أرسل الدعوة</button></div>
+    </div>
+    <div id="fam-on" hidden>
+      <div class="gbox"><b id="fam-who"></b><p id="fam-how"></p></div>
+      <p class="note" style="font-size:13px"><button class="linkish" id="fam-leave" type="button">فك الربط</button></p>
+    </div>
+  </div>
+</section>
+
+<section class="sheet" id="s-papers" aria-label="أوراقي">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>أوراقي</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <h2 class="h2">أوراقك ما تنتهي عليك</h2>
+    <p class="sub">صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي ١٥ مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.</p>
+    <ul class="safe">
+      <li>نحفظ نوع الورقة وتاريخ انتهائها بس</li>
+      <li>ما نحفظ رقمها ولا صورتها</li>
+    </ul>
+    <div class="gbox" id="pap-prime" hidden><b>هذي من ميزات Prime</b><p>اشترك في Prime وخلّ فزعة يتابع أوراقك وأوراق اللي معك.</p><button class="btn btn-red" type="button" id="pap-buy">ترقّى لـ Prime</button></div>
+    <div id="pap-on" hidden>
+      <div id="pap-list"></div>
+      <button class="btn btn-primary" type="button" id="pap-add" style="margin-top:16px">أضف ورقة</button>
+    </div>
+  </div>
+</section>
+
 <section class="sheet" id="s-invite" aria-label="ادعُ صاحبك">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>ادعُ صاحبك</h1><span style="width:42px"></span></header>
   <div class="body">
@@ -502,9 +560,10 @@ html.i18n-wait body{visibility:hidden}
       <tr><th scope="row">كتابة وبحث وصور وسعرات</th><td class="y">✓</td><td class="y">✓</td></tr>
       <tr><th scope="row">موجز يومك كل صبح</th><td class="y">✓</td><td class="y">✓</td></tr>
       <tr><th scope="row">ربط تقويمك وبرامجك</th><td class="y">✓</td><td class="y">✓</td></tr>
-      <tr><th scope="row">شخص من أهلك معك بنفس الاشتراك</th><td class="n">—</td><td><span class="soon-t">قريباً</span></td></tr>
-      <tr><th scope="row">تذكّره عنك (دواء، موعد، مشوار)</th><td class="n">—</td><td><span class="soon-t">قريباً</span></td></tr>
-      <tr><th scope="row">أوراقك وأوراقه ما تنتهي عليكم</th><td class="n">—</td><td><span class="soon-t">قريباً</span></td></tr>
+      <tr><th scope="row">شخص من أهلك معك بنفس الاشتراك</th><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><th scope="row">تذكّره عنك (دواء، موعد، مشوار)</th><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><th scope="row">أوراقك وأوراقه ما تنتهي عليكم</th><td class="n">—</td><td class="y">✓</td></tr>
+      <tr><th scope="row">قراءة Gmail وتلخيصه</th><td class="n">—</td><td class="y">✓</td></tr>
       <tr><th scope="row">مصاريفك ومواعيدك من رسائل الجوال</th><td class="n">—</td><td class="y">✓</td></tr>
     </tbody></table>
     <div class="tier cur"><h3>مجاني <small>باقتك الحالية</small></h3><div class="pr" data-en='<b>Free</b> forever'><b>مجاناً</b> دائماً</div>
@@ -601,7 +660,7 @@ html.i18n-wait body{visibility:hidden}
   const AR = n => EN ? String(n) : String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
   // ---------- English: translate the page once, before anything is wired up ----------
   if (EN) {
-    const TR = {"مصاريفك ومواعيدك من رسائل الجوال": "Spending and appointments from your texts", "رسائل الجوال": "Phone texts", "خلّ فزعة يعرف رسائلك المهمة": "Let Fazaa see your important texts", "رسائل البنك تصير مصاريف مرتبة، ورسائل المواعيد والفواتير تصير تذكيرات. وأنت تختار وش يوصل.": "Bank texts become tidy spending, and appointment and bill texts become reminders. You choose what gets through.", "هذي من ميزات Prime": "This is a Prime feature", "ترقّى لـ Prime عشان فزعة يتابع مصاريفك ومواعيدك وفواتيرك من رسائل جوالك.": "Upgrade to Prime so Fazaa tracks your spending, appointments and bills from your phone texts.", "رموز التحقق تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes are thrown away instantly, never stored or read", "ما نحفظ نص الرسالة: بس المبلغ والمحل والتاريخ، أو الموعد": "We don't keep the message text: only the amount, merchant and date, or the appointment", "أرقام البطاقات والحسابات تنمسح قبل أي شي": "Card and account numbers are wiped first", "توقفه أو تغيّر رابطك متى ما بغيت": "Turn it off or change your link any time", "١) انسخ رابطك الخاص": "1) Copy your private link", "انسخ رابطي": "Copy my link", "٢) خلّ جوالك يرسل الرسائل لفزعة": "2) Let your phone send texts to Fazaa", "الرابط خاص فيك، لا ترسله لأحد.": "This link is private to you, don't share it.", "أوقف رسائل الجوال": "Turn off phone texts", "قارن الباقات": "Compare plans", "رسائل بالشهر": "Messages a month", "حتى ٣٠٠": "Up to 300", "تذكيرات جديدة بالشهر": "New reminders a month", "بلا حد": "Unlimited", "مناسبات ومهام تتكرر": "Repeating occasions and tasks", "ضمن الـ١٠": "Within the 10", "كتابة وبحث وصور وسعرات": "Writing, search, photos and calories", "موجز يومك كل صبح": "Daily briefing every morning", "ربط تقويمك وبرامجك": "Connect your calendar and apps", "شخص من أهلك معك بنفس الاشتراك": "One family member on the same plan", "تذكّره عنك (دواء، موعد، مشوار)": "Remind them for you (medicine, appointment, errand)", "أوراقك وأوراقه ما تنتهي عليكم": "Your documents and theirs never expire on you", "مصاريفك من رسائل البنك": "Your spending from bank texts", "قريباً": "Soon", "١٠٠": "100", "١٠": "10", "تقويم جوالك": "Your phone calendar", "١٠٠ رسالة بالشهر": "100 messages a month", "موجز يومك وربط تقويمك": "Daily briefing and calendar connection", "حتى ٣٠٠ رسالة بالشهر": "Up to 300 messages a month", "تذكيرات ومناسبات ومهام متكررة بلا حد": "Unlimited reminders, occasions and repeating tasks", "موجز يومك: رسالة كل صبح فيها مواعيد يومك": "Daily briefing: a message every morning with your day's appointments", "شغّل موجز يومك": "Turn on daily briefing", "اكتب بكلامك العادي، مثل ما تكلم صاحبك.": "Just type the way you'd text a friend.", "مواعيد فزعة في تقويم جوالك": "Your Fazaa appointments in your phone calendar", "اضغط الزر، وإذا سألك جوالك «اشتراك؟» وافق. بعدها أي موعد تسجله في فزعة يطلع في تقويمك لحاله.": "Tap the button, and if your phone asks “Subscribe?”, say yes. After that, every appointment you add in Fazaa shows up in your calendar on its own.", "تستخدم تقويم ثاني؟": "Use a different calendar?", "الرابط خاص فيك. لو أرسلته لأحد بالغلط": "This link is private to you. If you sent it to someone by mistake,", "تقويم الجوال": "Phone calendar", "أضف لتقويم الآيفون": "Add to iPhone Calendar", "أضف لتقويم قوقل": "Add to Google Calendar", "أضف لأوت لوك": "Add to Outlook", "غيّر الرابط": "Change link", "فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "١٠ تذكيرات بالشهر": "10 reminders a month", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "اللغة": "Language", "اسمك": "Your name", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "إلغاء": "Cancel"};
+    const TR = {"مصاريفك ومواعيدك من رسائل الجوال": "Spending and appointments from your texts", "رسائل الجوال": "Phone texts", "خلّ فزعة يعرف رسائلك المهمة": "Let Fazaa see your important texts", "رسائل البنك تصير مصاريف مرتبة، ورسائل المواعيد والفواتير تصير تذكيرات. وأنت تختار وش يوصل.": "Bank texts become tidy spending, and appointment and bill texts become reminders. You choose what gets through.", "هذي من ميزات Prime": "This is a Prime feature", "ترقّى لـ Prime عشان فزعة يتابع مصاريفك ومواعيدك وفواتيرك من رسائل جوالك.": "Upgrade to Prime so Fazaa tracks your spending, appointments and bills from your phone texts.", "رموز التحقق تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes are thrown away instantly, never stored or read", "ما نحفظ نص الرسالة: بس المبلغ والمحل والتاريخ، أو الموعد": "We don't keep the message text: only the amount, merchant and date, or the appointment", "أرقام البطاقات والحسابات تنمسح قبل أي شي": "Card and account numbers are wiped first", "توقفه أو تغيّر رابطك متى ما بغيت": "Turn it off or change your link any time", "١) انسخ رابطك الخاص": "1) Copy your private link", "انسخ رابطي": "Copy my link", "٢) خلّ جوالك يرسل الرسائل لفزعة": "2) Let your phone send texts to Fazaa", "الرابط خاص فيك، لا ترسله لأحد.": "This link is private to you, don't share it.", "أوقف رسائل الجوال": "Turn off phone texts", "قارن الباقات": "Compare plans", "رسائل بالشهر": "Messages a month", "حتى ٣٠٠": "Up to 300", "تذكيرات جديدة بالشهر": "New reminders a month", "بلا حد": "Unlimited", "مناسبات ومهام تتكرر": "Repeating occasions and tasks", "ضمن الـ١٠": "Within the 10", "كتابة وبحث وصور وسعرات": "Writing, search, photos and calories", "موجز يومك كل صبح": "Daily briefing every morning", "ربط تقويمك وبرامجك": "Connect your calendar and apps", "شخص من أهلك معك بنفس الاشتراك": "One family member on the same plan", "تذكّره عنك (دواء، موعد، مشوار)": "Remind them for you (medicine, appointment, errand)", "أوراقك وأوراقه ما تنتهي عليكم": "Your documents and theirs never expire on you", "مصاريفك من رسائل البنك": "Your spending from bank texts", "قريباً": "Soon", "١٠٠": "100", "١٠": "10", "تقويم جوالك": "Your phone calendar", "١٠٠ رسالة بالشهر": "100 messages a month", "موجز يومك وربط تقويمك": "Daily briefing and calendar connection", "حتى ٣٠٠ رسالة بالشهر": "Up to 300 messages a month", "تذكيرات ومناسبات ومهام متكررة بلا حد": "Unlimited reminders, occasions and repeating tasks", "موجز يومك: رسالة كل صبح فيها مواعيد يومك": "Daily briefing: a message every morning with your day's appointments", "شغّل موجز يومك": "Turn on daily briefing", "اكتب بكلامك العادي، مثل ما تكلم صاحبك.": "Just type the way you'd text a friend.", "مواعيد فزعة في تقويم جوالك": "Your Fazaa appointments in your phone calendar", "اضغط الزر، وإذا سألك جوالك «اشتراك؟» وافق. بعدها أي موعد تسجله في فزعة يطلع في تقويمك لحاله.": "Tap the button, and if your phone asks “Subscribe?”, say yes. After that, every appointment you add in Fazaa shows up in your calendar on its own.", "تستخدم تقويم ثاني؟": "Use a different calendar?", "الرابط خاص فيك. لو أرسلته لأحد بالغلط": "This link is private to you. If you sent it to someone by mistake,", "تقويم الجوال": "Phone calendar", "أضف لتقويم الآيفون": "Add to iPhone Calendar", "أضف لتقويم قوقل": "Add to Google Calendar", "أضف لأوت لوك": "Add to Outlook", "غيّر الرابط": "Change link", "فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "١٠ تذكيرات بالشهر": "10 reminders a month", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "اللغة": "Language", "اسمك": "Your name", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "إلغاء": "Cancel", "شخص من أهلك": "A family member", "معك بنفس اشتراك Prime": "On the same Prime plan", "أوراقي": "My documents", "هويتك وجوازك ورخصتك ما تنتهي عليك": "Never let your ID, passport or licence expire", "أضف شخص واحد من أهلك ياخذ Prime معك بدون زيادة. وبعدها تقدر تقول لفزعة «ذكّر أمي بالدواء الساعة ٩» ويوصلها التذكير على جوالها.": "Add one family member to get Prime with you at no extra cost. Then you can tell Fazaa “Remind Mom to take her medicine at 9” and the reminder reaches her phone.", "كل واحد محادثاته وبياناته له، محد يشوفها": "Each of you keeps your own chats and data; nobody else sees them", "الثاني يشوف بس التذكيرات اللي سجلتها أنت له": "They only see the reminders you added for them", "تقدرون تحفظون أوراق بعض وتوصلكم تذكيراتها": "You can save each other's documents and both get the reminders", "تفك الربط متى ما بغيت": "Remove the link any time", "اشترك في Prime وأضف معك شخص من أهلك بنفس الاشتراك.": "Get Prime and add a family member on the same plan.", "وش يقرب لك؟": "How are they related to you?", "القرابة": "Relation", "زوج/زوجة": "Spouse", "ابن/بنت": "Son/daughter", "أب/أم": "Parent", "أخ/أخت": "Sibling", "أقر إنه من أهلي من الدرجة الأولى، وأعرف إن الربط ينلغى لو ما كان كذا.": "I confirm they're my immediate family, and I understand the link will be removed if not.", "جهّز رابط الدعوة": "Create invite link", "رابط الدعوة جاهز": "Your invite link is ready", "أرسله له. أول ما يفتحه ويوافق، يصير معك في Prime. الرابط يشتغل مرة وحدة، لمدة ٧ أيام.": "Send it to them. Once they open it and accept, they're on Prime with you. The link works once, for 7 days.", "أرسل الدعوة": "Send invite", "فك الربط": "Remove link", "أوراقك ما تنتهي عليك": "Your documents never expire on you", "صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي ١٥ مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.": "Snap your ID, iqama, passport, licence or vehicle registration and send it to Fazaa, or type “My iqama expires on 15 March”. It reminds you a month before, a week before and on the day, with the Absher renewal steps.", "نحفظ نوع الورقة وتاريخ انتهائها بس": "We only keep the document type and expiry date", "ما نحفظ رقمها ولا صورتها": "We never keep its number or photo", "اشترك في Prime وخلّ فزعة يتابع أوراقك وأوراق اللي معك.": "Get Prime and let Fazaa track your documents and your family member's.", "أضف ورقة": "Add a document", "قراءة Gmail وتلخيصه": "Reading and summarizing Gmail"};
     $$("[data-en]").forEach(el => { el.innerHTML = el.dataset.en; });
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n; (n = w.nextNode());) { const k = n.nodeValue.trim(); if (k && TR[k]) n.nodeValue = n.nodeValue.replace(k, () => TR[k]); }
@@ -991,6 +1050,69 @@ html.i18n-wait body{visibility:hidden}
   }
   addEventListener("message", e => { if (e.origin === "https://api.ifazaa.com" && e.data && e.data.fazaa === "connected") { loadConn(); if (e.data.ok) toast(L("تم الربط ✅", "Connected ✅")); } });
   document.addEventListener("visibilitychange", () => { if (!document.hidden && $("#s-connect").classList.contains("on")) loadConn(); });
+  // ---------- شخص من أهلك ----------
+  const RELS = { spouse: L("زوج/زوجة", "spouse"), child: L("ابن/بنت", "son/daughter"), parent: L("أب/أم", "parent"), sibling: L("أخ/أخت", "sibling") };
+  let fam = null, famRel = "";
+  function syncFam() {
+    const f = fam || {};
+    $("#fam-prime").hidden = !!(f.role || f.can_invite);
+    $("#fam-new").hidden = !(f.can_invite && !f.invite);
+    $("#fam-wait").hidden = !(f.can_invite && f.invite);
+    $("#fam-on").hidden = !f.role;
+    if (f.role) {
+      $("#fam-who").textContent = (f.partner || L("الشخص اللي معك", "Your family member")) + L(" معك في Prime ✅", " is with you on Prime ✅");
+      $("#fam-how").textContent = f.role === "owner"
+        ? L("قل لفزعة مثلاً «ذكّر ", "Tell Fazaa, for example, “Remind ") + (f.partner || L("أمي", "Mom")) + L(" بالدواء الساعة ٩» ويوصله التذكير.", " to take the medicine at 9” and they'll get the reminder.")
+        : L("أنت منضم لاشتراك ", "You're on the Prime plan of ") + (f.partner || "") + L(". تقدر تقول لفزعة «ذكّره بـ…» ويوصله التذكير.", ". You can tell Fazaa “remind them…” and they'll get it.");
+    }
+    const sm = $("#fam-small"); if (sm) sm.textContent = f.role ? (f.partner || "") + L(" معك ✅", " is with you ✅") : L("معك بنفس اشتراك Prime", "On the same Prime plan");
+  }
+  const loadFam = () => api("/family").then(r => { fam = r; syncFam(); }).catch(() => {});
+  $$('[data-sheet="s-family"]').forEach(b => b.addEventListener("click", loadFam));
+  $$("[data-rel]").forEach(b => b.onclick = () => { famRel = b.dataset.rel; $$("[data-rel]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+  $("#fam-buy").onclick = () => $("#buy").click();
+  $("#fam-make").onclick = async () => {
+    if (!famRel) { toast(L("اختر وش يقرب لك", "Pick how you're related")); return; }
+    if (!$("#fam-ok").checked) { toast(L("حط صح على الإقرار أول", "Tick the confirmation first")); return; }
+    try { fam = await api("/family", { method: "POST", body: JSON.stringify({ relation: famRel, confirm: true }) }); syncFam(); }
+    catch (e) { if (e.message === "prime") { $("#buy").click(); return; } toast(errText(e)); }
+  };
+  $("#fam-share").onclick = async () => {
+    const url = fam && fam.invite && fam.invite.url; if (!url) return;
+    const text = L("أضفتك معي في فزعة Prime 🎁 افتح الرابط ووافق، ويصير عندك Prime ببلاش:", "I added you to my Fazaa Prime 🎁 Open the link and accept to get Prime for free:");
+    try { if (navigator.share) { await navigator.share({ title: L("فزعة", "Fazaa"), text, url }); return; } } catch { return; }
+    try { await navigator.clipboard.writeText(text + " " + url); toast(L("تم نسخ الدعوة ✅", "Invite copied ✅")); } catch { prompt(L("انسخ الرابط:", "Copy the link:"), url); }
+  };
+  $("#fam-leave").onclick = async () => {
+    if (!(await ask(L("تفك الربط؟", "Remove the link?"), fam && fam.role === "member" ? L("بترجع للباقة المجانية، وتذكيراتك تبقى.", "You'll go back to the free plan, and your reminders stay.") : L("الشخص اللي معك بيرجع للباقة المجانية، وتذكيراته تبقى عنده.", "Your family member goes back to the free plan, and keeps their reminders."), L("فك الربط", "Remove")))) return;
+    try { fam = await api("/family/leave", { method: "POST" }); syncFam(); renderMe(); toast(L("انفك الربط", "Removed")); } catch (e) { toast(errText(e)); }
+  };
+  async function joinFamily() {
+    let t = ""; try { t = new URLSearchParams(location.search).get("join") || ""; } catch {}
+    if (!t) return;
+    try { const u = new URL(location.href); u.searchParams.delete("join"); history.replaceState(history.state, "", u.pathname + u.search + u.hash); } catch {}
+    if (!(await ask(L("دعوة لـ فزعة Prime 🎁", "Invite to Fazaa Prime 🎁"), L("واحد من أهلك أضافك معه في اشتراكه. توافق؟ بياناتك ومحادثاتك تبقى لك، وهو يقدر يسجل لك تذكيرات بس.", "Someone in your family added you to their plan. Accept? Your data and chats stay yours; they can only add reminders for you."), L("انضم", "Join")))) return;
+    try { fam = await api("/family/join", { method: "POST", body: JSON.stringify({ token: t }) }); syncFam(); renderMe(); toast(L("صار عندك Prime ✅", "You now have Prime ✅")); }
+    catch (e) {
+      const why = { bad: L("الرابط انتهى أو انستخدم. اطلب واحد جديد.", "The link expired or was used. Ask for a new one."), busy: L("حسابك مربوط باشتراك عائلي ثاني.", "Your account is already on another family plan."), taken: L("صاحب الدعوة عنده شخص معه من قبل.", "That plan already has someone added."), self: L("ما تقدر تنضم لدعوتك أنت.", "You can't join your own invite.") }[e.message];
+      toast(why || errText(e));
+    }
+  }
+  // ---------- أوراقي ----------
+  const loadPapers = () => api("/papers").then(r => {
+    $("#pap-prime").hidden = !!r.prime; $("#pap-on").hidden = !r.prime;
+    $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L("تنتهي ", "Expires ")}${AR(p.expires)}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L("منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
+      : `<p class="note">${L("ما فيه أوراق للحين. اضغط «أضف ورقة» أو أرسل صورة الورقة لفزعة.", "No documents yet. Tap “Add a document” or send Fazaa a photo of it.")}</p>`;
+    $$("[data-delpap]").forEach(b => b.onclick = async () => {
+      if (!(await ask(L("تحذف الورقة؟", "Delete this document?"), L("بتنحذف تذكيراتها بعد.", "Its reminders will be deleted too."), L("احذف", "Delete")))) return;
+      try { await api("/papers/delete", { method: "POST", body: JSON.stringify({ id: +b.dataset.delpap }) }); loadPapers(); } catch (e) { toast(errText(e)); }
+    });
+  }).catch(() => {});
+  $$('[data-sheet="s-papers"]').forEach(b => b.addEventListener("click", loadPapers));
+  $("#pap-buy").onclick = () => $("#buy").click();
+  $("#pap-add").onclick = () => {
+    history.back(); setTimeout(() => { go("chat"); const i = $("#inp"); i.value = L("أبي أحفظ ورقة: ", "Save a document for me: "); i.focus(); i.dispatchEvent(new Event("input")); }, 50);
+  };
   // ---------- ربط تيليجرام ----------
   let tgLinked = false, tgWait = 0;
   function syncTg() {
@@ -1042,7 +1164,7 @@ html.i18n-wait body{visibility:hidden}
   function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = L("ابدأ", "Get started"); }
   $("#onb-go").onclick = () => {
     if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = L("يلا", "Let's go"); gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }
-    S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI();
+    S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI(); joinFamily();
   };
   $("#onb-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#onb-go").click(); });
 
@@ -1107,7 +1229,7 @@ html.i18n-wait body{visibility:hidden}
   }
   async function afterSignin(r) {
     S.email = r.email || ""; if (r.name && !S.name) S.name = r.name;
-    if (!$("#onb").hidden) { if (!S.name) S.name = $("#onb-name").value.trim(); S.onb = true; $("#onb").hidden = true; }
+    if (!$("#onb").hidden) { if (!S.name) S.name = $("#onb-name").value.trim(); S.onb = true; $("#onb").hidden = true; joinFamily(); }
     save(); lastId = 0; updateHello(); renderMe(); syncPushUI();
     await loadHistory();
     toast(r.returning ? L("هلا فيك من جديد 👋 رجعت لك بياناتك", "Welcome back 👋 your data is restored") : L("تم ✅ حسابك محفوظ", "Done ✅ your account is saved"));
@@ -1186,6 +1308,7 @@ html.i18n-wait body{visibility:hidden}
   // ---------- boot ----------
   if (!S.onb) showOnb();
   updateHello(); renderChat(); renderMe(); loadHistory();
+  if (S.onb) joinFamily();
   syncPushUI();
   if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));

@@ -993,10 +993,10 @@ html.i18n-wait body{visibility:hidden}
   addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; $("#inst-native").hidden = false; });
   addEventListener("appinstalled", () => { deferred = null; S.hideInstall = true; save(); $("#install").hidden = true; toast(L("تم ✅ فزعة صار على شاشتك", "Done ✅ Fazaa is on your home screen")); });
   function setPlat(p) {
-    $$(".plat button").forEach(b => b.setAttribute("aria-pressed", b.dataset.plat === p));
+    $$(".plat button[data-plat]").forEach(b => b.setAttribute("aria-pressed", b.dataset.plat === p));
     ["ios", "and", "pc"].forEach(k => { $("#inst-" + k).hidden = k !== p; });
   }
-  $$(".plat button").forEach(b => b.onclick = () => setPlat(b.dataset.plat));
+  $$(".plat button[data-plat]").forEach(b => b.onclick = () => setPlat(b.dataset.plat));
   function openInstall() {
     setPlat(ios ? "ios" : android ? "and" : "pc");
     $("#inst-done").hidden = !standalone;

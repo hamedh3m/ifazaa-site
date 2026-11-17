@@ -1,0 +1,43 @@
+# فحص كل ٥ دقايق: فزعة، أبو محمد، والموقع. لو واحد ما رد ٣ مرات ورا بعض، الفحص يفشل
+# وGitHub يرسل لحامد إيميل وتنبيه على جواله (تطبيق GitHub).
+# اختياري: لو انضاف ALERT_TELEGRAM_TOKEN و ALERT_TELEGRAM_CHAT في Secrets يوصل التنبيه على تيليجرام بعد.
+name: uptime
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check Fazaa, Abu Mohammed and the site
+        env:
+          TG_TOKEN: ${{ secrets.ALERT_TELEGRAM_TOKEN }}
+          TG_CHAT: ${{ secrets.ALERT_TELEGRAM_CHAT }}
+        run: |
+          check() {
+            for i in 1 2 3; do
+              out=$(curl -fsS -m 15 "$1" 2>/dev/null) && echo "$out" | grep -q "$2" && return 0
+              sleep 20
+            done
+            return 1
+          }
+          down=""
+          check https://api.ifazaa.com/health '"running":true' || down="$down فزعة"
+          check https://h3m.tail450117.ts.net/health '"ok":true' || down="$down أبو-محمد"
+          check https://ifazaa.com/ 'ifazaa' || down="$down الموقع"
+          if [ -n "$down" ]; then
+            echo "::error::ما يرد:$down"
+            if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+              curl -fsS -m 15 "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+                --data-urlencode "chat_id=${TG_CHAT}" \
+                --data-urlencode "text=🚨 السيرفر: ما يرد:${down}. شيّك على Lightsail." >/dev/null || true
+            fi
+            exit 1
+          fi
+          echo "كله شغال ✅"

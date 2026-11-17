@@ -859,11 +859,13 @@ html.i18n-wait body{visibility:hidden}
     ["حبة الضغط", "كل يوم · ١٠:٠٠ ص", "ذكرني كل يوم الساعة ١٠ الصبح بحبة الضغط"],
     ["قبل نهاية الشهر: وش باقي من الميزانية", "كل شهر · يوم ٢٥", "ذكرني يوم ٢٥ أشيك على الميزانية"]
   ];
-  const REP = EN ? { daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" } : { daily: "يومياً", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
+  const DAYN = EN ? { sun: "Sun", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat" } : { sun: "الأحد", mon: "الاثنين", tue: "الثلاثاء", wed: "الأربعاء", thu: "الخميس", fri: "الجمعة", sat: "السبت" };
+  const repTxt = r => REP[r] || (String(r || "").startsWith("days:") ? r.slice(5).split(",").map(d => DAYN[d.trim().slice(0, 3).toLowerCase()] || "").filter(Boolean).join(EN ? ", " : "، ") : "");
+  const REP = EN ? { daily: "Daily", weekdays: "Sun–Thu", weekends: "Fri & Sat", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" } : { daily: "يومياً", weekdays: "الأحد للخميس", weekends: "الجمعة والسبت", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
   function drawTasks() {
     const up = reminders.slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
     $("#task-list").innerHTML = up.length ? `<p class="sec-t">${L("تذكيراتك", "Your reminders")}</p>` + up.map(x => `
-      <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${REP[x.repeat] ? " · " + REP[x.repeat] : ""}</span></div>
+      <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span></div>
       <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       + `<button class="btn btn-ghost" id="new-task" style="margin-top:14px"><svg><use href="#i-plus"/></svg>${L("جديد", "New")}</button>`
       : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي مجدول للحين", "Nothing scheduled yet")}</h3><button class="btn btn-primary" id="new-task"><svg><use href="#i-plus"/></svg>${L("سوّ واحد جديد", "Create one")}</button></div>`;

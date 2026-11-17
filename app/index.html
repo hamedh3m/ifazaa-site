@@ -294,6 +294,29 @@ html.i18n-wait body{visibility:hidden}
 .cmp td.y{color:#6fe6a5;font-weight:700}.cmp td.n{color:#5d5d64}
 .cmp td:last-child{background:rgba(224,33,59,.06)}
 .soon-t{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(201,184,154,.15);color:var(--sand);white-space:nowrap}
+.safe{list-style:none;display:grid;gap:8px;margin:16px 0 4px;padding:14px 16px;border-radius:18px;background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.22);font-size:14px}
+.safe li{position:relative;padding-inline-start:22px;color:#d8d8dc}
+.safe li::before{content:"✓";position:absolute;inset-inline-start:0;color:#6fe6a5;font-weight:800}
+.stp{margin-top:14px;padding:14px;border-radius:20px;background:var(--s1);border:1px solid var(--line)}
+.stp>p{font-size:15px;line-height:1.6;margin-bottom:12px}
+.stp>p b{color:#fff}
+.stp .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:800;font-size:13px;margin-inline-end:8px}
+.shot{direction:ltr;margin:0 auto;max-width:280px;border-radius:22px;background:#f2f2f7;color:#111;padding:10px 10px 12px;font-family:-apple-system,system-ui,sans-serif;box-shadow:0 10px 30px -12px rgba(0,0,0,.6)}
+.shot.dark{background:#1c1c1e;color:#f2f2f7}
+.shot .tb{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;padding:2px 6px 8px;opacity:.85}
+.shot .ttl{font-size:17px;font-weight:800;padding:0 6px 8px}
+.shot .row{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;border-radius:10px;padding:9px 10px;margin-top:6px;font-size:13px}
+.shot.dark .row{background:#2c2c2e}
+.shot .row small{opacity:.55;font-size:11px}
+.shot .row.hi{outline:2.5px solid #e0213b;outline-offset:1px;position:relative}
+.shot .row.hi::after{content:"👆";position:absolute;right:-6px;bottom:-14px;font-size:20px}
+.shot .tag{font-size:10px;font-weight:700;color:#e0213b;text-align:center;margin-top:8px}
+.shot .tabs2{display:flex;justify-content:space-around;font-size:11px;margin-top:10px;opacity:.7}
+.shot .tabs2 b{color:#007aff;opacity:1}
+.shot .fld{font-family:ui-monospace,monospace;font-size:11px;word-break:break-all}
+#sms-sum{margin:14px 0 4px;padding:14px 16px;border-radius:18px;background:var(--s1);border:1px solid var(--line)}
+#sms-sum h4{font-size:15px;margin-bottom:8px}
+#sms-sum .bar2{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;border-top:1px solid var(--line)}
 .onb .lang-t{position:absolute;top:calc(var(--top) + 16px);inset-inline-end:20px;z-index:2;padding:7px 14px;border-radius:999px;border:1px solid rgba(245,245,242,.25);font-size:13px;font-weight:700}
 </style>
 </head>
@@ -331,6 +354,7 @@ html.i18n-wait body{visibility:hidden}
   <symbol id="a-tasks" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#4285f4"/><path d="m8 12.3 2.7 2.7L16.2 9.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="a-notion" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#fff"/><path d="M8 7.5v9M8 7.5l8 9M16 7.5v9" stroke="#111" stroke-width="1.8" fill="none" stroke-linecap="round"/></symbol>
   <symbol id="a-slack" viewBox="0 0 24 24"><rect x="10" y="2" width="4" height="9" rx="2" fill="#36c5f0"/><rect x="13" y="10" width="9" height="4" rx="2" fill="#2eb67d"/><rect x="10" y="13" width="4" height="9" rx="2" fill="#ecb22e"/><rect x="2" y="10" width="9" height="4" rx="2" fill="#e01e5a"/></symbol>
+  <symbol id="a-sms" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="#34c759"/><path fill="#fff" d="M12 6c-3.9 0-7 2.5-7 5.6 0 1.8 1 3.3 2.6 4.4L7 18.5l3-1.6c.6.1 1.3.2 2 .2 3.9 0 7-2.5 7-5.5S15.9 6 12 6Z"/></symbol>
   <symbol id="a-icloud" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" fill="#3a8ef6"/><path fill="#fff" d="M8 16.5a3 3 0 0 1-.4-6 4.2 4.2 0 0 1 8.1-.9 3.5 3.5 0 0 1 .3 6.9Z"/></symbol>
 </svg>
 
@@ -426,6 +450,30 @@ html.i18n-wait body{visibility:hidden}
     <button class="g-more" id="cal-more-t" type="button">تستخدم تقويم ثاني؟</button>
     <div id="cal-more" hidden></div>
     <p class="note" style="font-size:13px">الرابط خاص فيك. لو أرسلته لأحد بالغلط <button class="linkish" id="cal-reset" type="button">غيّر الرابط</button>.</p>
+  </div>
+</section>
+
+<section class="sheet" id="s-sms" aria-label="رسائل الجوال">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>رسائل الجوال</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <h2 class="h2">خلّ فزعة يعرف رسائلك المهمة</h2>
+    <p class="sub">رسائل البنك تصير مصاريف مرتبة، ورسائل المواعيد والفواتير تصير تذكيرات. وأنت تختار وش يوصل.</p>
+    <div class="gbox" id="sms-prime" hidden><b>هذي من ميزات Prime</b><p>ترقّى لـ Prime عشان فزعة يتابع مصاريفك ومواعيدك وفواتيرك من رسائل جوالك.</p><button class="btn btn-red" type="button" id="sms-buy">ترقّى لـ Prime</button></div>
+    <div id="sms-on">
+      <ul class="safe">
+        <li>رموز التحقق تنرمى فوراً، وما تنحفظ ولا يقراها أحد</li>
+        <li>ما نحفظ نص الرسالة: بس المبلغ والمحل والتاريخ، أو الموعد</li>
+        <li>أرقام البطاقات والحسابات تنمسح قبل أي شي</li>
+        <li>توقفه أو تغيّر رابطك متى ما بغيت</li>
+      </ul>
+      <div id="sms-sum" hidden></div>
+      <p class="sec-t">١) انسخ رابطك الخاص</p>
+      <button class="btn btn-primary" type="button" id="sms-copy">انسخ رابطي</button>
+      <p class="sec-t">٢) خلّ جوالك يرسل الرسائل لفزعة</p>
+      <div class="plat" role="group" aria-label="نوع الجهاز"><button type="button" data-smsplat="ios">آيفون</button><button type="button" data-smsplat="and">أندرويد</button></div>
+      <div id="sms-steps"></div>
+      <p class="note" style="font-size:13px">الرابط خاص فيك، لا ترسله لأحد. <button class="linkish" id="sms-reset" type="button">غيّر الرابط</button> · <button class="linkish" id="sms-off" type="button">أوقف رسائل الجوال</button></p>
+    </div>
   </div>
 </section>
 
@@ -553,7 +601,7 @@ html.i18n-wait body{visibility:hidden}
   const AR = n => EN ? String(n) : String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
   // ---------- English: translate the page once, before anything is wired up ----------
   if (EN) {
-    const TR = {"قارن الباقات": "Compare plans", "رسائل بالشهر": "Messages a month", "حتى ٣٠٠": "Up to 300", "تذكيرات جديدة بالشهر": "New reminders a month", "بلا حد": "Unlimited", "مناسبات ومهام تتكرر": "Repeating occasions and tasks", "ضمن الـ١٠": "Within the 10", "كتابة وبحث وصور وسعرات": "Writing, search, photos and calories", "موجز يومك كل صبح": "Daily briefing every morning", "ربط تقويمك وبرامجك": "Connect your calendar and apps", "عائلتك (حتى ٥) باشتراك واحد": "Your family (up to 5) on one plan", "تذكّر أهلك اللي في اشتراكك": "Remind family members on your plan", "أوراق العائلة ما تنتهي عليك": "Family documents never expire on you", "مصاريفك من رسائل البنك": "Your spending from bank texts", "قريباً": "Soon", "١٠٠": "100", "١٠": "10", "تقويم جوالك": "Your phone calendar", "١٠٠ رسالة بالشهر": "100 messages a month", "موجز يومك وربط تقويمك": "Daily briefing and calendar connection", "حتى ٣٠٠ رسالة بالشهر": "Up to 300 messages a month", "تذكيرات ومناسبات ومهام متكررة بلا حد": "Unlimited reminders, occasions and repeating tasks", "موجز يومك: رسالة كل صبح فيها مواعيد يومك": "Daily briefing: a message every morning with your day's appointments", "شغّل موجز يومك": "Turn on daily briefing", "اكتب بكلامك العادي، مثل ما تكلم صاحبك.": "Just type the way you'd text a friend.", "مواعيد فزعة في تقويم جوالك": "Your Fazaa appointments in your phone calendar", "اضغط الزر، وإذا سألك جوالك «اشتراك؟» وافق. بعدها أي موعد تسجله في فزعة يطلع في تقويمك لحاله.": "Tap the button, and if your phone asks “Subscribe?”, say yes. After that, every appointment you add in Fazaa shows up in your calendar on its own.", "تستخدم تقويم ثاني؟": "Use a different calendar?", "الرابط خاص فيك. لو أرسلته لأحد بالغلط": "This link is private to you. If you sent it to someone by mistake,", "تقويم الجوال": "Phone calendar", "أضف لتقويم الآيفون": "Add to iPhone Calendar", "أضف لتقويم قوقل": "Add to Google Calendar", "أضف لأوت لوك": "Add to Outlook", "غيّر الرابط": "Change link", "فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "١٠ تذكيرات بالشهر": "10 reminders a month", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "اللغة": "Language", "اسمك": "Your name", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "إلغاء": "Cancel"};
+    const TR = {"رسائل الجوال": "Phone texts", "خلّ فزعة يعرف رسائلك المهمة": "Let Fazaa see your important texts", "رسائل البنك تصير مصاريف مرتبة، ورسائل المواعيد والفواتير تصير تذكيرات. وأنت تختار وش يوصل.": "Bank texts become tidy spending, and appointment and bill texts become reminders. You choose what gets through.", "هذي من ميزات Prime": "This is a Prime feature", "ترقّى لـ Prime عشان فزعة يتابع مصاريفك ومواعيدك وفواتيرك من رسائل جوالك.": "Upgrade to Prime so Fazaa tracks your spending, appointments and bills from your phone texts.", "رموز التحقق تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes are thrown away instantly, never stored or read", "ما نحفظ نص الرسالة: بس المبلغ والمحل والتاريخ، أو الموعد": "We don't keep the message text: only the amount, merchant and date, or the appointment", "أرقام البطاقات والحسابات تنمسح قبل أي شي": "Card and account numbers are wiped first", "توقفه أو تغيّر رابطك متى ما بغيت": "Turn it off or change your link any time", "١) انسخ رابطك الخاص": "1) Copy your private link", "انسخ رابطي": "Copy my link", "٢) خلّ جوالك يرسل الرسائل لفزعة": "2) Let your phone send texts to Fazaa", "الرابط خاص فيك، لا ترسله لأحد.": "This link is private to you, don't share it.", "أوقف رسائل الجوال": "Turn off phone texts", "قارن الباقات": "Compare plans", "رسائل بالشهر": "Messages a month", "حتى ٣٠٠": "Up to 300", "تذكيرات جديدة بالشهر": "New reminders a month", "بلا حد": "Unlimited", "مناسبات ومهام تتكرر": "Repeating occasions and tasks", "ضمن الـ١٠": "Within the 10", "كتابة وبحث وصور وسعرات": "Writing, search, photos and calories", "موجز يومك كل صبح": "Daily briefing every morning", "ربط تقويمك وبرامجك": "Connect your calendar and apps", "عائلتك (حتى ٥) باشتراك واحد": "Your family (up to 5) on one plan", "تذكّر أهلك اللي في اشتراكك": "Remind family members on your plan", "أوراق العائلة ما تنتهي عليك": "Family documents never expire on you", "مصاريفك من رسائل البنك": "Your spending from bank texts", "قريباً": "Soon", "١٠٠": "100", "١٠": "10", "تقويم جوالك": "Your phone calendar", "١٠٠ رسالة بالشهر": "100 messages a month", "موجز يومك وربط تقويمك": "Daily briefing and calendar connection", "حتى ٣٠٠ رسالة بالشهر": "Up to 300 messages a month", "تذكيرات ومناسبات ومهام متكررة بلا حد": "Unlimited reminders, occasions and repeating tasks", "موجز يومك: رسالة كل صبح فيها مواعيد يومك": "Daily briefing: a message every morning with your day's appointments", "شغّل موجز يومك": "Turn on daily briefing", "اكتب بكلامك العادي، مثل ما تكلم صاحبك.": "Just type the way you'd text a friend.", "مواعيد فزعة في تقويم جوالك": "Your Fazaa appointments in your phone calendar", "اضغط الزر، وإذا سألك جوالك «اشتراك؟» وافق. بعدها أي موعد تسجله في فزعة يطلع في تقويمك لحاله.": "Tap the button, and if your phone asks “Subscribe?”, say yes. After that, every appointment you add in Fazaa shows up in your calendar on its own.", "تستخدم تقويم ثاني؟": "Use a different calendar?", "الرابط خاص فيك. لو أرسلته لأحد بالغلط": "This link is private to you. If you sent it to someone by mistake,", "تقويم الجوال": "Phone calendar", "أضف لتقويم الآيفون": "Add to iPhone Calendar", "أضف لتقويم قوقل": "Add to Google Calendar", "أضف لأوت لوك": "Add to Outlook", "غيّر الرابط": "Change link", "فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "١٠ تذكيرات بالشهر": "10 reminders a month", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "اللغة": "Language", "اسمك": "Your name", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "إلغاء": "Cancel"};
     $$("[data-en]").forEach(el => { el.innerHTML = el.dataset.en; });
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n; (n = w.nextNode());) { const k = n.nodeValue.trim(); if (k && TR[k]) n.nodeValue = n.nodeValue.replace(k, () => TR[k]); }
@@ -621,6 +669,7 @@ html.i18n-wait body{visibility:hidden}
       r = await fetch(API + path, { ...opt, headers: { "Authorization": "Bearer " + S.token, ...(opt.body ? { "Content-Type": "application/json" } : {}) } });
     } catch { throw new Error("offline"); }
     if (r.status === 429) throw new Error("rate");
+    if (r.status === 402) throw new Error("prime");
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -803,9 +852,9 @@ html.i18n-wait body{visibility:hidden}
   $("#set-brief").addEventListener("change", e => { if (briefOn && e.target.value) saveBrief(e.target.value); });
   syncBrief("");
   const soon = L("قريباً", "Soon");
-  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),"tg"],["a-icloud",L("تقويم الجوال","Phone calendar"),L("اربط","Link"),"cal"],["a-gmail","Gmail",soon,"o:gmail"],["a-cal",L("تقويم قوقل","Google Calendar"),soon,"o:gcal"],["a-outlook","Outlook",soon,"o:outlook"],["a-drive",L("قوقل درايف","Google Drive"),soon,"o:gdrive"],["a-tasks",L("مهام قوقل","Google Tasks"),soon,"o:gtasks"],["a-notion","Notion",soon,"o:notion"],["a-wa",L("واتساب","WhatsApp"),soon],["a-slack","Slack",soon,"o:slack"]];
+  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),"tg"],["a-icloud",L("تقويم الجوال","Phone calendar"),L("اربط","Link"),"cal"],["a-sms",L("رسائل الجوال","Phone texts"),L("اربط","Link"),"sms"],["a-gmail","Gmail",soon,"o:gmail"],["a-cal",L("تقويم قوقل","Google Calendar"),soon,"o:gcal"],["a-outlook","Outlook",soon,"o:outlook"],["a-drive",L("قوقل درايف","Google Drive"),soon,"o:gdrive"],["a-tasks",L("مهام قوقل","Google Tasks"),soon,"o:gtasks"],["a-notion","Notion",soon,"o:notion"],["a-wa",L("واتساب","WhatsApp"),soon],["a-slack","Slack",soon,"o:slack"]];
   $("#apps").innerHTML = apps.map(([i, n, s, act]) => `<button class="app-t${act && !act.startsWith("o:") ? " live" : ""}"${act ? ` data-act="${act}"` : ""} type="button"><span class="ai"><svg><use href="#${i}"/></svg></span><b>${n}</b><small>${s}</small></button>`).join("");
-  $$("#apps .app-t").forEach(b => b.onclick = () => b.dataset.act === "tg" ? linkTelegram() : b.dataset.act === "cal" ? openCal() : (b.dataset.act || "").startsWith("o:") && b.classList.contains("live") ? oauthTap(b.dataset.act.slice(2)) : toast(L("هالربط قريباً", "This connection is coming soon")));
+  $$("#apps .app-t").forEach(b => b.onclick = () => b.dataset.act === "tg" ? linkTelegram() : b.dataset.act === "cal" ? openCal() : b.dataset.act === "sms" ? openSms() : (b.dataset.act || "").startsWith("o:") && b.classList.contains("live") ? oauthTap(b.dataset.act.slice(2)) : toast(L("هالربط قريباً", "This connection is coming soon")));
   // ---------- تقويم الجوال (رابط اشتراك) ----------
   let calUrls = null;
   function calLinks(u) {
@@ -837,8 +886,77 @@ html.i18n-wait body{visibility:hidden}
     try { calUrls = await api("/calendar", { method: "POST", body: JSON.stringify({ reset: true }) }); calLinks(calUrls); toast(L("تغيّر الرابط ✅ أضفه لتقويمك من جديد", "Link changed ✅ add it to your calendar again")); }
     catch (e) { toast(errText(e)); }
   };
+  // ---------- رسائل الجوال (SMS) ----------
+  let smsUrl = "";
+  const SMS_APP = "https://github.com/bogkonstantin/android_income_sms_gateway_webhook/releases";
+  const shot = (o) => `<div class="shot${o.dark ? " dark" : ""}"><div class="tb"><span>9:41</span><span>${o.app || ""}</span></div>${o.title ? `<div class="ttl">${o.title}</div>` : ""}` +
+    o.rows.map((x, i) => `<div class="row${i === o.hi ? " hi" : ""}"><span>${x[0]}</span>${x[1] ? `<small>${x[1]}</small>` : ""}</div>`).join("") +
+    (o.tabs ? `<div class="tabs2">${o.tabs.map(t => t.startsWith("*") ? `<b>${t.slice(1)}</b>` : `<span>${t}</span>`).join("")}</div>` : "") +
+    `<div class="tag">${L("توضيح", "Illustration")}</div></div>`;
+  function smsSteps(p) {
+    const S = p === "ios" ? [
+      [L("افتح تطبيق <b>الاختصارات</b> (Shortcuts) وروح لتبويب <b>الأتمتة</b> (Automation) تحت.", "Open the <b>Shortcuts</b> app and go to the <b>Automation</b> tab at the bottom."),
+        shot({ app: "Shortcuts", title: "Automation", rows: [["New Automation", "+"], ["Personal Automation", ""]], hi: 0, tabs: ["Shortcuts", "*Automation", "Gallery"] })],
+      [L("اضغط <b>+</b> (أتمتة جديدة)، وانزل واختر <b>رسالة</b> (Message).", "Tap <b>+</b> (New Automation), scroll and choose <b>Message</b>."),
+        shot({ app: "Shortcuts", title: "When", rows: [["Email", ""], ["Message", ""], ["Wi-Fi", ""], ["Bluetooth", ""]], hi: 1 })],
+      [L("اختر <b>الرسالة تحتوي على</b> (Message Contains) واكتب <b>ريال</b>، وحدد <b>تشغيل فورًا</b> (Run Immediately)، واضغط <b>التالي</b>.", "Choose <b>Message Contains</b> and type <b>SAR</b> (or <b>ريال</b>), select <b>Run Immediately</b>, then tap <b>Next</b>."),
+        shot({ app: "Shortcuts", title: "Message", rows: [["Sender", L("اختياري", "optional")], ["Message Contains", "ريال"], ["Run Immediately", "✓"], ["Next", ""]], hi: 1 })],
+      [L("اختر <b>أتمتة فارغة جديدة</b> (New Blank Automation) ← <b>إضافة إجراء</b> ← ابحث عن <b>URL</b> واختر <b>الحصول على محتويات URL</b> (Get Contents of URL).", "Choose <b>New Blank Automation</b> → <b>Add Action</b> → search <b>URL</b> → pick <b>Get Contents of URL</b>."),
+        shot({ app: "Shortcuts", title: "Add Action", rows: [["🔍 URL", ""], ["Get Contents of URL", ""], ["Open URLs", ""]], hi: 1 })],
+      [L("اضغط على كلمة <b>URL</b> والصق رابطك. افتح السهم <b>&gt;</b>: الطريقة (Method) <b>POST</b>، ونص الطلب (Request Body) <b>JSON</b>، وأضف حقل: المفتاح <b>text</b> والقيمة <b>مُدخل الاختصار</b> (Shortcut Input).", "Tap <b>URL</b> and paste your link. Open the <b>&gt;</b> arrow: Method <b>POST</b>, Request Body <b>JSON</b>, add a field with key <b>text</b> and value <b>Shortcut Input</b>."),
+        shot({ app: "Shortcuts", title: "Get Contents of URL", rows: [[`<span class="fld">${L("رابطك", "your link")}</span>`, ""], ["Method", "POST"], ["Request Body", "JSON"], ["text", "Shortcut Input"]], hi: 3 })],
+      [L("اضغط <b>تم</b>. وخلاص: كل رسالة فيها «ريال» توصل لفزعة. تقدر تسوي أتمتة ثانية بنفس الطريقة لكلمة <b>موعد</b> أو <b>فاتورة</b>.", "Tap <b>Done</b>. That's it: every message containing “SAR” reaches Fazaa. Make another automation the same way for <b>appointment</b> or <b>bill</b>."), ""]
+    ] : [
+      [L(`حمّل تطبيق <b>SMS to URL Forwarder</b> المجاني ومفتوح المصدر من <a href="${SMS_APP}" target="_blank" rel="noopener" style="text-decoration:underline">صفحته الرسمية</a> (ملف APK). هو مو موجود في Google Play لأن قوقل تمنع تطبيقات تحويل الرسائل، فلو طلع تحذير اختر <b>التثبيت على أي حال</b>.`, `Download the free, open-source <b>SMS to URL Forwarder</b> app from <a href="${SMS_APP}" target="_blank" rel="noopener" style="text-decoration:underline">its official page</a> (APK file). It isn't on Google Play because Google doesn't allow SMS forwarding apps, so if you see a warning choose <b>Install anyway</b>.`),
+        shot({ app: "Android", title: "SMS to URL Forwarder", rows: [["Install", ""], ["Install anyway", ""]], hi: 1, dark: true })],
+      [L("افتح التطبيق واسمح له <b>باستقبال الرسائل</b> والإشعارات.", "Open the app and allow it to <b>receive SMS</b> and send notifications."),
+        shot({ app: "Android", rows: [["Allow SMS access?", ""], ["Allow", ""], ["Don't allow", ""]], hi: 1, dark: true })],
+      [L("اضغط <b>+</b> عشان تضيف قاعدة. في <b>Sender</b> اكتب <b>*</b> (كل المرسلين) أو اسم البنك. وفي <b>Text filter</b> اكتب <b>ريال|SAR|موعد|فاتورة</b>.", "Tap <b>+</b> to add a rule. In <b>Sender</b> type <b>*</b> (all senders) or your bank's name. In <b>Text filter</b> type <b>ريال|SAR|موعد|فاتورة</b>."),
+        shot({ app: "Android", title: "New rule", rows: [["Sender", "*"], ["Text filter", "ريال|SAR|موعد"], ["URL", ""], ["Payload template", "default"]], hi: 1, dark: true })],
+      [L("في <b>URL</b> الصق رابطك، وخلّ <b>Payload template</b> زي ما هو. اضغط <b>Test</b> وبعدها احفظ.", "Paste your link in <b>URL</b> and leave <b>Payload template</b> as is. Tap <b>Test</b>, then save."),
+        shot({ app: "Android", title: "New rule", rows: [["Sender", "*"], ["Text filter", "ريال|SAR|موعد"], [`URL <span class="fld">${L("رابطك", "your link")}</span>`, ""], ["Test", ""]], hi: 2, dark: true })],
+      [L("خلاص. رسائل البنك والمواعيد والفواتير بتوصل لفزعة لحالها.", "Done. Bank, appointment and bill texts will reach Fazaa on their own."), ""]
+    ];
+    $("#sms-steps").innerHTML = S.map(([t, img], i) => `<div class="stp"><p><span class="n">${AR(i + 1)}</span>${t}</p>${img}</div>`).join("");
+    $$("[data-smsplat]").forEach(b => b.setAttribute("aria-pressed", b.dataset.smsplat === p));
+  }
+  $$("[data-smsplat]").forEach(b => b.onclick = () => smsSteps(b.dataset.smsplat));
+  async function loadSpend() {
+    try {
+      const r = await api("/spending");
+      if (!r.total && !r.income) { $("#sms-sum").hidden = true; return; }
+      $("#sms-sum").innerHTML = `<h4>${L("مصاريف هالشهر: ", "This month's spending: ")}${AR(Math.round(r.total).toLocaleString("en"))} ${L("ريال", "SAR")}</h4>` +
+        Object.entries(r.by_category).map(([k, v]) => `<div class="bar2"><span>${esc(EN ? ({ "مطاعم": "Restaurants", "بقالة": "Groceries", "بنزين": "Fuel", "تسوق": "Shopping", "فواتير": "Bills", "صحة": "Health", "سفر": "Travel", "ترفيه": "Entertainment", "تحويلات": "Transfers", "أخرى": "Other" }[k] || k) : k)}</span><span>${AR(Math.round(v).toLocaleString("en"))}</span></div>`).join("");
+      $("#sms-sum").hidden = false;
+    } catch {}
+  }
+  async function openSms() {
+    let r;
+    try { r = await api("/sms", { method: "POST", body: "{}" }); }
+    catch (e) {
+      if (e.message === "prime") { $("#sms-prime").hidden = false; $("#sms-on").hidden = true; openSheet("s-sms"); return; }
+      toast(errText(e)); return;
+    }
+    smsUrl = r.url; $("#sms-prime").hidden = true; $("#sms-on").hidden = false;
+    smsSteps(ios ? "ios" : "and"); openSheet("s-sms"); loadSpend(); loadConn();
+  }
+  $("#sms-buy").onclick = () => $("#buy").click();
+  $("#sms-copy").onclick = async () => {
+    if (!smsUrl) return;
+    try { await navigator.clipboard.writeText(smsUrl); toast(L("تم نسخ رابطك ✅", "Your link is copied ✅")); }
+    catch { prompt(L("انسخ رابطك:", "Copy your link:"), smsUrl); }
+  };
+  $("#sms-reset").onclick = async () => {
+    if (!(await ask(L("تغيّر الرابط؟", "Change the link?"), L("الرابط القديم بيوقف، ولازم تحط الجديد في جوالك مرة ثانية.", "The old link stops working, and you'll need to put the new one on your phone again."), L("غيّر الرابط", "Change link")))) return;
+    try { smsUrl = (await api("/sms", { method: "POST", body: JSON.stringify({ reset: true }) })).url; toast(L("تغيّر ✅ انسخ الرابط الجديد", "Changed ✅ copy the new link")); } catch (e) { toast(errText(e)); }
+  };
+  $("#sms-off").onclick = async () => {
+    if (!(await ask(L("توقف رسائل الجوال؟", "Turn off phone texts?"), L("الرابط بيوقف، وما يوصل فزعة أي رسالة جديدة. مصاريفك المسجلة تبقى.", "The link stops working and no new texts reach Fazaa. Your recorded spending stays."), L("أوقف", "Turn off")))) return;
+    try { await api("/sms", { method: "POST", body: JSON.stringify({ off: true }) }); smsUrl = ""; history.back(); loadConn(); toast(L("انوقفت", "Turned off")); } catch (e) { toast(errText(e)); }
+  };
   function syncConn(cal) {
     const t = $('#apps .app-t[data-act="cal"] small'); if (t) t.textContent = cal ? L("مربوط", "Linked") : L("اربط", "Link");
+    const m = $('#apps .app-t[data-act="sms"] small'); if (m) m.textContent = conn.sms ? L("مربوط", "Linked") : L("Prime", "Prime");
   }
   // ---------- ربط البرامج (قوقل، Notion، أوت لوك) ----------
   let conn = { available: [] };

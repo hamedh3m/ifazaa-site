@@ -13,6 +13,17 @@
 <meta name="apple-mobile-web-app-title" content="فزعة">
 <title>فزعة</title>
 <link rel="manifest" href="manifest.webmanifest">
+<script>
+(function(){var q=null,l=null,K="fazaa-app-v1",d=document.documentElement;
+try{q=new URLSearchParams(location.search).get("lang")}catch(e){}
+if(q!=="en"&&q!=="ar")q=null;
+try{var s=JSON.parse(localStorage.getItem(K))||{};if(q&&s.lang!==q){s.lang=q;localStorage.setItem(K,JSON.stringify(s))}l=q||s.lang}catch(e){l=q}
+window.FZ_LANG=l==="en"?"en":"ar";
+if(window.FZ_LANG==="en"){d.lang="en";d.dir="ltr";d.className+=" i18n-wait";document.title="Fazaa";
+var m=document.querySelector('link[rel="manifest"]');if(m)m.href="manifest-en.webmanifest";
+var t=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(t)t.content="Fazaa";
+setTimeout(function(){d.classList.remove("i18n-wait")},2000)}})();
+</script>
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -259,6 +270,18 @@ svg{display:block}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 [hidden]{display:none!important}
 #install-x{display:grid;place-items:center}#install-x svg{width:16px;height:16px}
+/* English (left to right) */
+html.i18n-wait body{visibility:hidden}
+[dir=ltr] .chip svg,[dir=ltr] .row .chev,[dir=ltr] .menu .chev{transform:none}
+[dir=ltr] [data-close] svg{transform:scaleX(-1)}
+[dir=ltr] .sheet{transform:translateX(100%)}
+[dir=ltr] .sheet.on{transform:none}
+[dir=ltr] .m.me{align-self:flex-end;border-end-start-radius:20px;border-end-end-radius:6px}
+[dir=ltr] .m.bot{align-self:flex-start;border-end-end-radius:20px;border-end-start-radius:6px}
+[dir=ltr] .typing{align-self:flex-start}
+[dir=ltr] .tapzone{direction:rtl}
+[dir=ltr] .steps li::before{content:counter(st)}
+.onb .lang-t{position:absolute;top:calc(var(--top) + 16px);inset-inline-end:20px;z-index:2;padding:7px 14px;border-radius:999px;border:1px solid rgba(245,245,242,.25);font-size:13px;font-weight:700}
 </style>
 </head>
 <body>
@@ -398,18 +421,20 @@ svg{display:block}
 <section class="sheet" id="s-plans" aria-label="الباقات">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>الباقات</h1><span style="width:42px"></span></header>
   <div class="body">
-    <div class="tier cur"><h3>مجاني <small>باقتك الحالية</small></h3><div class="pr"><b>مجاناً</b> دائماً</div>
+    <div class="tier cur"><h3>مجاني <small>باقتك الحالية</small></h3><div class="pr" data-en='<b>Free</b> forever'><b>مجاناً</b> دائماً</div>
       <ul><li>اسأله أي شي وكلمه بالفويس</li><li>١٠ تذكيرات بالشهر</li><li>رسائل وتهاني جاهزة</li></ul></div>
-    <div class="tier prime"><h3>Prime</h3><div class="pr"><b>١٩٩</b> ريال بالسنة</div>
+    <div class="tier prime"><h3>Prime</h3><div class="pr" data-en='<b>SAR 199</b> a year'><b>١٩٩</b> ريال بالسنة</div>
       <ul><li>كل اللي في المجاني</li><li>تذكيرات ومناسبات بلا حد</li><li>مهام تتكرر لحالها وموجز يومي</li><li>ذكاء أقوى وصور وفواتير</li></ul>
       <button class="btn btn-red" id="buy">ترقّى لـ Prime</button></div>
-    <p class="note">للمؤسسات والشركات: السعر حسب احتياجك. <a href="#" id="biz" style="text-decoration:underline">كلمنا</a></p>
+    <p class="note" data-en='For organizations and companies: pricing based on your needs. <a href="#" id="biz" style="text-decoration:underline">Talk to us</a>'>للمؤسسات والشركات: السعر حسب احتياجك. <a href="#" id="biz" style="text-decoration:underline">كلمنا</a></p>
   </div>
 </section>
 
 <section class="sheet" id="s-settings" aria-label="الإعدادات">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>الإعدادات</h1><span style="width:42px"></span></header>
   <div class="body">
+    <label class="field"><span>اللغة</span></label>
+    <div class="plat" role="group" aria-label="اللغة" style="margin-top:0"><button type="button" data-setlang="ar" lang="ar">عربي</button><button type="button" data-setlang="en" lang="en">English</button></div>
     <label class="field"><span>اسمك</span><input id="set-name" autocomplete="given-name" maxlength="30"></label>
     <label class="field"><span>وقت موجز يومك</span><input id="set-brief" type="time" value="07:00"></label>
     <label class="field"><span>تنبيهات الجوال</span></label>
@@ -426,19 +451,19 @@ svg{display:block}
     <div class="plat" role="group" aria-label="نوع الجهاز"><button type="button" data-plat="ios">آيفون</button><button type="button" data-plat="and">أندرويد</button><button type="button" data-plat="pc">كمبيوتر</button></div>
     <button class="btn btn-red" id="inst-native" type="button" style="margin-top:18px" hidden><svg><use href="#i-dl"/></svg>ثبّت الحين</button>
     <ol class="steps" id="inst-ios" hidden>
-      <li><span>اضغط زر <b>المشاركة</b> تحت في الشاشة (في Safari)</span><span class="ico"><svg><use href="#i-share"/></svg></span></li>
-      <li><span>انزل شوي واختر <b>«إضافة إلى الشاشة الرئيسية»</b></span><span class="ico"><svg><use href="#i-addsq"/></svg></span></li>
-      <li><span>اضغط <b>«إضافة»</b> فوق، وافتح فزعة من أيقونته</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
+      <li><span data-en='Tap the <b>Share</b> button at the bottom of the screen (in Safari)'>اضغط زر <b>المشاركة</b> تحت في الشاشة (في Safari)</span><span class="ico"><svg><use href="#i-share"/></svg></span></li>
+      <li><span data-en='Scroll down and choose <b>“Add to Home Screen”</b>'>انزل شوي واختر <b>«إضافة إلى الشاشة الرئيسية»</b></span><span class="ico"><svg><use href="#i-addsq"/></svg></span></li>
+      <li><span data-en='Tap <b>“Add”</b> at the top, then open Fazaa from its icon'>اضغط <b>«إضافة»</b> فوق، وافتح فزعة من أيقونته</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
     </ol>
     <ol class="steps" id="inst-and" hidden>
-      <li><span>اضغط النقاط الثلاث <b>⋮</b> فوق في Chrome</span><span class="ico"><svg><use href="#i-dots"/></svg></span></li>
-      <li><span>اختر <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b></span><span class="ico"><svg><use href="#i-addsq"/></svg></span></li>
-      <li><span>اضغط <b>«تثبيت»</b>، وتلقى فزعة مع تطبيقاتك</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
+      <li><span data-en='Tap the three dots <b>⋮</b> at the top of Chrome'>اضغط النقاط الثلاث <b>⋮</b> فوق في Chrome</span><span class="ico"><svg><use href="#i-dots"/></svg></span></li>
+      <li><span data-en='Choose <b>“Install app”</b> or <b>“Add to Home screen”</b>'>اختر <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b></span><span class="ico"><svg><use href="#i-addsq"/></svg></span></li>
+      <li><span data-en='Tap <b>“Install”</b>, and Fazaa will be with your apps'>اضغط <b>«تثبيت»</b>، وتلقى فزعة مع تطبيقاتك</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
     </ol>
     <ol class="steps" id="inst-pc" hidden>
-      <li><span>في Chrome أو Edge، اضغط أيقونة <b>التثبيت</b> في آخر شريط العنوان</span><span class="ico"><svg><use href="#i-dl"/></svg></span></li>
-      <li><span>أو من القائمة <b>⋮</b> اختر <b>«تثبيت فزعة»</b></span><span class="ico"><svg><use href="#i-dots"/></svg></span></li>
-      <li><span>يطلع لك فزعة على سطح المكتب وفي قائمة البرامج</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
+      <li><span data-en='In Chrome or Edge, click the <b>install</b> icon at the end of the address bar'>في Chrome أو Edge، اضغط أيقونة <b>التثبيت</b> في آخر شريط العنوان</span><span class="ico"><svg><use href="#i-dl"/></svg></span></li>
+      <li><span data-en='Or from the <b>⋮</b> menu, choose <b>“Install Fazaa”</b>'>أو من القائمة <b>⋮</b> اختر <b>«تثبيت فزعة»</b></span><span class="ico"><svg><use href="#i-dots"/></svg></span></li>
+      <li><span data-en='Fazaa appears on your desktop and in your apps list'>يطلع لك فزعة على سطح المكتب وفي قائمة البرامج</span><span class="ico"><svg><use href="#logo"/></svg></span></li>
     </ol>
     <p class="note" id="inst-done" hidden>✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.</p>
   </div>
@@ -450,12 +475,13 @@ svg{display:block}
     <h2 class="h2">بياناتك لك، ومحد يشوفها</h2>
     <p class="note">بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.</p>
     <button class="btn btn-ghost" id="wipe" style="margin-top:22px;color:#ff6b7e;border-color:rgba(224,33,59,.4)"><svg><use href="#i-trash"/></svg>احذف بياناتي</button>
-    <p class="note"><a href="/privacy" style="text-decoration:underline">سياسة الخصوصية كاملة</a></p>
+    <p class="note" data-en='<a href="/en/privacy.html" style="text-decoration:underline">Full privacy policy</a>'><a href="/privacy" style="text-decoration:underline">سياسة الخصوصية كاملة</a></p>
   </div>
 </section>
 
 <!-- onboarding -->
 <section class="onb" id="onb" hidden>
+  <button class="lang-t" type="button" id="onb-lang" lang="en">English</button>
   <div class="step1" id="step1">
     <svg class="logo-big"><use href="#logo"/></svg>
     <h1>كل شي يعتمد عليك، خلّه على فزعة</h1>
@@ -472,7 +498,7 @@ svg{display:block}
   </div>
   <div>
     <button class="btn btn-primary" id="onb-go">ابدأ</button>
-    <p class="note" style="text-align:center">بالمتابعة توافق على <a href="/terms" style="text-decoration:underline">الشروط</a> و<a href="/privacy" style="text-decoration:underline">الخصوصية</a></p>
+    <p class="note" style="text-align:center" data-en='By continuing you agree to the <a href="/en/terms.html" style="text-decoration:underline">Terms</a> and <a href="/en/privacy.html" style="text-decoration:underline">Privacy policy</a>'>بالمتابعة توافق على <a href="/terms" style="text-decoration:underline">الشروط</a> و<a href="/privacy" style="text-decoration:underline">الخصوصية</a></p>
   </div>
 </section>
 
@@ -484,13 +510,23 @@ svg{display:block}
 <script>
 (() => {
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
-  const AR = n => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+  const EN = window.FZ_LANG === "en", L = (ar, en) => EN ? en : ar;
+  const AR = n => EN ? String(n) : String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+  // ---------- English: translate the page once, before anything is wired up ----------
+  if (EN) {
+    const TR = {"فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "اكتب أو تكلم بكلامك العادي.": "Type or talk, just like you normally would.", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "اسأله أي شي وكلمه بالفويس": "Ask it anything, by text or voice", "١٠ تذكيرات بالشهر": "10 reminders a month", "رسائل وتهاني جاهزة": "Ready-made messages and greetings", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "مهام تتكرر لحالها وموجز يومي": "Repeating tasks and a daily briefing", "ذكاء أقوى وصور وفواتير": "Smarter AI, photos and bills", "اللغة": "Language", "اسمك": "Your name", "وقت موجز يومك": "Daily briefing time", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "إلغاء": "Cancel"};
+    $$("[data-en]").forEach(el => { el.innerHTML = el.dataset.en; });
+    const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n; (n = w.nextNode());) { const k = n.nodeValue.trim(); if (k && TR[k]) n.nodeValue = n.nodeValue.replace(k, () => TR[k]); }
+    $$("[aria-label],[placeholder]").forEach(el => ["aria-label", "placeholder"].forEach(a => { const v = el.getAttribute(a); if (v && TR[v]) el.setAttribute(a, TR[v]); }));
+  }
+  document.documentElement.classList.remove("i18n-wait");
   const WA = "https://wa.me/966530004565?text=";
 
   // ---------- storage (safe) ----------
   const KEY = "fazaa-app-v1";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
-  let S = Object.assign({ name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: "", email: "" }, load());
+  let S = Object.assign({ name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: "", email: "", lang: "" }, load());
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 
   // ---------- toast / confirm ----------
@@ -505,7 +541,7 @@ svg{display:block}
   });
 
   // ---------- tabs ----------
-  const titles = { chat: "فزعة", today: "يومك", tasks: "المجدول", me: "حسابي" };
+  const titles = EN ? { chat: "Fazaa", today: "Your day", tasks: "Schedule", me: "Account" } : { chat: "فزعة", today: "يومك", tasks: "المجدول", me: "حسابي" };
   const go = v => {
     $$(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
     $$(".tab").forEach(t => { if (t.dataset.v === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
@@ -524,12 +560,13 @@ svg{display:block}
   addEventListener("popstate", closeSheets);
 
   // ---------- time helpers ----------
-  const DAYS = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-  const fmtTime = d => { let h = d.getHours(), m = d.getMinutes(); const p = h < 12 ? "ص" : "م"; h = h % 12 || 12; return AR(h) + (m ? ":" + AR(String(m).padStart(2, "0")) : "") + " " + p; };
+  const DAYS = EN ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"] : ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  const fmtTime = d => { let h = d.getHours(), m = d.getMinutes(); const p = h < 12 ? L("ص", "AM") : L("م", "PM"); h = h % 12 || 12; return AR(h) + (m ? ":" + AR(String(m).padStart(2, "0")) : "") + " " + p; };
   const fmtWhen = d => {
     const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - t0) / 864e5);
-    const day = diff === 0 ? "اليوم" : diff === 1 ? "بكرة" : diff > 1 && diff < 7 ? DAYS[d.getDay()] : AR(d.getDate()) + "/" + AR(d.getMonth() + 1);
+    const day = diff === 0 ? L("اليوم", "Today") : diff === 1 ? L("بكرة", "Tomorrow") : diff > 1 && diff < 7 ? DAYS[d.getDay()]
+      : EN ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : AR(d.getDate()) + "/" + AR(d.getMonth() + 1);
     return day + " " + fmtTime(d);
   };
   const toLatin = s => s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
@@ -548,13 +585,16 @@ svg{display:block}
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
-  const errText = e => e.message === "rate" ? "شوي شوي 🙏 جرب بعد دقيقة" : e.message === "offline" ? "فزعة مو متصل الحين، جرب بعد شوي" : "صار خلل بسيط، جرب مرة ثانية";
+  const errText = e => e.message === "rate" ? L("شوي شوي 🙏 جرب بعد دقيقة", "Easy there 🙏 try again in a minute")
+    : e.message === "offline" ? L("فزعة مو متصل الحين، جرب بعد شوي", "Fazaa isn't reachable right now, try again shortly")
+    : L("صار خلل بسيط، جرب مرة ثانية", "Something went wrong, please try again");
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="text-decoration:underline">$1</a>');
 
   // ---------- chat ui ----------
   const msgs = $("#msgs"), inp = $("#inp"), send = $("#send");
-  const ideas = ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
+  const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
+    : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
   $("#chips").innerHTML = ideas.map(i => `<button class="chip" type="button">${i}<svg><use href="#i-chev"/></svg></button>`).join("");
   $$("#chips .chip").forEach(c => c.addEventListener("click", () => submit(c.textContent)));
 
@@ -585,7 +625,7 @@ svg{display:block}
       const r = await api("/messages?after=" + lastId);
       if (!r.messages.length) return;
       $("#empty").style.display = "none";
-      r.messages.forEach(m => { const x = fromServer(m); S.msgs.push(x); bubble(x); if (!x.me && /⏰/.test(x.text)) toast("⏰ وصلك تذكير"); });
+      r.messages.forEach(m => { const x = fromServer(m); S.msgs.push(x); bubble(x); if (!x.me && /⏰/.test(x.text)) toast(L("⏰ وصلك تذكير", "⏰ You have a reminder")); });
       lastId = r.messages[r.messages.length - 1].id; S.msgs = S.msgs.slice(-80); save();
       msgs.scrollTop = msgs.scrollHeight;
     } catch {}
@@ -604,7 +644,7 @@ svg{display:block}
     try {
       const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "" }) });
       ty.remove();
-      const bot = { me: false, text: r.reply || "تمام 👍", ts: Date.now() };
+      const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
       S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
       lastId = Math.max(lastId, r.last || 0); save();
     } catch (e) {
@@ -615,19 +655,26 @@ svg{display:block}
     msgs.scrollTop = msgs.scrollHeight;
   }
   const grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, inp.scrollHeight) + "px"; };
-  const syncSend = () => { const has = !!inp.value.trim(); send.classList.toggle("go", has); $("#send-ic").innerHTML = `<use href="#${has ? "i-send" : "i-mic"}"/>`; send.setAttribute("aria-label", has ? "أرسل" : "فويس"); };
+  const syncSend = () => { const has = !!inp.value.trim(); send.classList.toggle("go", has); $("#send-ic").innerHTML = `<use href="#${has ? "i-send" : "i-mic"}"/>`; send.setAttribute("aria-label", has ? L("أرسل", "Send") : L("فويس", "Voice")); };
   inp.addEventListener("input", () => { grow(); syncSend(); });
   inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); submit(); } });
-  send.addEventListener("click", () => inp.value.trim() ? submit() : toast("الفويس قريباً في التطبيق، وهو شغال على تيليجرام"));
+  send.addEventListener("click", () => inp.value.trim() ? submit() : toast(L("الفويس قريباً في التطبيق، وهو شغال على تيليجرام", "Voice is coming soon to the app, and it already works on Telegram")));
 
   // ---------- today (stories) ----------
   let si = 0, stimer;
   function storyData() {
     const now = new Date(), h = now.getHours();
-    const greet = h < 12 ? "صباح الخير" : h < 18 ? "مساك الله بالخير" : "مساء الخير";
+    const greet = EN ? (h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") : h < 12 ? "صباح الخير" : h < 18 ? "مساك الله بالخير" : "مساء الخير";
     const R = reminders.map(x => ({ title: x.title, at: Date.parse(x.at) }));
     const today = R.filter(x => new Date(x.at).toDateString() === now.toDateString()).sort((a, b) => a.at - b.at);
     const next = R.filter(x => x.at > now.getTime()).sort((a, b) => a.at - b.at);
+    if (EN) return [
+      { c: "st-1", k: greet + (S.name ? ", " + S.name : ""), h: today.length ? `You have ${today.length} ${today.length === 1 ? "thing" : "things"} today` : "Your day is free so far",
+        list: today.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.at))]), p: today.length ? "" : "Tell me any appointment or anything you want to remember, and I'll organize it for you." },
+      { c: "st-2", k: "Coming up", h: next.length ? "Your next appointments" : "No upcoming appointments", list: next.slice(0, 4).map(x => [x.title, fmtWhen(new Date(x.at))]), p: next.length ? "" : "Try: “Remind me about my dentist appointment Thursday at 4 pm”." },
+      { c: "st-3", k: "Your documents", h: "Don't wait until they expire", list: [], p: "Tell me when your iqama, car registration or passport expires, and I'll remind you a month and a week before." },
+      { c: "st-4", k: "Today's idea", h: "Plan Friday's gathering early", list: [], p: "Tell me how many people, and I'll give you the menu, quantities and shopping list, and remind you to shop the day before." }
+    ];
     return [
       { c: "st-1", k: greet + (S.name ? " يا " + S.name : ""), h: today.length ? `عندك ${AR(today.length)} ${today.length === 1 ? "شي" : "أشياء"} اليوم` : "يومك فاضي للحين",
         list: today.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.at))]), p: today.length ? "" : "قل لي أي موعد أو شي تبي تتذكره، وأنا أرتبه لك." },
@@ -642,34 +689,38 @@ svg{display:block}
     $("#story").className = "story " + d.c;
     $("#story").innerHTML = `<span class="k">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` +
       (d.list.length ? `<ul>${d.list.map(([a, b]) => `<li>${esc(a)}<small>${b}</small></li>`).join("")}</ul>` : "") +
-      (d.p ? `<p>${esc(d.p)}</p>` : "") + `<div class="tapzone"><button aria-label="التالي"></button><button aria-label="السابق"></button></div>`;
+      (d.p ? `<p>${esc(d.p)}</p>` : "") + `<div class="tapzone"><button aria-label="${L("التالي", "Next")}"></button><button aria-label="${L("السابق", "Previous")}"></button></div>`;
     const [nextB, prevB] = $$("#story .tapzone button");
     nextB.onclick = () => showStory(si + 1); prevB.onclick = () => showStory(si - 1);
-    $("#story-n").textContent = AR(si + 1) + " من " + AR(D.length);
+    $("#story-n").textContent = AR(si + 1) + L(" من ", " of ") + AR(D.length);
     clearTimeout(stimer); stimer = setTimeout(() => { if ($("#v-today").classList.contains("on")) showStory(si + 1); }, 6000);
   }
   const startStories = async () => { showStory(0); try { reminders = (await api("/reminders")).reminders; showStory(0); } catch {} };
 
   // ---------- tasks ----------
-  const taskIdeas = [
+  const taskIdeas = EN ? [
+    ["Daily briefing: my appointments and reminders", "Every day · 7:00 AM", "Remind me every day at 7 am with a daily briefing"],
+    ["Blood pressure pill", "Every day · 10:00 AM", "Remind me every day at 10 am to take my blood pressure pill"],
+    ["Before month end: what's left of the budget", "Every month · on the 25th", "Remind me every month on the 25th to check my budget"]
+  ] : [
     ["موجز يومي: مواعيدي وتذكيراتي", "كل يوم · ٧:٠٠ ص", "ذكرني كل يوم الساعة ٧ الصبح بموجز يومي"],
     ["حبة الضغط", "كل يوم · ١٠:٠٠ ص", "ذكرني كل يوم الساعة ١٠ الصبح بحبة الضغط"],
     ["قبل نهاية الشهر: وش باقي من الميزانية", "كل شهر · يوم ٢٥", "ذكرني يوم ٢٥ أشيك على الميزانية"]
   ];
-  const REP = { daily: "يومياً", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
+  const REP = EN ? { daily: "Daily", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" } : { daily: "يومياً", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
   function drawTasks() {
     const up = reminders.slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
-    $("#task-list").innerHTML = up.length ? `<p class="sec-t">تذكيراتك</p>` + up.map(x => `
+    $("#task-list").innerHTML = up.length ? `<p class="sec-t">${L("تذكيراتك", "Your reminders")}</p>` + up.map(x => `
       <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${REP[x.repeat] ? " · " + REP[x.repeat] : ""}</span></div>
-      <button class="del" data-del="${x.id}" aria-label="احذف"><svg><use href="#i-trash"/></svg></button></div>`).join("")
-      + `<button class="btn btn-ghost" id="new-task" style="margin-top:14px"><svg><use href="#i-plus"/></svg>جديد</button>`
-      : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>ما عندك شي مجدول للحين</h3><button class="btn btn-primary" id="new-task"><svg><use href="#i-plus"/></svg>سوّ واحد جديد</button></div>`;
+      <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
+      + `<button class="btn btn-ghost" id="new-task" style="margin-top:14px"><svg><use href="#i-plus"/></svg>${L("جديد", "New")}</button>`
+      : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي مجدول للحين", "Nothing scheduled yet")}</h3><button class="btn btn-primary" id="new-task"><svg><use href="#i-plus"/></svg>${L("سوّ واحد جديد", "Create one")}</button></div>`;
     $("#task-ideas").innerHTML = taskIdeas.map(([a, b, c]) => `<button class="row" data-idea="${c}"><div><p>${a}</p><span class="tag">${b}</span></div><svg class="chev"><use href="#i-chev"/></svg></button>`).join("");
-    $("#new-task").onclick = () => { go("chat"); inp.value = "ذكرني "; grow(); syncSend(); inp.focus(); };
+    $("#new-task").onclick = () => { go("chat"); inp.value = L("ذكرني ", "Remind me "); grow(); syncSend(); inp.focus(); };
     $$("[data-idea]").forEach(b => b.onclick = () => { go("chat"); submit(b.dataset.idea); });
     $$("[data-del]").forEach(b => b.onclick = async () => {
-      if (!(await ask("تحذف هالتذكير؟", "بينحذف ولا يوصلك.", "احذف"))) return;
-      try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); toast("انحذف"); }
+      if (!(await ask(L("تحذف هالتذكير؟", "Delete this reminder?"), L("بينحذف ولا يوصلك.", "It will be deleted and won't reach you."), L("احذف", "Delete")))) return;
+      try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); toast(L("انحذف", "Deleted")); }
       catch (e) { toast(errText(e)); }
     });
   }
@@ -681,15 +732,16 @@ svg{display:block}
   // ---------- account ----------
   let invite = "";
   function renderMe() {
-    $("#me-name").textContent = S.name || "ضيف";
-    $("#av").textContent = (S.name || "ف").trim()[0];
+    $("#me-name").textContent = S.name || L("ضيف", "Guest");
+    $("#av").textContent = (S.name || L("ف", "F")).trim()[0];
     $("#set-name").value = S.name || "";
     api("/me").then(m => {
       const paid = m.plan && m.plan !== "free";
-      $("#plan-chip").textContent = paid ? "Prime" : "مجاني";
-      $("#me-plan").textContent = paid ? ("Prime" + (m.plan_until ? " · لين " + AR(m.plan_until.slice(0, 10)) : ""))
+      $("#plan-chip").textContent = paid ? "Prime" : L("مجاني", "Free");
+      $("#me-plan").textContent = paid ? ("Prime" + (m.plan_until ? L(" · لين ", " · until ") + AR(m.plan_until.slice(0, 10)) : ""))
+        : EN ? `Free · ${m.msgs} of ${m.msgs_limit} messages · ${m.reminders_month} of ${m.reminders_limit} reminders this month`
         : `المجانية · ${AR(m.msgs)} من ${AR(m.msgs_limit)} رسالة · ${AR(m.reminders_month)} من ${AR(m.reminders_limit)} تذكير هالشهر`;
-      const n = m.refs || 0; $("#ref-n").textContent = AR(n % 3) + " من ٣"; $("#ref-small").textContent = AR(n % 3) + " من ٣";
+      const n = m.refs || 0, of3 = AR(n % 3) + L(" من ٣", " of 3"); $("#ref-n").textContent = of3; $("#ref-small").textContent = of3;
       $$(".bars i").forEach((b, k) => b.classList.toggle("on", k < Math.floor(n / 3)));
       invite = m.invite || "";
       if ((m.email || "") !== S.email) { S.email = m.email || ""; save(); syncGoogleUI(); }
@@ -697,24 +749,26 @@ svg{display:block}
     }).catch(() => {});
     syncGoogleUI();
   }
-  $("#set-name").addEventListener("change", e => { S.name = e.target.value.trim(); save(); renderMe(); updateHello(); toast("انحفظ"); });
-  $("#set-brief").value = S.brief; $("#set-brief").addEventListener("change", e => { S.brief = e.target.value; save(); toast("انحفظ"); });
-  const apps = [["a-tg","تيليجرام","اربط",1],["a-wa","واتساب","قريباً"],["a-gmail","Gmail","قريباً"],["a-cal","تقويم قوقل","قريباً"],["a-outlook","Outlook","قريباً"],["a-drive","قوقل درايف","قريباً"],["a-tasks","مهام قوقل","قريباً"],["a-notion","Notion","قريباً"],["a-slack","Slack","قريباً"],["a-icloud","تقويم آيفون","قريباً"]];
+  $("#set-name").addEventListener("change", e => { S.name = e.target.value.trim(); save(); renderMe(); updateHello(); toast(L("انحفظ", "Saved")); });
+  $("#set-brief").value = S.brief; $("#set-brief").addEventListener("change", e => { S.brief = e.target.value; save(); toast(L("انحفظ", "Saved")); });
+  const soon = L("قريباً", "Soon");
+  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),1],["a-wa",L("واتساب","WhatsApp"),soon],["a-gmail","Gmail",soon],["a-cal",L("تقويم قوقل","Google Calendar"),soon],["a-outlook","Outlook",soon],["a-drive",L("قوقل درايف","Google Drive"),soon],["a-tasks",L("مهام قوقل","Google Tasks"),soon],["a-notion","Notion",soon],["a-slack","Slack",soon],["a-icloud",L("تقويم آيفون","iPhone Calendar"),soon]];
   $("#apps").innerHTML = apps.map(([i, n, s, live]) => `<button class="app-t${live ? " live" : ""}" type="button"><span class="ai"><svg><use href="#${i}"/></svg></span><b>${n}</b><small>${s}</small></button>`).join("");
-  $$("#apps .app-t").forEach(b => b.onclick = () => b.classList.contains("live") ? linkTelegram() : toast("هالربط قريباً"));
+  $$("#apps .app-t").forEach(b => b.onclick = () => b.classList.contains("live") ? linkTelegram() : toast(L("هالربط قريباً", "This connection is coming soon")));
   // ---------- ربط تيليجرام ----------
   let tgLinked = false, tgWait = 0;
   function syncTg() {
     $("#tg-box").hidden = tgLinked;
-    $("#tg-small").textContent = tgLinked ? "تيليجرام مربوط ✅" : "اربط تيليجرام عشان يصير حساب واحد";
-    const tile = $("#apps .app-t.live small"); if (tile) tile.textContent = tgLinked ? "مربوط" : "اربط";
+    $("#tg-small").textContent = tgLinked ? L("تيليجرام مربوط ✅", "Telegram linked ✅") : L("اربط تيليجرام عشان يصير حساب واحد", "Link Telegram to make it one account");
+    const tile = $("#apps .app-t.live small"); if (tile) tile.textContent = tgLinked ? L("مربوط", "Linked") : L("اربط", "Link");
   }
   async function linkTelegram() {
-    if (tgLinked) { toast("تيليجرام مربوط بحسابك ✅"); return; }
+    const TG_OK = L("تيليجرام مربوط بحسابك ✅", "Telegram is linked to your account ✅");
+    if (tgLinked) { toast(TG_OK); return; }
     let r;
     try { r = await api("/link/telegram", { method: "POST" }); } catch (e) { toast(errText(e)); return; }
-    if (r.linked) { tgLinked = true; syncTg(); toast("تيليجرام مربوط بحسابك ✅"); return; }
-    if (!(await ask("اربط تيليجرام", "بيفتح لك بوت فزعة في تيليجرام. اضغط «Start» وارجع هنا، والربط يصير لحاله.", "افتح تيليجرام"))) return;
+    if (r.linked) { tgLinked = true; syncTg(); toast(TG_OK); return; }
+    if (!(await ask(L("اربط تيليجرام", "Link Telegram"), L("بيفتح لك بوت فزعة في تيليجرام. اضغط «Start» وارجع هنا، والربط يصير لحاله.", "This opens the Fazaa bot in Telegram. Tap “Start” and come back here; the link happens on its own."), L("افتح تيليجرام", "Open Telegram")))) return;
     const w = open(r.url, "_blank", "noopener"); if (!w) location.href = r.url;
     clearInterval(tgWait); let n = 0;
     tgWait = setInterval(async () => {
@@ -723,38 +777,44 @@ svg{display:block}
         const m = await api("/me");
         if (m.telegram) {
           clearInterval(tgWait); tgLinked = true; syncTg(); renderMe(); lastId = 0; await loadHistory();
-          toast("تم ✅ صار حسابك واحد مع تيليجرام");
+          toast(L("تم ✅ صار حسابك واحد مع تيليجرام", "Done ✅ Your account is now one with Telegram"));
         }
       } catch {}
     }, 4000);
   }
   $("#tg-link").onclick = linkTelegram;
   $("#share").onclick = async () => {
-    const text = "جرّب فزعة، مساعد ذكي يذكّرك ويرتب يومك، وفيه باقة مجانية:", url = invite || "https://ifazaa.com";
-    try { if (navigator.share) { await navigator.share({ title: "فزعة", text, url }); return; } } catch { return; }
+    const text = L("جرّب فزعة، مساعد ذكي يذكّرك ويرتب يومك، وفيه باقة مجانية:", "Try Fazaa, a smart assistant that reminds you and plans your day, with a free plan:"), url = invite || L("https://ifazaa.com", "https://ifazaa.com/en/");
+    try { if (navigator.share) { await navigator.share({ title: L("فزعة", "Fazaa"), text, url }); return; } } catch { return; }
     open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
   };
-  $("#buy").onclick = () => open(WA + encodeURIComponent("السلام عليكم، أبي أترقى لفزعة Prime"), "_blank", "noopener");
-  $("#biz").onclick = e => { e.preventDefault(); open(WA + encodeURIComponent("السلام عليكم، أبي أعرف عن فزعة لمؤسستي/شركتي"), "_blank", "noopener"); };
-  $("#help").onclick = () => open(WA + encodeURIComponent("السلام عليكم، عندي سؤال عن تطبيق فزعة"), "_blank", "noopener");
+  $("#buy").onclick = () => open(WA + encodeURIComponent(L("السلام عليكم، أبي أترقى لفزعة Prime", "Hi, I'd like to upgrade to Fazaa Prime")), "_blank", "noopener");
+  $("#biz").onclick = e => { e.preventDefault(); open(WA + encodeURIComponent(L("السلام عليكم، أبي أعرف عن فزعة لمؤسستي/شركتي", "Hi, I'd like to know about Fazaa for my organization/company")), "_blank", "noopener"); };
+  $("#help").onclick = () => open(WA + encodeURIComponent(L("السلام عليكم، عندي سؤال عن تطبيق فزعة", "Hi, I have a question about the Fazaa app")), "_blank", "noopener");
   $("#wipe").onclick = async () => {
-    if (!(await ask("تحذف كل بياناتك؟", "بتنحذف محادثاتك وتذكيراتك عندنا وفي هالجهاز نهائياً.", "احذف كل شي"))) return;
+    if (!(await ask(L("تحذف كل بياناتك؟", "Delete all your data?"), L("بتنحذف محادثاتك وتذكيراتك عندنا وفي هالجهاز نهائياً.", "Your chats and reminders will be permanently deleted from our servers and this device."), L("احذف كل شي", "Delete everything")))) return;
     try { await api("/delete", { method: "POST", body: JSON.stringify({ confirm: true }) }); }
     catch (e) { toast(errText(e)); return; }
     try { localStorage.removeItem(KEY); } catch {}
-    S = { name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: newToken(), email: "" }; save(); lastId = 0; reminders = [];
+    S = { name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: newToken(), email: "", lang: S.lang }; save(); lastId = 0; reminders = [];
     try { google.accounts.id.disableAutoSelect(); } catch {}
-    closeSheets(); renderChat(); go("chat"); showOnb(); toast("انحذفت بياناتك");
+    closeSheets(); renderChat(); go("chat"); showOnb(); toast(L("انحذفت بياناتك", "Your data was deleted"));
   };
 
   // ---------- onboarding ----------
-  const updateHello = () => { $("#hello").textContent = S.name ? `هلا ${S.name}! وش أفزع لك اليوم؟` : "هلا! وش أفزع لك اليوم؟"; };
-  function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = "ابدأ"; }
+  const updateHello = () => { $("#hello").textContent = EN ? (S.name ? `Hi ${S.name}! How can I help you today?` : "Hi! How can I help you today?") : S.name ? `هلا ${S.name}! وش أفزع لك اليوم؟` : "هلا! وش أفزع لك اليوم؟"; };
+  function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = L("ابدأ", "Get started"); }
   $("#onb-go").onclick = () => {
-    if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = "يلا"; gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }
+    if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = L("يلا", "Let's go"); gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }
     S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI();
   };
   $("#onb-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#onb-go").click(); });
+
+  // ---------- اللغة ----------
+  const setLang = l => { S.lang = l; save(); location.replace("./?lang=" + l); };
+  $("#onb-lang").textContent = L("English", "عربي"); $("#onb-lang").lang = L("en", "ar");
+  $("#onb-lang").onclick = () => setLang(L("en", "ar"));
+  $$("[data-setlang]").forEach(b => { const me = b.dataset.setlang === L("ar", "en"); b.setAttribute("aria-pressed", me); b.onclick = () => { if (!me) setLang(b.dataset.setlang); }; });
 
   // ---------- الدخول بحساب قوقل ----------
   const GCID = "993007337123-hbit1ddsa7usstj42ojb4b5j1egb4667.apps.googleusercontent.com";
@@ -773,7 +833,7 @@ svg{display:block}
     if (!el || el.dataset.done) return;
     loadGoogle().then(() => {
       const w = Math.min(400, Math.max(220, el.clientWidth || 300));
-      google.accounts.id.renderButton(el, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale: "ar", width: w });
+      google.accounts.id.renderButton(el, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale: L("ar", "en"), width: w });
       el.dataset.done = "1";
     }).catch(() => {});
   }
@@ -786,7 +846,7 @@ svg{display:block}
   async function onGoogle(resp) {
     let r;
     try { r = await api("/auth/google", { method: "POST", body: JSON.stringify({ credential: resp.credential, name: S.name || $("#onb-name").value.trim() }) }); }
-    catch (e) { toast(e.message === "server" ? "ما قدرنا نتحقق من حسابك، جرب مرة ثانية" : errText(e)); return; }
+    catch (e) { toast(e.message === "server" ? L("ما قدرنا نتحقق من حسابك، جرب مرة ثانية", "We couldn't verify your account, please try again") : errText(e)); return; }
     afterSignin(r);
   }
   // ---------- الدخول بحساب آبل (يظهر بعد ما نسجّل التطبيق عند آبل) ----------
@@ -795,7 +855,7 @@ svg{display:block}
   let aReady = null;
   const loadApple = () => aReady || (aReady = new Promise((res, rej) => {
     const sc = document.createElement("script");
-    sc.src = "https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/ar_SA/appleid.auth.js"; sc.async = true;
+    sc.src = `https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/${L("ar_SA", "en_US")}/appleid.auth.js`; sc.async = true;
     sc.onload = () => { try { AppleID.auth.init({ clientId: APPLE_ID, scope: "name email", redirectURI: "https://ifazaa.com/app/", usePopup: true }); res(); } catch (e) { rej(e); } };
     sc.onerror = () => { aReady = null; rej(new Error("apple")); };
     document.head.appendChild(sc);
@@ -803,10 +863,10 @@ svg{display:block}
   async function onApple() {
     let res;
     try { await loadApple(); res = await AppleID.auth.signIn(); }
-    catch (e) { if (!(e && e.error === "popup_closed_by_user")) toast("ما قدرنا نفتح الدخول بآبل، جرب مرة ثانية"); return; }
+    catch (e) { if (!(e && e.error === "popup_closed_by_user")) toast(L("ما قدرنا نفتح الدخول بآبل، جرب مرة ثانية", "We couldn't open Sign in with Apple, please try again")); return; }
     let r;
     try { r = await api("/auth/apple", { method: "POST", body: JSON.stringify({ id_token: res.authorization.id_token, user: res.user || null, name: S.name || $("#onb-name").value.trim() }) }); }
-    catch (e) { toast(e.message === "server" ? "ما قدرنا نتحقق من حسابك، جرب مرة ثانية" : errText(e)); return; }
+    catch (e) { toast(e.message === "server" ? L("ما قدرنا نتحقق من حسابك، جرب مرة ثانية", "We couldn't verify your account, please try again") : errText(e)); return; }
     afterSignin(r);
   }
   async function afterSignin(r) {
@@ -814,14 +874,14 @@ svg{display:block}
     if (!$("#onb").hidden) { if (!S.name) S.name = $("#onb-name").value.trim(); S.onb = true; $("#onb").hidden = true; }
     save(); lastId = 0; updateHello(); renderMe(); syncPushUI();
     await loadHistory();
-    toast(r.returning ? "هلا فيك من جديد 👋 رجعت لك بياناتك" : "تم ✅ حسابك محفوظ");
+    toast(r.returning ? L("هلا فيك من جديد 👋 رجعت لك بياناتك", "Welcome back 👋 your data is restored") : L("تم ✅ حسابك محفوظ", "Done ✅ your account is saved"));
   }
   $("#g-signout").onclick = async () => {
-    if (!(await ask("تسجّل خروج؟", "بياناتك محفوظة في حسابك، وترجع لها لما تدخل مرة ثانية.", "تسجيل خروج"))) return;
+    if (!(await ask(L("تسجّل خروج؟", "Sign out?"), L("بياناتك محفوظة في حسابك، وترجع لها لما تدخل مرة ثانية.", "Your data stays saved in your account, and comes back when you sign in again."), L("تسجيل خروج", "Sign out")))) return;
     try { await api("/auth/signout", { method: "POST" }); } catch (e) { toast(errText(e)); return; }
     try { google.accounts.id.disableAutoSelect(); } catch {}
     S.token = newToken(); S.email = ""; S.msgs = []; lastId = 0; reminders = []; save();
-    renderChat(); renderMe(); toast("سجلت خروج");
+    renderChat(); renderMe(); toast(L("سجلت خروج", "Signed out"));
   };
 
   // ---------- تنبيهات الجوال ----------
@@ -834,21 +894,22 @@ svg{display:block}
       const { key } = await api("/push/key");
       sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(key) });
     }
-    await api("/push/subscribe", { method: "POST", body: JSON.stringify({ ...sub.toJSON(), name: S.name || "", test: !!test }) });
+    await api("/push/subscribe", { method: "POST", body: JSON.stringify({ ...sub.toJSON(), name: S.name || "", test: !!test, lang: L("ar", "en") }) });
   }
   function syncPushUI() {
     const on = pushOK && Notification.permission === "granted";
-    $("#push-btn").textContent = on ? "✅ التنبيهات شغالة" : ("Notification" in window && Notification.permission === "denied") ? "التنبيهات مقفلة من إعدادات الجوال" : "🔔 فعّل التنبيهات";
+    $("#push-btn").textContent = on ? L("✅ التنبيهات شغالة", "✅ Notifications are on") : ("Notification" in window && Notification.permission === "denied") ? L("التنبيهات مقفلة من إعدادات الجوال", "Notifications are blocked in your phone settings") : L("🔔 فعّل التنبيهات", "🔔 Turn on notifications");
     const canAsk = pushOK && Notification.permission === "default" && (!ios || standalone);
     $("#pushbar").hidden = !(canAsk && !S.hidePush && S.onb);
   }
   async function enablePush() {
-    if (!pushOK) { toast(ios && !standalone ? "ثبّت التطبيق على الشاشة الرئيسية أول" : "جوالك ما يدعم التنبيهات هنا"); return; }
-    if (ios && !standalone) { toast("ثبّت التطبيق على الشاشة الرئيسية أول"); return; }
+    const HOME_FIRST = L("ثبّت التطبيق على الشاشة الرئيسية أول", "Add the app to your home screen first");
+    if (!pushOK) { toast(ios && !standalone ? HOME_FIRST : L("جوالك ما يدعم التنبيهات هنا", "Your phone doesn't support notifications here")); return; }
+    if (ios && !standalone) { toast(HOME_FIRST); return; }
     let perm = Notification.permission;
     if (perm === "default") perm = await Notification.requestPermission();
-    if (perm !== "granted") { toast("ما انفتحت التنبيهات. تقدر تفتحها من إعدادات الجوال"); syncPushUI(); return; }
-    try { await subscribePush(true); toast("تم ✅ بيوصلك تنبيه تجريبي الحين"); } catch (e) { toast(e.message === "offline" ? errText(e) : "ما قدرت أفعّل التنبيهات، جرب مرة ثانية"); }
+    if (perm !== "granted") { toast(L("ما انفتحت التنبيهات. تقدر تفتحها من إعدادات الجوال", "Notifications weren't turned on. You can enable them in your phone settings")); syncPushUI(); return; }
+    try { await subscribePush(true); toast(L("تم ✅ بيوصلك تنبيه تجريبي الحين", "Done ✅ a test notification is on its way")); } catch (e) { toast(e.message === "offline" ? errText(e) : L("ما قدرت أفعّل التنبيهات، جرب مرة ثانية", "I couldn't turn on notifications, please try again")); }
     syncPushUI();
   }
   $("#push-go").onclick = enablePush;
@@ -862,7 +923,7 @@ svg{display:block}
   const android = /android/i.test(ua);
   let deferred = null;
   addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; $("#inst-native").hidden = false; });
-  addEventListener("appinstalled", () => { deferred = null; S.hideInstall = true; save(); $("#install").hidden = true; toast("تم ✅ فزعة صار على شاشتك"); });
+  addEventListener("appinstalled", () => { deferred = null; S.hideInstall = true; save(); $("#install").hidden = true; toast(L("تم ✅ فزعة صار على شاشتك", "Done ✅ Fazaa is on your home screen")); });
   function setPlat(p) {
     $$(".plat button").forEach(b => b.setAttribute("aria-pressed", b.dataset.plat === p));
     ["ios", "and", "pc"].forEach(k => { $("#inst-" + k).hidden = k !== p; });

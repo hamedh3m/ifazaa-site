@@ -155,6 +155,15 @@ svg{display:block}
 .avatar{width:54px;height:54px;border-radius:18px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
 .me-card b{font-size:18px;display:block}
 .me-card span{color:var(--muted);font-size:14px}
+.gbox{margin-top:12px;padding:16px 18px;border-radius:24px;background:var(--s1);border:1px solid var(--line)}
+.gbox p{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 12px}
+.gbox b{display:block;font-size:15px;margin-bottom:4px}
+.g-slot{min-height:44px;display:flex;justify-content:center}
+.g-out{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.g-out span{color:var(--muted);font-size:14px;direction:ltr;overflow:hidden;text-overflow:ellipsis}
+.g-out button{flex:none;height:38px;padding:0 16px;border-radius:999px;background:var(--s2);font-size:14px}
+.g-or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:22px 0 14px}
+.g-or::before,.g-or::after{content:"";flex:1;height:1px;background:var(--line)}
 .menu{margin-top:14px;border-radius:22px;background:var(--s1);border:1px solid var(--line);overflow:hidden}
 .menu button{display:flex;align-items:center;gap:14px;width:100%;padding:16px 18px;text-align:start;font-size:16px}
 .menu button+button{border-top:1px solid var(--line)}
@@ -334,6 +343,8 @@ svg{display:block}
     <!-- account -->
     <section class="view" id="v-me" aria-label="حسابي">
       <div class="me-card"><div class="avatar" id="av">ف</div><div><b id="me-name">ضيف</b><span id="me-plan">الباقة المجانية · ١٠ تذكيرات بالشهر</span></div></div>
+      <div class="gbox" id="g-in" hidden><b>احفظ حسابك</b><p>ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.</p><div class="g-slot" id="g-me"></div></div>
+      <div class="gbox g-out" id="g-out" hidden><span id="g-email"></span><button type="button" id="g-signout">تسجيل خروج</button></div>
       <div class="menu">
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small>تيليجرام، Gmail، التقويم…</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">٠ من ٣</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -451,6 +462,9 @@ svg{display:block}
     <svg class="logo-big"><use href="#logo"/></svg>
     <h1>وش نناديك؟</h1>
     <label class="field"><span>اسمك الأول</span><input id="onb-name" autocomplete="given-name" maxlength="30" placeholder="مثلاً: حامد"></label>
+    <div class="g-or">أو</div>
+    <div class="g-slot" id="g-onb"></div>
+    <p class="note" style="text-align:center;font-size:14px;color:var(--muted);max-width:none;margin-top:12px">بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز</p>
   </div>
   <div>
     <button class="btn btn-primary" id="onb-go">ابدأ</button>
@@ -472,7 +486,7 @@ svg{display:block}
   // ---------- storage (safe) ----------
   const KEY = "fazaa-app-v1";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
-  let S = Object.assign({ name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: "" }, load());
+  let S = Object.assign({ name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: "", email: "" }, load());
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
 
   // ---------- toast / confirm ----------
@@ -674,7 +688,9 @@ svg{display:block}
       const n = m.refs || 0; $("#ref-n").textContent = AR(n % 3) + " من ٣"; $("#ref-small").textContent = AR(n % 3) + " من ٣";
       $$(".bars i").forEach((b, k) => b.classList.toggle("on", k < Math.floor(n / 3)));
       invite = m.invite || "";
+      if ((m.email || "") !== S.email) { S.email = m.email || ""; save(); syncGoogleUI(); }
     }).catch(() => {});
+    syncGoogleUI();
   }
   $("#set-name").addEventListener("change", e => { S.name = e.target.value.trim(); save(); renderMe(); updateHello(); toast("انحفظ"); });
   $("#set-brief").value = S.brief; $("#set-brief").addEventListener("change", e => { S.brief = e.target.value; save(); toast("انحفظ"); });
@@ -694,7 +710,8 @@ svg{display:block}
     try { await api("/delete", { method: "POST", body: JSON.stringify({ confirm: true }) }); }
     catch (e) { toast(errText(e)); return; }
     try { localStorage.removeItem(KEY); } catch {}
-    S = { name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: newToken() }; save(); lastId = 0; reminders = [];
+    S = { name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: newToken(), email: "" }; save(); lastId = 0; reminders = [];
+    try { google.accounts.id.disableAutoSelect(); } catch {}
     closeSheets(); renderChat(); go("chat"); showOnb(); toast("انحذفت بياناتك");
   };
 
@@ -702,10 +719,55 @@ svg{display:block}
   const updateHello = () => { $("#hello").textContent = S.name ? `هلا ${S.name}! وش أفزع لك اليوم؟` : "هلا! وش أفزع لك اليوم؟"; };
   function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = "ابدأ"; }
   $("#onb-go").onclick = () => {
-    if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = "يلا"; setTimeout(() => $("#onb-name").focus(), 50); return; }
+    if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = "يلا"; gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }
     S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI();
   };
   $("#onb-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#onb-go").click(); });
+
+  // ---------- الدخول بحساب قوقل ----------
+  const GCID = "993007337123-hbit1ddsa7usstj42ojb4b5j1egb4667.apps.googleusercontent.com";
+  let gReady = null;
+  const loadGoogle = () => gReady || (gReady = new Promise((res, rej) => {
+    const sc = document.createElement("script");
+    sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
+    sc.onload = () => {
+      try { google.accounts.id.initialize({ client_id: GCID, callback: onGoogle, auto_select: false, cancel_on_tap_outside: true, ux_mode: "popup" }); res(); }
+      catch (e) { rej(e); }
+    };
+    sc.onerror = () => { gReady = null; rej(new Error("gsi")); };
+    document.head.appendChild(sc);
+  }));
+  function gButton(el) {
+    if (!el || el.dataset.done) return;
+    loadGoogle().then(() => {
+      const w = Math.min(400, Math.max(220, el.clientWidth || 300));
+      google.accounts.id.renderButton(el, { theme: "filled_black", size: "large", shape: "pill", text: "continue_with", locale: "ar", width: w });
+      el.dataset.done = "1";
+    }).catch(() => {});
+  }
+  function syncGoogleUI() {
+    const inn = !!S.email;
+    $("#g-in").hidden = inn; $("#g-out").hidden = !inn;
+    $("#g-email").textContent = S.email || "";
+    if (!inn && $("#v-me").classList.contains("on")) gButton($("#g-me"));
+  }
+  async function onGoogle(resp) {
+    let r;
+    try { r = await api("/auth/google", { method: "POST", body: JSON.stringify({ credential: resp.credential, name: S.name || $("#onb-name").value.trim() }) }); }
+    catch (e) { toast(e.message === "server" ? "ما قدرنا نتحقق من حسابك، جرب مرة ثانية" : errText(e)); return; }
+    S.email = r.email || ""; if (r.name && !S.name) S.name = r.name;
+    if (!$("#onb").hidden) { if (!S.name) S.name = $("#onb-name").value.trim(); S.onb = true; $("#onb").hidden = true; }
+    save(); lastId = 0; updateHello(); renderMe(); syncPushUI();
+    await loadHistory();
+    toast(r.returning ? "هلا فيك من جديد 👋 رجعت لك بياناتك" : "تم ✅ حسابك محفوظ بقوقل");
+  }
+  $("#g-signout").onclick = async () => {
+    if (!(await ask("تسجّل خروج؟", "بياناتك محفوظة في حسابك، وترجع لها لما تدخل بقوقل مرة ثانية.", "تسجيل خروج"))) return;
+    try { await api("/auth/signout", { method: "POST" }); } catch (e) { toast(errText(e)); return; }
+    try { google.accounts.id.disableAutoSelect(); } catch {}
+    S.token = newToken(); S.email = ""; S.msgs = []; lastId = 0; reminders = []; save();
+    renderChat(); renderMe(); toast("سجلت خروج");
+  };
 
   // ---------- تنبيهات الجوال ----------
   const pushOK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;

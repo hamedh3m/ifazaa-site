@@ -294,6 +294,19 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
 .biz svg{flex:none;width:22px;height:22px;color:var(--muted);transform:scaleX(-1)}
 @media (max-width:980px){.extras{grid-template-columns:1fr}.plans2{grid-template-columns:1fr}}
 @media (min-width:621px) and (max-width:980px){.plans2{grid-template-columns:1fr 1fr}.plans2 .ref-card{grid-column:1/-1}}
+
+/* v3: row */
+.row5{display:grid;grid-auto-flow:column;grid-auto-columns:min(340px,82%);gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:44px 0 10px;scrollbar-width:none}
+.row5::-webkit-scrollbar{display:none}
+.r5{scroll-snap-align:start}
+.r5 .stage{aspect-ratio:4/4}
+.r5 h3{font-size:26px;font-weight:800;margin:20px 0 6px;display:flex;align-items:center;gap:10px}
+.r5 h3 .soon{margin:0;font-size:12px}
+.r5 p{color:var(--muted);font-size:15px}
+.stage--wine{background:radial-gradient(120% 90% at 80% 0%,#8c1426,#2a070d 60%,#120406)}
+.stage--blue{background:radial-gradient(120% 90% at 30% 10%,#2a4a7a,#101c30 60%,#080c14)}
+.k5{display:block;color:rgba(255,255,255,.7);font-size:13px;margin-top:70px}
+.b5{display:block;font-size:22px;font-weight:800;margin:4px 0 10px}
 </style>
 </head>
 <body>
@@ -317,7 +330,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
   <div class="wrap">
     <a class="logo" href="#"><i>ف</i>فزعة</a>
     <nav class="nav" aria-label="الأقسام">
-      <a href="#films">شوفه يشتغل</a><a href="#uses">وش يسوي لك</a><a href="#plans">الباقات</a><a href="#faq">الأسئلة الشائعة</a>
+      <a href="#films">شوفه يشتغل</a><a href="#how">وش يسوي لك</a><a href="#plans">الباقات</a><a href="#faq">الأسئلة الشائعة</a>
     </nav>
     <a class="pill-sm" data-wa="السلام عليكم، أبي أبدأ فزعة المجاني" href="#">ابدأ مجاناً</a>
   </div>
@@ -329,10 +342,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
       <span class="eyebrow rv"><b></b>خفّف عن نفسك</span>
       <h1 class="h1 rv">كل شي يعتمد عليك
         <span class="ic ic--cal" aria-hidden="true"><span></span><b>١٧</b></span>
-        خلّه على فزعة
-        <span class="ic ic--logo" aria-hidden="true">ف</span>
-        يفزع لك
-        <span class="ic ic--tg" aria-hidden="true"><svg><use href="#i-tg"/></svg></span>
+        خلّه على فزعة يفزع لك
       </h1>
 
       <div class="ask rv" role="group" aria-label="جرّب تكلم فزعة">
@@ -349,15 +359,6 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
       </div>
       <p class="hero__note rv">مجاني دائماً، مو تجربة. وترقّى وقت ما تبي.</p>
 
-      <div class="floats" aria-hidden="true">
-        <div class="fl fl--1"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>الحين</span></div><p>موعدك تأجل لـ ٥، رتبت لك باقي العصر.</p></div></div>
-        <div class="fl fl--2"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>الحين</span></div><p>ميلاد أمك الخميس، تبي أقترح لك هدية؟</p></div></div>
-        <div class="fl fl--3"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>الحين</span></div><p>عزيمة الجمعة: قائمة المقاضي جاهزة.</p></div></div>
-      </div>
-      <div class="floats-m">
-        <div class="fl"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>الحين</span></div><p>موعدك تأجل لـ ٥، رتبت لك باقي العصر.</p></div></div>
-        <div class="fl"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>الحين</span></div><p>ميلاد أمك الخميس، تبي أقترح لك هدية؟</p></div></div>
-      </div>
     </div>
 
     <div class="apps rv">
@@ -402,83 +403,36 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
     <div class="wrap">
       <h2 class="sec-h rv">يتابع، وينبّهك، وينفّذ عنك</h2>
       <p class="sec-p rv">بدون تطبيق جديد ولا أوامر تحفظها. تكلمه كتابة أو فويس أو صورة، بكلامك العادي.</p>
-      <div class="pillars">
-        <article class="pillar rv">
-          <div class="stage stage--green">
-            <div class="track">
-              <div>موعد الأسنان<small>بكرة ٤ م</small></div>
-              <div>تجديد الإقامة<small>بعد ٢٣ يوم</small></div>
-              <div>فاتورة الكهرباء<small>قبل ٢٥ الشهر</small></div>
-              <div>قسط السيارة<small>يوم ٢٧</small></div>
-            </div>
-          </div>
-          <h3>يتابع</h3>
-          <p>مواعيدك وأوراقك وفواتيرك، كلها في باله عشان ما تشيل همها.</p>
+      <div class="row5">
+        <article class="r5">
+          <div class="stage stage--green"><div class="track">
+            <div>موعد الأسنان<small>بكرة ٤ م</small></div><div>تجديد الإقامة<small>بعد ٢٣ يوم</small></div>
+            <div>فاتورة الكهرباء<small>قبل ٢٥ الشهر</small></div><div>قسط السيارة<small>يوم ٢٧</small></div></div></div>
+          <h3>يتابع</h3><p>مواعيدك وأوراقك وفواتيرك، كلها في باله عشان ما تشيل همها.</p>
         </article>
-        <article class="pillar rv">
-          <div class="stage stage--red">
-            <div style="width:100%">
-              <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>٣:٠٠ م</span></div><p>⏰ باقي ساعة على موعد الأسنان</p></div></div>
-              <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>١٠:٠٠ ص</span></div><p>💊 وقت حبة الضغط</p></div></div>
-              <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>أمس</span></div><p>📄 جوازك ينتهي بعد شهر، أذكرك قبلها بأسبوع؟</p></div></div>
-            </div>
-          </div>
-          <h3>ينبّهك</h3>
-          <p>قبل الموعد، وقبل ما تنتهي أوراقك، وكل سنة بالمناسبات. بدون ما تفتح شي.</p>
+        <article class="r5">
+          <div class="stage stage--red"><div style="width:100%">
+            <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>٣:٠٠ م</span></div><p>⏰ باقي ساعة على موعد الأسنان</p></div></div>
+            <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>١٠:٠٠ ص</span></div><p>💊 وقت حبة الضغط</p></div></div>
+            <div class="note"><span class="av">ف</span><div><div class="who"><b>فزعة</b><span>أمس</span></div><p>📄 جوازك ينتهي بعد شهر، أذكرك قبلها بأسبوع؟</p></div></div></div></div>
+          <h3>ينبّهك</h3><p>قبل الموعد، وقبل ما تنتهي أوراقك، وكل سنة بالمناسبات.</p>
         </article>
-        <article class="pillar rv">
-          <div class="stage stage--sand">
-            <div class="check">
-              <div><em>✓</em>تهنئة لخالد بالمولود جاهزة</div>
-              <div><em>✓</em>إيميل الإجازة لمديرك جاهز</div>
-              <div><em>✓</em>قارنت لك ٣ عروض جوال</div>
-              <div><em>✓</em>ورقة المدرسة لخصتها بسطرين</div>
-            </div>
-          </div>
-          <h3>ينفّذ</h3>
-          <p>يكتب ويدوّر ويقارن ويلخص. وما يرسل شي باسمك إلا بموافقتك.</p>
+        <article class="r5">
+          <div class="stage stage--sand"><div class="check">
+            <div><em>✓</em>تهنئة لخالد بالمولود جاهزة</div><div><em>✓</em>قارنت لك ٣ عروض جوال</div>
+            <div><em>✓</em>عشاء من الموجود: كبسة دجاج</div><div><em>✓</em>ميزانية الشهر مرتبة</div></div></div>
+          <h3>ينفّذ</h3><p>يكتب ويدوّر ويقارن ويرتب. وما يرسل شي باسمك إلا بموافقتك.</p>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" id="uses" style="padding-top:20px">
-    <div class="wrap">
-      <h2 class="sec-h rv">المساعد الوحيد اللي تحتاجه لكل جزء من يومك</h2>
-      <div class="tabs" role="tablist" aria-label="الأقسام">
-        <button class="tab" role="tab" aria-selected="true" data-f="all">الكل</button>
-        <button class="tab" role="tab" aria-selected="false" data-f="day">يومك</button>
-        <button class="tab" role="tab" aria-selected="false" data-f="home">البيت والعيال</button>
-        <button class="tab" role="tab" aria-selected="false" data-f="money">فلوسك</button>
-        <button class="tab" role="tab" aria-selected="false" data-f="travel">السفر</button>
-      </div>
-      <div class="cards" id="cards">
-        <article class="card" data-k="day"><div><h4>رسالة صعبة</h4><p>تهنئة أو اعتذار أو رفض بأدب، بدال ما تحتار.</p><q>كيف أرفض سلفة لصديقي بدون ما يزعل؟</q></div><a class="try" data-wa="أبي أجرب: كيف أرفض سلفة بدون ما يزعل صديقي؟" href="#">جرّبها في فزعة</a></article>
-        <article class="card" data-k="day"><div><h4>صحتك</h4><p>دواك، وسعرات صحنك من صورة، وموعد النادي.</p><q>كم سعرات هالصحن؟ 📷</q></div><a class="try" data-wa="أبي أجرب: كم سعرات صحني؟" href="#">جرّبها في فزعة</a></article>
-        <article class="card" data-k="home"><div><h4>وش أطبخ اليوم؟</h4><p>من الموجود عندك، مع الطريقة والكميات.</p><q>عندي دجاج ورز وطماطم، وش أطبخ؟</q></div><a class="try" data-wa="أبي أجرب: عندي دجاج ورز وطماطم وش أطبخ؟" href="#">جرّبها في فزعة</a></article>
-        <article class="card" data-k="home"><div><h4>العيال</h4><p>التطعيمات والاختبارات ومواعيد المدرسة.</p><q>اختبر ولدي في درس الكسور</q></div><a class="try" data-wa="أبي أجرب: اختبر ولدي في درس الكسور" href="#">جرّبها في فزعة</a></article>
-        <article class="card" data-k="money"><div><h4>ميزانية الشهر</h4><p>وين راحت فلوسك، وكم يبقى لآخر الشهر.</p><q>راتبي ٩ آلاف، رتب لي ميزانية الشهر</q></div><a class="try" data-wa="أبي أجرب: رتب لي ميزانية الشهر" href="#">جرّبها في فزعة</a></article>
-        <article class="card" data-k="money"><div><h4>أرخص سعر</h4><p>يدوّر في المتاجر ويرسل لك الأرخص.</p><q>وين ألقى أرخص سماعة AirPods؟</q></div><a class="try" data-wa="أبي أجرب: وين ألقى أرخص سماعة؟" href="#">جرّبها في فزعة</a></article>
-        <article class="card" data-k="travel"><div><h4>سفرتك جاهزة</h4><p>برنامج يوم بيوم وقائمة الشنطة.</p><q>رايح إسطنبول ٥ أيام مع العايلة، رتب لي</q></div><a class="try" data-wa="أبي أجرب: رتب لي سفرة ٥ أيام" href="#">جرّبها في فزعة</a></article>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" style="padding-top:20px">
-    <div class="wrap">
-      <h2 class="sec-h rv">ويشتغل عنك حتى وأنت ساكت</h2>
-      <div class="extras">
-        <article class="ex rv">
-          <div class="ex__vis ex__vis--story"><span class="bars4"><i class="on"></i><i></i><i></i><i></i></span><small>صباح الخير</small><b>عندك ٣ أشياء اليوم</b><span class="mini">اجتماع الفريق<em>١١ ص</em></span></div>
-          <h3>يومك كل صبح</h3><p>موجز قصير بمواعيدك وتذكيراتك، يوصلك أول ما تصحى.</p><span class="soon">قريباً</span>
+        <article class="r5">
+          <div class="stage stage--wine"><div style="width:100%"><span class="bars4"><i class="on"></i><i></i><i></i><i></i></span>
+            <small class="k5">صباح الخير</small><b class="b5">عندك ٣ أشياء اليوم</b><span class="mini">اجتماع الفريق<em>١١ ص</em></span></div></div>
+          <h3>يومك كل صبح <span class="soon">قريباً</span></h3><p>موجز قصير بمواعيدك وتذكيراتك أول ما تصحى.</p>
         </article>
-        <article class="ex rv">
-          <div class="ex__vis"><span class="mini mini--rt">ذكرني بحبة الضغط وسجّل إذا أخذتها<em>كل يوم · ١٠:٠٠ ص</em></span><span class="mini mini--rt">وش باقي من الميزانية؟<em>كل شهر · يوم ٢٥</em></span></div>
-          <h3>مهام تتكرر لحالها</h3><p>قل له مرة وحدة، ويسويها كل يوم أو كل شهر في وقتها.</p><span class="soon">قريباً</span>
-        </article>
-        <article class="ex rv">
-          <div class="ex__vis ex__vis--app"><span class="phone-ic">ف</span></div>
-          <h3>تطبيق فزعة</h3><p>كل شي في مكان واحد على جوالك، وتنبيهاتك توصلك مباشرة.</p><span class="soon">قريباً</span>
+        <article class="r5">
+          <div class="stage stage--blue"><div style="width:100%;display:grid;gap:8px">
+            <span class="mini mini--rt">ذكرني بحبة الضغط وسجّل إذا أخذتها<em>كل يوم · ١٠:٠٠ ص</em></span>
+            <span class="mini mini--rt">وش باقي من الميزانية؟<em>كل شهر · يوم ٢٥</em></span></div></div>
+          <h3>يشتغل لحاله <span class="soon">قريباً</span></h3><p>قل له مرة وحدة، ويسويها كل يوم أو كل شهر في وقتها.</p>
         </article>
       </div>
     </div>
@@ -502,7 +456,7 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
         </aside>
       </div>
       <a class="biz rv" href="/mashari.html">
-        <div><b>عندك مؤسسة أو شركة؟</b><span>Pro يرد على عملائك ويحجز لهم ويرفع لك تقرير كل صبح، من ٢٬٩٩٠ ريال بالسنة. وفزعة Elite لكل أقسام شركتك بعرض.</span></div>
+        <div><b>عندك مؤسسة أو شركة؟</b><span>فزعة Pro يرد على عملائك ويحجز لهم ويرفع لك تقرير كل صبح، وفزعة Elite لكل أقسام شركتك. السعر حسب احتياجك، كلمنا ونعطيك عرض.</span></div>
         <svg><use href="#i-chev"/></svg>
       </a>
     </div>

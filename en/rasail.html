@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><meta name="referrer" content="no-referrer"><title>Phone texts: Fazaa</title><link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet"><style>:root{--bg:#09090a;--ink:#f5f5f2;--muted:#9d9da4;--line:rgba(245,245,242,.1);--card:#141416;--red:#e0213b;--ease:cubic-bezier(.23,1,.32,1)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--ink);font-family:Almarai,system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit}.wrap{width:min(720px,100% - 32px);margin-inline:auto}
+.top{display:flex;justify-content:space-between;align-items:center;height:68px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;text-decoration:none}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--red);display:grid;place-items:center;font-style:normal;font-size:20px;color:#fff}
+.lang{font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:6px 14px;border-radius:999px}
+h1{font-size:clamp(32px,6vw,48px);line-height:1.25;font-weight:800;margin:28px 0 10px}
+.sub{color:var(--muted);font-size:17px;max-width:56ch}
+.safe{list-style:none;margin:22px 0;padding:16px 18px;border:1px solid rgba(37,211,102,.25);background:rgba(37,211,102,.06);border-radius:18px}
+.safe li{padding:4px 0;font-size:15px}.safe li::before{content:"✓";color:#6fe6a5;margin-inline-end:10px;font-weight:800}
+h2{font-size:20px;margin:30px 0 8px}p{color:#d6d6d2}
+.btn{display:block;width:100%;text-align:center;padding:15px;border-radius:999px;border:0;font:700 17px Almarai,system-ui;cursor:pointer;text-decoration:none;margin-top:12px;transition:transform .16s var(--ease)}
+.btn:active{transform:scale(.97)}.btn-red{background:var(--red);color:#fff}.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.tabs{display:flex;gap:10px;margin:22px 0 6px}.tabs button{flex:1;padding:12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);font:700 16px Almarai,system-ui;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ink);color:#111;border-color:var(--ink)}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:18px;border:1px solid var(--line);background:var(--card);border-radius:20px;margin-top:12px}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.step h3{font-size:17px;margin-bottom:2px}.step img{display:block;width:100%;max-width:340px;border-radius:14px;margin-top:12px;border:1px solid var(--line)}
+.step a{text-decoration:underline}.step a.btn{text-decoration:none}
+.done{margin:22px 0;padding:16px 18px;border-radius:18px;background:rgba(224,33,59,.08);border:1px solid rgba(224,33,59,.3)}
+.foot{color:var(--muted);font-size:14px;margin:30px 0 40px;text-align:center}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}</style></head>
+<body><div class="wrap">
+<header class="top"><a class="logo" href="/en/"><i>ف</i>Fazaa</a><a class="lang" href="/rasail.html">عربي</a></header>
+<h1>Let Fazaa read your texts</h1><p class="sub">Your spending is tracked on its own, bills and appointments become reminders, and you can ask Fazaa “What texts did I get today?”. A Prime feature.</p>
+<ul class="safe"><li>Verification codes are discarded instantly</li><li>Card and account numbers are wiped first</li><li>Texts are deleted within a day and a half, and no person ever sees them</li></ul>
+<h2>Before you start: copy your private link</h2><p>Open the Fazaa app → “Account” → “Phone texts” → “Copy my link”. The link is private to you; don't share it.</p>
+<button class="btn btn-ghost" id="copy" data-ok="Copied ✅" hidden>Copy my link</button>
+<a class="btn btn-ghost" id="openapp" href="/app/?lang=en">Open Fazaa and copy your link</a>
+<div class="tabs" role="group"><button type="button" data-t="ios" aria-pressed="true">iPhone</button><button type="button" data-t="and" aria-pressed="false">Android</button></div>
+<div id="ios"><div class="step"><span class="n">1</span><div><h3>Add the shortcut</h3><p>Tap the button → “Set Up Shortcut”.</p><a class="btn btn-red" href="https://www.icloud.com/shortcuts/7b7215e1e692400493847a49e944dcbd">Add the shortcut</a><img src="/assets/rasail/1-preview.jpg" alt="" loading="lazy"></div></div><div class="step"><span class="n">2</span><div><h3>Paste your link</h3><p>Tap the “Link” field → “Paste” → “Add Shortcut”.</p><img src="/assets/rasail/2-paste.jpg" alt="" loading="lazy"></div></div><div class="step"><span class="n">3</span><div><h3>Run it once</h3><p>Open Shortcuts and tap “Fazaa Messages” once; when asked, choose “Always Allow”. Without this it won't run while your phone is locked.</p></div></div><div class="step"><span class="n">4</span><div><h3>Create the automation</h3><p>Shortcuts → “Automation” → “+” → “Message”. Change “Sender” to “Message” → “Contains” → type the letter “a”.</p><img src="/assets/rasail/3-filter.jpg" alt="" loading="lazy"></div></div><div class="step"><span class="n">5</span><div><h3>Run “Fazaa Messages”</h3><p>Search below for “Run Shortcut” → pick “Fazaa Messages”. The input becomes “Message” on its own.</p><img src="/assets/rasail/4-run.jpg" alt="" loading="lazy"></div></div><div class="step"><span class="n">6</span><div><h3>Turn off confirmation</h3><p>Tap the arrow next to the trigger: keep “Automation” on and “Ask Before Running” off, then save.</p><img src="/assets/rasail/5-settings.jpg" alt="" loading="lazy"></div></div><div class="step"><span class="n">7</span><div><h3>For Arabic texts</h3><p>Make a second automation the same way, with the letter “ا” instead of “a”.</p></div></div></div><div id="and" hidden><div class="step"><span class="n">1</span><div><h3>Download the app</h3><p>Download <a href="https://github.com/bogkonstantin/android_income_sms_gateway_webhook/releases" target="_blank" rel="noopener">SMS to URL Forwarder</a> (a free, open-source APK). If you see a warning, choose “Install anyway”.</p></div></div><div class="step"><span class="n">2</span><div><h3>Allow SMS</h3><p>Open the app and allow it to receive SMS and notifications.</p></div></div><div class="step"><span class="n">3</span><div><h3>Add a rule</h3><p>Tap “+”: type * in Sender, paste your link in URL, leave the rest as is, and save.</p></div></div></div>
+<div class="done">Done. Try it: have someone text you, then ask Fazaa “What texts did I get today?”.</div>
+<p class="foot"><a href="https://wa.me/966530004565" target="_blank" rel="noopener">Stuck? Message us on WhatsApp</a></p>
+</div><script>const K="fazaa-app-v1";let st={};try{st=JSON.parse(localStorage.getItem(K))||{}}catch(e){}
+const cb=document.getElementById("copy"),oa=document.getElementById("openapp");
+if(st.token){fetch("https://api.ifazaa.com/fz-app/api/sms",{method:"POST",headers:{"Authorization":"Bearer "+st.token,"Content-Type":"application/json"},body:"{}"})
+ .then(r=>r.ok?r.json():null).then(j=>{if(j&&j.url){cb.hidden=false;oa.hidden=true;cb.onclick=async()=>{try{await navigator.clipboard.writeText(j.url);cb.textContent=cb.dataset.ok}catch(e){prompt("",j.url)}}}}).catch(()=>{})}
+document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+ document.getElementById("ios").hidden=b.dataset.t!=="ios";document.getElementById("and").hidden=b.dataset.t!=="and";});
+if(/android/i.test(navigator.userAgent))document.querySelector('[data-t=and]').click();</script></body></html>

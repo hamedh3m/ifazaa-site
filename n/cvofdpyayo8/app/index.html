@@ -97,6 +97,12 @@ svg{display:block}
 .send.go{background:var(--ink)}
 .send svg{width:20px;height:20px}
 .send.go svg{color:#111}
+.pushbar{margin:0 12px 6px;padding:10px 12px;border-radius:16px;background:rgba(224,33,59,.12);border:1px solid rgba(224,33,59,.3);display:flex;align-items:center;gap:10px;font-size:14px}
+.pushbar[hidden]{display:none}
+.pushbar span{flex:1}
+.pushbar .go{padding:7px 14px;border-radius:999px;background:var(--ink);color:#111;font-weight:700;font-size:13px}
+.pushbar .x{width:28px;height:28px;color:var(--muted)}
+.pushbar .x svg{width:16px;height:16px;margin:auto}
 .demo-note{text-align:center;font-size:11px;color:#6b6b72;margin-top:6px}
 
 /* today (radar) */
@@ -281,6 +287,7 @@ svg{display:block}
           <div class="chips" id="chips"></div>
         </div>
       </div>
+      <div class="pushbar" id="pushbar" hidden><span>🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر</span><button class="go" type="button" id="push-go">فعّل</button><button class="x" type="button" id="push-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
       <div class="composer">
         <div class="comp">
           <textarea id="inp" rows="1" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
@@ -372,7 +379,9 @@ svg{display:block}
   <div class="body">
     <label class="field"><span>اسمك</span><input id="set-name" autocomplete="given-name" maxlength="30"></label>
     <label class="field"><span>وقت موجز يومك</span><input id="set-brief" type="time" value="07:00"></label>
-    <p class="note">التذكيرات تطلع لك في المحادثة لما تفتح التطبيق. وتنبيهات الجوال قريباً.</p>
+    <label class="field"><span>تنبيهات الجوال</span></label>
+    <button class="btn btn-ghost" id="push-btn" type="button">🔔 فعّل التنبيهات</button>
+    <p class="note" id="push-note">التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.</p>
   </div>
 </section>
 
@@ -649,9 +658,40 @@ svg{display:block}
   function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = "ابدأ"; }
   $("#onb-go").onclick = () => {
     if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = "يلا"; setTimeout(() => $("#onb-name").focus(), 50); return; }
-    S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe();
+    S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI();
   };
   $("#onb-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#onb-go").click(); });
+
+  // ---------- تنبيهات الجوال ----------
+  const pushOK = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+  const b64ToBytes = s => { const p = "=".repeat((4 - s.length % 4) % 4), r = atob((s + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(r, c => c.charCodeAt(0)); };
+  async function subscribePush(test) {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      const { key } = await api("/push/key");
+      sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(key) });
+    }
+    await api("/push/subscribe", { method: "POST", body: JSON.stringify({ ...sub.toJSON(), name: S.name || "", test: !!test }) });
+  }
+  function syncPushUI() {
+    const on = pushOK && Notification.permission === "granted";
+    $("#push-btn").textContent = on ? "✅ التنبيهات شغالة" : ("Notification" in window && Notification.permission === "denied") ? "التنبيهات مقفلة من إعدادات الجوال" : "🔔 فعّل التنبيهات";
+    const canAsk = pushOK && Notification.permission === "default" && (!ios || standalone);
+    $("#pushbar").hidden = !(canAsk && !S.hidePush && S.onb);
+  }
+  async function enablePush() {
+    if (!pushOK) { toast(ios && !standalone ? "ثبّت التطبيق على الشاشة الرئيسية أول" : "جوالك ما يدعم التنبيهات هنا"); return; }
+    if (ios && !standalone) { toast("ثبّت التطبيق على الشاشة الرئيسية أول"); return; }
+    let perm = Notification.permission;
+    if (perm === "default") perm = await Notification.requestPermission();
+    if (perm !== "granted") { toast("ما انفتحت التنبيهات. تقدر تفتحها من إعدادات الجوال"); syncPushUI(); return; }
+    try { await subscribePush(true); toast("تم ✅ بيوصلك تنبيه تجريبي الحين"); } catch (e) { toast(e.message === "offline" ? errText(e) : "ما قدرت أفعّل التنبيهات، جرب مرة ثانية"); }
+    syncPushUI();
+  }
+  $("#push-go").onclick = enablePush;
+  $("#push-btn").onclick = enablePush;
+  $("#push-x").onclick = () => { S.hidePush = true; save(); syncPushUI(); };
 
   // ---------- install hint ----------
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
@@ -665,6 +705,8 @@ svg{display:block}
   // ---------- boot ----------
   if (!S.onb) showOnb();
   updateHello(); renderChat(); renderMe(); loadHistory();
+  syncPushUI();
+  if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 })();
 </script>

@@ -18,7 +18,8 @@
 try{q=new URLSearchParams(location.search).get("lang")}catch(e){}
 if(q!=="en"&&q!=="ar")q=null;
 try{var s=JSON.parse(localStorage.getItem(K))||{};if(q&&s.lang!==q){s.lang=q;localStorage.setItem(K,JSON.stringify(s))}l=q||s.lang}catch(e){l=q}
-window.FZ_LANG=l==="en"?"en":"ar";
+if(l!=="en"&&l!=="ar")l=/^ar/i.test(navigator.language||"ar")?"ar":"en";
+window.FZ_LANG=l;
 if(window.FZ_LANG==="en"){d.lang="en";d.dir="ltr";d.className+=" i18n-wait";document.title="Fazaa";
 var m=document.querySelector('link[rel="manifest"]');if(m)m.href="manifest-en.webmanifest";
 var t=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(t)t.content="Fazaa";

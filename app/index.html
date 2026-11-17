@@ -960,12 +960,13 @@ html.i18n-wait body{visibility:hidden}
   }
   // ---------- ربط البرامج (قوقل، Notion، أوت لوك) ----------
   let conn = { available: [] };
+  const PRIME_SVC = ["gmail"];      // قراءة Gmail: ميزة Prime
   const svcOf = s => s === "gmail" && !conn.available.includes("gmail") && conn.available.includes("gmail_send") ? "gmail_send" : s;
   function syncApps() {
     $$('#apps .app-t[data-act^="o:"]').forEach(b => {
       const s = svcOf(b.dataset.act.slice(2)), on = !!conn[s], can = conn.available.includes(s);
       b.classList.toggle("live", on || can);
-      b.querySelector("small").textContent = on ? L("مربوط", "Linked") : can ? L("اربط", "Link") : L("قريباً", "Soon");
+      b.querySelector("small").textContent = on ? L("مربوط", "Linked") : can ? (PRIME_SVC.includes(s) && !conn.prime ? "Prime" : L("اربط", "Link")) : L("قريباً", "Soon");
     });
   }
   const loadConn = () => api("/connections").then(r => { conn = r; syncConn(r.calendar); syncApps(); }).catch(() => {});
@@ -973,13 +974,18 @@ html.i18n-wait body{visibility:hidden}
   async function oauthTap(base) {
     const s = svcOf(base), name = $(`#apps .app-t[data-act="o:${base}"] b`).textContent;
     if (conn[s]) {
-      const acct = (conn.accounts || {})[{ notion: "notion", outlook: "microsoft", slack: "slack" }[s] || "google"] || "";
+      const acct = (conn.accounts || {})[{ notion: "notion", outlook: "microsoft", slack: "slack", gmail: "googlemail" }[s] || "google"] || "";
       if (!(await ask(L("تفك ربط ", "Disconnect ") + name + L("؟", "?"), (acct ? acct + " · " : "") + L("فزعة بيوقف يوصل له، وننحذف مفاتيح الربط عندنا.", "Fazaa will stop accessing it, and we delete the connection keys."), L("فك الربط", "Disconnect")))) return;
       try { await api("/disconnect/" + s, { method: "POST" }); toast(L("انفك الربط", "Disconnected")); } catch (e) { toast(errText(e)); }
       return loadConn();
     }
+    if (PRIME_SVC.includes(s) && !conn.prime) {
+      if (await ask(L("قراءة Gmail ميزة Prime", "Reading Gmail is a Prime feature"), L("مع Prime فزعة يقرا إيميلاتك ويلخصها لك ويدوّر فيها لما تطلب.", "With Prime, Fazaa reads your email, sums it up and searches it when you ask."), L("اشترك في Prime", "Get Prime"))) $("#buy").click();
+      return;
+    }
+    if (s === "gmail" && !(await ask(L("قبل الربط", "Before you connect"), L("بتطلع لك صفحة من قوقل تقول إن التطبيق ما تم التحقق منه بعد (لأننا في مرحلة التحقق). اضغط «Advanced» أو «متقدم» ثم «Go to Fazaa Mail». فزعة يقرا إيميلاتك بس لما تطلب، وما يرسل ولا يحذف شي منها.", "Google will show a page saying the app isn't verified yet (we're still in review). Tap “Advanced”, then “Go to Fazaa Mail”. Fazaa only reads your email when you ask, and never sends or deletes anything from it."), L("كمّل", "Continue")))) return;
     let r;
-    try { r = await api("/connect/" + s, { method: "POST" }); } catch (e) { toast(errText(e)); return; }
+    try { r = await api("/connect/" + s, { method: "POST" }); } catch (e) { if (e.message === "prime") { $("#buy").click(); return; } toast(errText(e)); return; }
     const w = open(r.url, "_blank"); if (!w) location.href = r.url;
     toast(L("كمّل الموافقة في الصفحة اللي انفتحت", "Finish approving in the page that opened"));
   }

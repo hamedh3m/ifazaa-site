@@ -363,7 +363,7 @@ svg{display:block}
     <div class="tier prime"><h3>Prime</h3><div class="pr"><b>١٩٩</b> ريال بالسنة</div>
       <ul><li>كل اللي في المجاني</li><li>تذكيرات ومناسبات بلا حد</li><li>مهام تتكرر لحالها وموجز يومي</li><li>ذكاء أقوى وصور وفواتير</li></ul>
       <button class="btn btn-red" id="buy">ترقّى لـ Prime</button></div>
-    <p class="note">للمؤسسات والشركات: فزعة Pro وElite. <a href="#" id="biz" style="text-decoration:underline">كلمنا</a></p>
+    <p class="note">للمؤسسات والشركات: السعر حسب احتياجك. <a href="#" id="biz" style="text-decoration:underline">كلمنا</a></p>
   </div>
 </section>
 
@@ -611,7 +611,7 @@ svg{display:block}
     open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
   };
   $("#buy").onclick = () => open(WA + encodeURIComponent("السلام عليكم، أبي أترقى لفزعة Prime"), "_blank", "noopener");
-  $("#biz").onclick = e => { e.preventDefault(); open(WA + encodeURIComponent("السلام عليكم، أبي أعرف عن فزعة Pro/Elite"), "_blank", "noopener"); };
+  $("#biz").onclick = e => { e.preventDefault(); open(WA + encodeURIComponent("السلام عليكم، أبي أعرف عن فزعة لمؤسستي/شركتي"), "_blank", "noopener"); };
   $("#help").onclick = () => open(WA + encodeURIComponent("السلام عليكم، عندي سؤال عن تطبيق فزعة"), "_blank", "noopener");
   $("#wipe").onclick = async () => {
     if (await ask("تحذف كل بياناتك؟", "بتنحذف محادثاتك وتذكيراتك واسمك من هالجهاز نهائياً.", "احذف كل شي")) {

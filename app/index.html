@@ -1022,10 +1022,12 @@ html.i18n-wait body{visibility:hidden}
       [L("اضغط «افتحني»", "Tap “Open me”"), shot({ app: L("فزعة", "Fazaa"), title: L("رسائل الجوال", "Phone texts"), rows: [[L("افتحني", "Open me"), ""]], hi: 0, dark: true })],
       [L("إضافة اختصار", "Add Shortcut"), sc({ title: L("فزعة رسائل", "Fazaa Messages"), rows: [[L("إضافة اختصار", "Add Shortcut"), ""]], hi: 0 })],
       [L("لصق ← إضافة", "Paste → Add"), sc({ title: L("الصق رابطك من تطبيق فزعة", "Paste your link"), rows: [[L("لصق", "Paste"), ""], [L("إضافة", "Add"), ""]], hi: 0 })],
+      [L("شغّله مرة ← السماح دائماً", "Run once → Always Allow"), sc({ title: L("السماح لـ «فزعة رسائل» بالاتصال؟", "Allow “Fazaa Messages” to connect?"), rows: [[L("السماح مرة", "Allow Once"), ""], [L("السماح دائماً", "Always Allow"), ""]], hi: 1 })],
       [L("التحكم التلقائي ← +", "Automation → +"), sc({ title: L("التحكم التلقائي", "Automation"), rows: [["+", ""]], hi: 0, tabs: [L("الاختصارات", "Shortcuts"), "*" + L("التحكم التلقائي", "Automation"), L("المعرض", "Gallery")] })],
       [L("رسالة", "Message"), sc({ title: L("متى", "When"), rows: [[L("البريد", "Email"), ""], [L("رسالة", "Message"), ""], ["Wi-Fi", ""]], hi: 1 })],
-      [L("تشغيل فورًا ← التالي", "Run Immediately → Next"), sc({ title: L("رسالة", "Message"), rows: [[L("المرسل", "Sender"), L("أي شخص", "Anyone")], [L("تشغيل فورًا", "Run Immediately"), "✓"], [L("التالي", "Next"), ""]], hi: 1 })],
-      [L("فزعة رسائل ✅", "Fazaa Messages ✅"), sc({ title: L("اختصاراتي", "My Shortcuts"), rows: [[L("فزعة رسائل", "Fazaa Messages"), ""]], hi: 0 })],
+      [L("رسالة تحتوي على «ا»", "Message contains “a”"), sc({ title: L("رسالة", "Message"), rows: [[L("رسالة تحتوي على", "Message contains"), L("ا", "a")]], hi: 0 })],
+      [L("تشغيل الاختصار ← فزعة رسائل", "Run Shortcut → Fazaa Messages"), sc({ title: L("تشغيل الاختصار", "Run Shortcut"), rows: [[L("فزعة رسائل", "Fazaa Messages"), ""], [L("إدخال", "Input"), L("رسالة", "Message")]], hi: 0 })],
+      [L("طفّ التأكيد قبل التشغيل ✅", "Turn off Ask Before Running ✅"), sc({ title: L("رسالة", "Message"), rows: [[L("التحكم التلقائي", "Automation"), "✓"], [L("التأكيد قبل التشغيل", "Ask Before Running"), L("مطفي", "Off")]], hi: 1 })],
     ];
     const A = [
       [L("حمّل التطبيق", "Download the app"), sc({ title: "SMS to URL Forwarder", rows: [[L("تثبيت على أي حال", "Install anyway"), ""]], hi: 0 })],
@@ -1035,8 +1037,8 @@ html.i18n-wait body{visibility:hidden}
     ];
     const frames = ios ? F : A;
     const text = ios
-      ? [L("اضغط <b>افتحني</b> ← <b>إضافة اختصار</b> ← <b>لصق</b> ← <b>إضافة</b>.", "Tap <b>Open me</b> → <b>Add Shortcut</b> → <b>Paste</b> → <b>Add</b>."),
-         L("افتح <b>الاختصارات</b> ← <b>التحكم التلقائي</b> ← <b>+</b> ← <b>رسالة</b> ← <b>تشغيل فورًا</b> ← <b>التالي</b> ← <b>فزعة رسائل</b>.", "Open <b>Shortcuts</b> → <b>Automation</b> → <b>+</b> → <b>Message</b> → <b>Run Immediately</b> → <b>Next</b> → <b>Fazaa Messages</b>.")]
+      ? [L("اضغط <b>افتحني</b> ← <b>إضافة اختصار</b> ← <b>لصق</b> ← <b>إضافة</b>. بعدها اضغط على اختصار <b>فزعة رسائل</b> مرة وحدة واختر <b>السماح دائماً</b>.", "Tap <b>Open me</b> → <b>Add Shortcut</b> → <b>Paste</b> → <b>Add</b>. Then tap the <b>Fazaa Messages</b> shortcut once and choose <b>Always Allow</b>."),
+         L("في <b>الاختصارات</b> ← <b>التحكم التلقائي</b> ← <b>+</b> ← <b>رسالة</b>: خلّ الفلتر <b>رسالة تحتوي على</b> حرف <b>ا</b>، وأضف إجراء <b>تشغيل الاختصار</b> ← <b>فزعة رسائل</b>، وطفّ <b>التأكيد قبل التشغيل</b>. (وسوِّ وحدة ثانية بحرف <b>a</b> للرسائل الإنجليزية.)", "In <b>Shortcuts</b> → <b>Automation</b> → <b>+</b> → <b>Message</b>: set the filter <b>Message contains</b> <b>a</b>, add the action <b>Run Shortcut</b> → <b>Fazaa Messages</b>, and turn off <b>Ask Before Running</b>. (Make a second one with <b>ا</b> for Arabic texts.)")]
       : [L(`حمّل <a href="${SMS_APP}" target="_blank" rel="noopener" style="text-decoration:underline">تطبيق تحويل الرسائل</a> واسمح له بالرسائل.`, `Download <a href="${SMS_APP}" target="_blank" rel="noopener" style="text-decoration:underline">the SMS forwarder app</a> and allow SMS.`),
          L("اضغط <b>+</b>، وفي <b>Sender</b> اكتب <b>*</b>، وفي <b>URL</b> الصق رابطك، واحفظ.", "Tap <b>+</b>, type <b>*</b> in <b>Sender</b>, paste your link in <b>URL</b>, and save.")];
     $("#sms-steps").innerHTML =
@@ -1480,7 +1482,7 @@ html.i18n-wait body{visibility:hidden}
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v36".slice(10);
+  const APPV = "fazaa-app-v37".slice(10);
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

@@ -165,6 +165,12 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .ccard .acts button.pri{background:var(--ink);color:#111;border-color:transparent}
 .ccard .acts button:active{transform:scale(.97)}
 .ccard.gone{opacity:.55}
+.ccard .need{margin-inline-start:auto;color:#f5b041}
+.ccard .em{margin-top:8px;border-radius:12px;background:var(--s2);overflow:hidden}
+.ccard .em div{display:flex;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.ccard .em div span{color:var(--muted);flex:none;width:56px}
+.ccard .em div b{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ccard .em p{padding:10px 12px;font-size:15px;white-space:pre-wrap;max-height:200px;overflow-y:auto}
 .qr{align-self:flex-end;display:flex;gap:8px;animation:pop 220ms var(--ease)}
 .qr button{padding:9px 20px;border-radius:999px;border:1px solid rgba(245,245,242,.25);font-weight:700;font-size:14px;transition:transform 140ms var(--ease)}
 .qr button.pri{background:var(--ink);color:#111;border-color:transparent}
@@ -1105,10 +1111,11 @@ html.i18n-wait body{visibility:hidden}
       worked(Date.now() - t0);
       const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
       S.msgs.push(bot); S.msgs = S.msgs.slice(-80);
-      const dm = draftOf(bot.text);   // فيه مسودة: النص يطلع في بطاقة لحاله، والفقاعة تبقى فيها الكلام اللي حوله
-      if (dm) bubble({ ...bot, text: bot.text.replace(dm[0], "").replace(/\n{3,}/g, "\n\n").trim() || "👇" }); else bubble(bot);
+      const dm = r.draft ? null : draftOf(bot.text);   // فيه مسودة: النص يطلع في بطاقة لحاله، والفقاعة تبقى فيها الكلام اللي حوله
+      if (r.draft) bubble({ ...bot, text: L("جهزت لك الإيميل، راجعه 👇", "Here's the email, take a look 👇") });
+      else if (dm) bubble({ ...bot, text: bot.text.replace(dm[0], "").replace(/\n{3,}/g, "\n\n").trim() || "👇" }); else bubble(bot);
       lastId = Math.max(lastId, r.last || 0); save();
-      enrich(bot.text, before);
+      if (r.draft) emailCard(r.draft); else enrich(bot.text, before);
     } catch (e) {
       ty.remove(); toast(errText(e));
       S.msgs.pop(); save(); renderChat(); inp.value = text; grow(); syncSend();
@@ -1149,8 +1156,9 @@ html.i18n-wait body{visibility:hidden}
       const r = await api(kind === "image" ? "/image" : "/voice", { method: "POST", body: JSON.stringify({ [kind === "image" ? "image" : "audio"]: data, text: caption, name: S.name || "", client: PLAT, thread: S.thread }) });
       ty.remove();
       const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
-      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
+      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(r.draft ? { ...bot, text: L("جهزت لك الإيميل، راجعه 👇", "Here's the email, take a look 👇") } : bot);
       lastId = Math.max(lastId, r.last || 0); save();
+      if (r.draft) emailCard(r.draft);
     } catch (e) {
       ty.remove(); toast(errText(e)); S.msgs.pop(); save(); renderChat();
       if (caption) { inp.value = caption; grow(); syncSend(); }
@@ -1291,6 +1299,19 @@ html.i18n-wait body{visibility:hidden}
       if (!(await ask(L("تحذف هالتذكير؟", "Delete this reminder?"), L("بينحذف ولا يوصلك.", "It will be deleted and won't reach you."), L("احذف", "Delete")))) return;
       try { await api("/reminders/" + x.id, { method: "DELETE" }); reminders = reminders.filter(r => String(r.id) !== String(x.id)); el.classList.add("gone"); el.querySelector(".st").textContent = L("انحذف", "Deleted"); el.querySelector(".st").classList.add("off"); el.querySelector(".acts").remove(); drawHome(); }
       catch (e) { toast(errText(e)); }
+    };
+  }
+  function emailCard(d) {
+    const el = card(`<div class="hd"><i>✉️</i>${L("إيميل جديد", "New email")}<span class="need">${L("يحتاج موافقتك", "Needs your OK")}</span></div><div class="em"><div><span>${L("من", "From")}</span><b>${d.kind === "outlook" ? "Outlook" : "Gmail"}</b></div><div><span>${L("إلى", "To")}</span><b dir="ltr">${esc(d.to.join(", "))}</b></div><div><span>${L("الموضوع", "Subject")}</span><b>${esc(d.subject || "—")}</b></div><p>${esc(d.body)}</p></div><div class="acts"><button type="button" data-a="no">${L("إلغاء", "Cancel")}</button><button type="button" class="pri" data-a="send">${L("أرسل", "Send")}</button></div>`);
+    const done = (txt, ok) => { el.querySelector(".acts").remove(); const n = el.querySelector(".need"); n.textContent = txt; n.style.color = ok ? "#6fe6a5" : "var(--muted)"; if (!ok) el.classList.add("gone"); };
+    el.querySelector('[data-a="send"]').onclick = async e => {
+      e.target.disabled = true;
+      try { await api(`/drafts/${d.id}/send`, { method: "POST", body: JSON.stringify({ thread: S.thread }) }); done(L("✓ انرسل", "✓ Sent"), true); poll(); }
+      catch (err) { e.target.disabled = false; toast(errText(err)); }
+    };
+    el.querySelector('[data-a="no"]').onclick = async () => {
+      try { await api(`/drafts/${d.id}/cancel`, { method: "POST", body: JSON.stringify({ thread: S.thread }) }); } catch {}
+      done(L("انلغى", "Cancelled"), false); poll();
     };
   }
   function draftCard(t) {

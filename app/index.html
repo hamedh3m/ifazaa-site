@@ -133,7 +133,16 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .hcards::-webkit-scrollbar{display:none}
 .hcards:empty{display:none}
 .hcard{flex:0 0 76%;max-width:290px;scroll-snap-align:center;min-height:148px;border-radius:22px;padding:16px;display:flex;flex-direction:column;text-align:start;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);transition:transform 160ms var(--ease)}
-.hcard:active{transform:scale(.98)}
+.hcard:active{filter:brightness(.92)}
+.hcards{perspective:900px}
+.hcard{transition:transform 380ms var(--ease),opacity 380ms var(--ease);will-change:transform}
+.cpills{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin:4px 0 0;min-height:40px;transition:opacity 220ms ease}
+.cpills.fade{opacity:0}
+.cpills button{padding:9px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:14px;transition:transform 140ms var(--ease)}
+.cpills button:active{transform:scale(.96)}
+.hi{animation:hiIn 600ms var(--ease) both}
+@keyframes hiIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hcard,.hi{transition:none;animation:none}}
 .hcard .k{font-size:12px;font-weight:700;color:rgba(255,255,255,.72)}
 .hcard h4{font-size:19px;font-weight:800;line-height:1.35;margin-top:8px;padding-inline-end:28px}
 .hcard small{font-size:13px;color:rgba(255,255,255,.72);margin-top:auto;padding-top:12px}
@@ -192,6 +201,14 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar-btn{position:relative;width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--line);display:grid;place-items:center;transition:transform 140ms var(--ease)}
 .radar-btn:active{transform:scale(.92)}
 .radar-btn[hidden]{display:none}
+#radar-btn{overflow:hidden}
+#radar-btn .sweep{position:absolute;inset:3px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 280deg,rgba(224,33,59,.15) 300deg,rgba(255,77,100,.85) 360deg);animation:sweep 3.2s linear infinite;pointer-events:none}
+#radar-btn.busy .sweep{animation-duration:1.4s}
+#radar-btn .ring{position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(255,255,255,.18);pointer-events:none}
+#radar-btn .dot{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+#radar-btn svg{display:none}
+@keyframes sweep{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#radar-btn .sweep{animation:none}}
 .radar-btn svg{width:18px;height:18px}
 .radar-btn b{position:absolute;top:-4px;inset-inline-end:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--red2);font-size:10px;line-height:17px;color:#fff;text-align:center}
 .radar{position:fixed;inset:0;z-index:60;background:var(--bg)}
@@ -244,7 +261,20 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .dp .newth{display:flex;align-items:center;gap:8px;justify-content:center;height:46px;border-radius:999px;background:var(--ink);color:#111;font-weight:800;margin-bottom:12px;transition:transform 140ms var(--ease)}
 .dp .newth:active{transform:scale(.97)}
 .dp .newth svg{width:18px;height:18px}
-.thl{flex:1;overflow-y:auto;display:grid;gap:6px;align-content:start}
+.thl{flex:1;overflow-y:auto;display:grid;gap:4px;align-content:start}
+.dprof{display:flex;align-items:center;gap:10px;padding:8px 4px 14px;text-align:start}
+.dprof .dav{width:40px;height:40px;border-radius:12px;background:var(--red2);display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;flex:none}
+.dprof .dn{flex:1;min-width:0}.dprof .dn b{display:block;font-size:17px;font-weight:800}.dprof .dn small{color:var(--muted);font-size:13px}
+.dprof svg{width:18px;height:18px;color:var(--muted)}
+.dtiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.dtiles button{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;background:var(--s1);border:1px solid var(--line);transition:transform 140ms var(--ease)}
+.dtiles button:active{transform:scale(.95)}
+.dtiles .ti{font-size:22px;line-height:1}.dtiles b{font-size:12px;font-weight:700}
+.dtiles .tsw{position:absolute;width:150%;aspect-ratio:1;top:50%;left:50%;margin:-75% 0 0 -75%;background:conic-gradient(from 0deg,transparent 0 300deg,rgba(255,77,100,.28) 360deg);animation:sweep 3s linear infinite;pointer-events:none;opacity:0}
+.dtiles .busy .tsw{opacity:1}
+.dsec{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em;margin:2px 4px 6px}
+.th .tsq{width:22px;height:22px;border-radius:6px;flex:none}
+.dp .newth.btm{margin:10px 0 0;order:9}
 .th{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;text-align:start;transition:background .2s}
 .th.on{background:var(--s3)}
 .th:active{background:var(--s2)}
@@ -272,7 +302,7 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .call .cb .off{background:#fff;color:#111}
 @media (prefers-reduced-motion:reduce){.call .corb.think{animation:none}.drawer .dp,.drawer.out .dp{animation:none}}
 
-/* الوكلاء */
+/* المساعدين */
 .agl{display:grid;gap:10px;margin-top:16px}
 .ag{border-radius:20px;background:var(--s1);border:1px solid var(--line);padding:14px}
 .ag.off{opacity:.6}
@@ -281,6 +311,11 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .at{flex:1;min-width:0}
 .ag .at b{display:block;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ag .at span{font-size:13px;color:var(--muted)}
+.ag .ae{position:relative}
+.ag:not(.off) .ae::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid transparent;border-top-color:#ff4d64;border-right-color:rgba(255,77,100,.35);animation:sweep 1.6s linear infinite}
+.ag .live{display:inline-flex;align-items:center;gap:5px;color:#ff8a9b;font-weight:700}
+.ag .live i{width:6px;height:6px;border-radius:50%;background:#ff4d64;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
 .ag .al{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--s2);font-size:14px;color:#d8d8d4;white-space:pre-wrap;max-height:96px;overflow:hidden}
 .ag .aa{display:flex;gap:8px;margin-top:10px}
 .ag .aa button{flex:1;height:38px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--s2);border:1px solid var(--line);transition:transform 140ms var(--ease)}
@@ -611,7 +646,7 @@ html.i18n-wait body{visibility:hidden}
 <div class="app">
   <header class="bar">
     <div class="brand"><button class="icon-btn" id="th-btn" type="button" aria-label="المحادثات"><svg><use href="#i-menu"/></svg></button><svg><use href="#logo"/></svg><span id="bar-title">فزعة</span></div>
-    <div class="bar-r"><button class="radar-btn" id="call-btn" type="button" aria-label="كلّم فزعة"><svg><use href="#i-phone"/></svg></button><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار" hidden><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><span class="plan-chip" id="plan-chip">مجاني</span></div>
+    <div class="bar-r"><button class="radar-btn" id="call-btn" type="button" aria-label="كلّم فزعة"><svg><use href="#i-phone"/></svg></button><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار"><i class="sweep"></i><i class="ring"></i><i class="dot"></i><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><span class="plan-chip" id="plan-chip">مجاني</span></div>
   </header>
 
   <main class="views">
@@ -621,8 +656,7 @@ html.i18n-wait body{visibility:hidden}
         <div class="empty home" id="empty">
           <h2 class="hi" id="hello">هلا! وش أفزع لك اليوم؟</h2>
           <p class="hi-sub" id="hello-sub">اكتب بكلامك العادي، مثل ما تكلم صاحبك.</p>
-          <div class="hcards" id="hcards"></div>
-          <div class="install" id="install" hidden><div><b>ثبّت فزعة على شاشتك</b><span>يفتح مثل أي تطبيق وتوصلك التنبيهات</span></div><button type="button" class="inst-go" id="install-open">وريني كيف</button><button type="button" id="install-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
+          <div class="hcards" id="hcards"></div><div class="cpills" id="cpills"></div>
         </div>
       </div>
       <div class="sugg" id="chips"></div>
@@ -662,13 +696,12 @@ html.i18n-wait body{visibility:hidden}
       <div class="menu">
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-agents" id="me-agents"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5;font-size:17px">🤖</span><span class="lbl">الوكلاء<br><small id="ag-small">فريقك اللي يشتغل عنك بالخلفية</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">أوراقي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-agents" id="me-agents"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5;font-size:17px">🛰️</span><span class="lbl">المساعدين<br><small id="ag-small">فريقك اللي يشتغل عنك بالخلفية</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">مستنداتي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">٠ من ٣</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>ترقّى لـ Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
       <div class="menu">
-        <button id="open-install"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-dl"/></svg></span><span class="lbl">ثبّت التطبيق على شاشتك</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-settings"><span class="mi" style="background:var(--s2)"><svg><use href="#i-gear"/></svg></span><span class="lbl">الإعدادات</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-privacy"><span class="mi" style="background:var(--s2)"><svg><use href="#i-lock"/></svg></span><span class="lbl">الخصوصية وبياناتك</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button id="help"><span class="mi" style="background:var(--s2)"><svg><use href="#i-help"/></svg></span><span class="lbl">تواصل معنا</span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -761,16 +794,16 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
-<section class="sheet" id="s-papers" aria-label="أوراقي">
-  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>أوراقي</h1><span style="width:42px"></span></header>
+<section class="sheet" id="s-papers" aria-label="مستنداتي">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>مستنداتي</h1><span style="width:42px"></span></header>
   <div class="body">
-    <h2 class="h2">أوراقك ما تنتهي عليك</h2>
+    <h2 class="h2">مستنداتك ما تنتهي عليك</h2>
     <p class="sub">صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي ١٥ مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.</p>
     <ul class="safe">
       <li>نحفظ نوع الورقة وتاريخ انتهائها بس</li>
       <li>ما نحفظ رقمها ولا صورتها</li>
     </ul>
-    <div class="gbox" id="pap-prime" hidden><b>هذي من ميزات Prime</b><p>اشترك في Prime وخلّ فزعة يتابع أوراقك وأوراق اللي معك.</p><button class="btn btn-red" type="button" id="pap-buy">ترقّى لـ Prime</button></div>
+    <div class="gbox" id="pap-prime" hidden><b>هذي من ميزات Prime</b><p>اشترك في Prime وخلّ فزعة يتابع مستنداتك وأوراق اللي معك.</p><button class="btn btn-red" type="button" id="pap-buy">ترقّى لـ Prime</button></div>
     <div id="pap-on" hidden>
       <div id="pap-list"></div>
       <button class="btn btn-primary" type="button" id="pap-add" style="margin-top:16px">أضف ورقة</button>
@@ -778,14 +811,14 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
-<section class="sheet" id="s-agents" aria-label="الوكلاء">
-  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ag-h1">الوكلاء</h1><span style="width:42px"></span></header>
+<section class="sheet" id="s-agents" aria-label="المساعدين">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ag-h1">المساعدين</h1><span style="width:42px"></span></header>
   <div class="body">
     <div id="ag-main">
       <h2 class="h2" id="ag-h2">فريقك اللي يشتغل عنك</h2>
-      <p class="sub" id="ag-sub">كل وكيل يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
+      <p class="sub" id="ag-sub">كل مساعد يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
       <div class="agl" id="ag-list"></div>
-      <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف وكيل</p>
+      <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف مساعد</p>
       <div class="agt" id="ag-tpl"></div>
     </div>
     <div class="agf" id="ag-form" hidden>
@@ -797,7 +830,7 @@ html.i18n-wait body{visibility:hidden}
         <label class="field"><span id="agf-at-l">الساعة</span><input id="agf-at" type="time" value="09:00"></label>
       </div>
       <label class="field" id="agf-day-w" hidden><span id="agf-day-l">اليوم</span><select id="agf-day"></select></label>
-      <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">شغّل الوكيل</button></div>
+      <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">شغّل المساعد</button></div>
     </div>
   </div>
 </section>
@@ -841,7 +874,7 @@ html.i18n-wait body{visibility:hidden}
       <p class="g">ميزات Prime</p>
       <div class="f" role="row"><p role="rowheader">شخص من أهلك معك بنفس الاشتراك</p><div class="v"><i class="no" role="cell" aria-label="—">—</i><i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div></div>
       <div class="f" role="row"><p role="rowheader">تذكّره عنك (دواء، موعد، مشوار)</p><div class="v"><i class="no" role="cell" aria-label="—">—</i><i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div></div>
-      <div class="f" role="row"><p role="rowheader">أوراقك وأوراقه ما تنتهي عليكم</p><div class="v"><i class="no" role="cell" aria-label="—">—</i><i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div></div>
+      <div class="f" role="row"><p role="rowheader">مستنداتك وأوراقه ما تنتهي عليكم</p><div class="v"><i class="no" role="cell" aria-label="—">—</i><i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div></div>
       <div class="f" role="row"><p role="rowheader">مصاريفك ومواعيدك من رسائل الجوال</p><div class="v"><i class="no" role="cell" aria-label="—">—</i><i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div></div>
       <div class="f" role="row"><p role="rowheader">قراءة Gmail وتلخيصه</p><div class="v"><i class="no" role="cell" aria-label="—">—</i><i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div></div>
     </div>
@@ -903,10 +936,17 @@ html.i18n-wait body{visibility:hidden}
 <section class="drawer" id="threads" hidden aria-label="المحادثات">
   <div class="dbg" id="th-bg"></div>
   <div class="dp" role="dialog" aria-modal="true">
-    <div class="dh"><b id="th-h">المحادثات</b><button class="icon-btn" type="button" id="th-x" aria-label="إغلاق"><svg><use href="#i-x"/></svg></button></div>
-    <button class="newth" type="button" id="th-new"><svg><use href="#i-plus"/></svg><span id="th-new-t">محادثة جديدة</span></button>
-    <button class="th" type="button" id="th-agents" style="margin-bottom:10px;background:var(--s2)"><span style="font-size:20px">🤖</span><div class="tt"><b id="th-ag-t">الوكلاء</b><span id="th-ag-s">فريقك اللي يشتغل عنك بالخلفية</span></div></button>
+    <div class="dh"><b id="th-h">القائمة</b><button class="icon-btn" type="button" id="th-x" aria-label="إغلاق"><svg><use href="#i-x"/></svg></button></div>
+    <button class="dprof" type="button" id="th-me"><span class="dav" id="th-av">ف</span><span class="dn"><b id="th-name">حسابي</b><small id="th-plan">مجاني</small></span><svg><use href="#i-chev"/></svg></button>
+    <div class="dtiles">
+      <button type="button" id="th-agents"><i class="tsw"></i><span class="ti">🛰️</span><b id="th-ag-t">المساعدين</b></button>
+      <button type="button" data-tsheet="s-papers"><span class="ti">📄</span><b>مستنداتي</b></button>
+      <button type="button" data-tsheet="s-connect"><span class="ti">🔌</span><b>ربط</b></button>
+      <button type="button" id="th-radar"><span class="ti">📡</span><b>الرادار</b></button>
+    </div>
+    <p class="dsec" id="th-sec">آخر المحادثات</p>
     <div class="thl" id="th-list"></div>
+    <button class="newth btm" type="button" id="th-new"><svg><use href="#i-plus"/></svg><span id="th-new-t">محادثة جديدة</span></button>
   </div>
 </section>
 <section class="call" id="call" hidden role="dialog" aria-modal="true" aria-label="مكالمة فزعة">
@@ -931,7 +971,7 @@ html.i18n-wait body{visibility:hidden}
   <div class="step1" id="step1">
     <svg class="logo-big"><use href="#logo"/></svg>
     <h1>كل شي يعتمد عليك، خلّه على فزعة</h1>
-    <p>يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.</p>
+    <p>يذكّرك بمواعيدك ومستنداتك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.</p>
   </div>
   <div class="step2" id="step2" hidden>
     <svg class="logo-big"><use href="#logo"/></svg>
@@ -960,7 +1000,7 @@ html.i18n-wait body{visibility:hidden}
   const AR = n => EN ? String(n) : String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
   // ---------- English: translate the page once, before anything is wired up ----------
   if (EN) {
-    const TR = {"عدّل": "Edit", "احفظ أو شارك": "Save or share", "عدّل عليها": "Edit it", "الصورة": "Image", "سكّر": "Close", "مصاريفك ومواعيدك من رسائل الجوال": "Spending and appointments from your texts", "رسائل الجوال": "Phone texts", "خلّ فزعة يعرف رسائلك المهمة": "Let Fazaa see your important texts", "رسائل البنك تصير مصاريف مرتبة، ورسائل المواعيد والفواتير تصير تذكيرات. وأنت تختار وش يوصل.": "Bank texts become tidy spending, and appointment and bill texts become reminders. You choose what gets through.", "مصاريفك تنحسب لحالها، والفواتير والمواعيد تصير تذكيرات، وتقدر تسأل فزعة عن رسائلك.": "Your spending is tracked on its own, bills and appointments become reminders, and you can ask Fazaa about your texts.", "هذي من ميزات Prime": "This is a Prime feature", "ترقّى لـ Prime عشان فزعة يتابع مصاريفك ومواعيدك وفواتيرك من رسائل جوالك.": "Upgrade to Prime so Fazaa tracks your spending, appointments and bills from your phone texts.", "رموز التحقق تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes are thrown away instantly, never stored or read", "رموز التحقق والرسائل الشخصية تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes and personal messages are thrown away instantly, never stored or read", "رموز التحقق تنرمى فوراً، وباقي الرسائل تنحذف بعد يوم ونص بالكثير، وما يشوفها أي إنسان": "Verification codes are thrown away instantly, other texts are deleted within a day and a half, and no person ever sees them", "ما نحفظ نص الرسالة: بس المبلغ والمحل والتاريخ، أو الموعد": "We don't keep the message text: only the amount, merchant and date, or the appointment", "أرقام البطاقات والحسابات تنمسح قبل أي شي": "Card and account numbers are wiped first", "توقفه أو تغيّر رابطك متى ما بغيت": "Turn it off or change your link any time", "١) انسخ رابطك الخاص": "1) Copy your private link", "انسخ رابطي": "Copy my link", "٢) خلّ جوالك يرسل الرسائل لفزعة": "2) Let your phone send texts to Fazaa", "خلّ جوالك يرسل الرسائل لفزعة": "Let your phone send texts to Fazaa", "اضغط الزر: رابطك الخاص ينسخ لحاله، وتفتح لك صفحة الإعداد بالصور خطوة خطوة، للآيفون والأندرويد.": "Tap the button: your private link is copied and the step-by-step setup page with pictures opens, for iPhone and Android.", "انسخ رابطي وافتح طريقة الإعداد": "Copy my link and open the setup guide", "الرابط خاص فيك، لا ترسله لأحد.": "This link is private to you, don't share it.", "أوقف رسائل الجوال": "Turn off phone texts", "موجز الرسائل آخر اليوم": "Evening message digest", "رسالة كل يوم فيها ملخص رسائلك: الشخصية اللي يمكن تحتاج رد، والبنوك والفواتير. الرسائل تنحفظ لين الموجز وبعدها تنحذف، وما يشوفها أي إنسان.": "A daily message summarizing your texts: personal ones that may need a reply, plus banks and bills. Messages are kept until the digest, then deleted, and no person ever sees them.", "الوقت": "Time", "شغّل موجز الرسائل": "Turn on message digest", "قارن الباقات": "Compare plans", "رسائل بالشهر": "Messages a month", "حتى ٣٠٠": "Up to 300", "تذكيرات جديدة بالشهر": "New reminders a month", "بلا حد": "Unlimited", "مناسبات ومهام تتكرر": "Repeating occasions and tasks", "ضمن الـ١٠": "Within the 10", "كتابة وبحث وصور وسعرات": "Writing, search, photos and calories", "موجز يومك كل صبح": "Daily briefing every morning", "ربط تقويمك وبرامجك": "Connect your calendar and apps", "شخص من أهلك معك بنفس الاشتراك": "One family member on the same plan", "تذكّره عنك (دواء، موعد، مشوار)": "Remind them for you (medicine, appointment, errand)", "أوراقك وأوراقه ما تنتهي عليكم": "Your documents and theirs never expire on you", "مصاريفك من رسائل البنك": "Your spending from bank texts", "قريباً": "Soon", "١٠٠": "100", "١٠": "10", "تقويم جوالك": "Your phone calendar", "١٠٠ رسالة بالشهر": "100 messages a month", "موجز يومك وربط تقويمك": "Daily briefing and calendar connection", "حتى ٣٠٠ رسالة بالشهر": "Up to 300 messages a month", "تذكيرات ومناسبات ومهام متكررة بلا حد": "Unlimited reminders, occasions and repeating tasks", "موجز يومك: رسالة كل صبح فيها مواعيد يومك": "Daily briefing: a message every morning with your day's appointments", "شغّل موجز يومك": "Turn on daily briefing", "اكتب بكلامك العادي، مثل ما تكلم صاحبك.": "Just type the way you'd text a friend.", "مواعيد فزعة في تقويم جوالك": "Your Fazaa appointments in your phone calendar", "اضغط الزر، وإذا سألك جوالك «اشتراك؟» وافق. بعدها أي موعد تسجله في فزعة يطلع في تقويمك لحاله.": "Tap the button, and if your phone asks “Subscribe?”, say yes. After that, every appointment you add in Fazaa shows up in your calendar on its own.", "تستخدم تقويم ثاني؟": "Use a different calendar?", "الرابط خاص فيك. لو أرسلته لأحد بالغلط": "This link is private to you. If you sent it to someone by mistake,", "تقويم الجوال": "Phone calendar", "أضف لتقويم الآيفون": "Add to iPhone Calendar", "أضف لتقويم قوقل": "Add to Google Calendar", "أضف لأوت لوك": "Add to Outlook", "غيّر الرابط": "Change link", "فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "١٠ تذكيرات بالشهر": "10 reminders a month", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "اللغة": "Language", "اسمك": "Your name", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك وأوراقك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google or Apple so you never lose your chats and reminders, and can open them from any device.", "إلغاء": "Cancel", "اشتراك سنوي يتجدد تلقائياً بنفس السعر، إلا لو ألغيته قبل نهاية المدة بـ٢٤ ساعة على الأقل من إعدادات حساب أبل. الدفع يكون من حساب أبل حقك.": "A yearly subscription that renews automatically at the same price unless you cancel at least 24 hours before it ends, in your Apple account settings. Payment is charged to your Apple account.", "الشروط": "Terms", "استرجاع المشتريات": "Restore purchases", "إدارة الاشتراك": "Manage subscription", "المتابعة باستخدام Google": "Continue with Google", "للبداية وتنظيم يومك": "To get started and organize your day", "لك ولشخص من أهلك": "For you and one family member", "الأكثر قيمة": "Best value", "اختر باقتك": "Choose your plan", "كل اللي في المجاني، وفوقه:": "Everything in Free, plus:", "شخص من أهلك معك بنفس الاشتراك، وتذكّره عنك": "One family member on your plan, and remind them for you", "١٠ تذكيرات جديدة بالشهر": "10 new reminders a month", "قارن بالتفصيل": "Compare in detail", "الأساسيات": "The basics", "ميزات Prime": "Prime features", "شخص من أهلك": "A family member", "معك بنفس اشتراك Prime": "On the same Prime plan", "أوراقي": "My documents", "هويتك وجوازك ورخصتك ما تنتهي عليك": "Never let your ID, passport or licence expire", "أضف شخص واحد من أهلك ياخذ Prime معك بدون زيادة. وبعدها تقدر تقول لفزعة «ذكّر أمي بالدواء الساعة ٩» ويوصلها التذكير على جوالها.": "Add one family member to get Prime with you at no extra cost. Then you can tell Fazaa “Remind Mom to take her medicine at 9” and the reminder reaches her phone.", "كل واحد محادثاته وبياناته له، محد يشوفها": "Each of you keeps your own chats and data; nobody else sees them", "الثاني يشوف بس التذكيرات اللي سجلتها أنت له": "They only see the reminders you added for them", "تقدرون تحفظون أوراق بعض وتوصلكم تذكيراتها": "You can save each other's documents and both get the reminders", "تفك الربط متى ما بغيت": "Remove the link any time", "اشترك في Prime وأضف معك شخص من أهلك بنفس الاشتراك.": "Get Prime and add a family member on the same plan.", "وش يقرب لك؟": "How are they related to you?", "القرابة": "Relation", "زوج/زوجة": "Spouse", "ابن/بنت": "Son/daughter", "أب/أم": "Parent", "أخ/أخت": "Sibling", "أقر إنه من أهلي من الدرجة الأولى، وأعرف إن الربط ينلغى لو ما كان كذا.": "I confirm they're my immediate family, and I understand the link will be removed if not.", "جهّز رابط الدعوة": "Create invite link", "رابط الدعوة جاهز": "Your invite link is ready", "أرسله له. أول ما يفتحه ويوافق، يصير معك في Prime. الرابط يشتغل مرة وحدة، لمدة ٧ أيام.": "Send it to them. Once they open it and accept, they're on Prime with you. The link works once, for 7 days.", "أرسل الدعوة": "Send invite", "فك الربط": "Remove link", "أوراقك ما تنتهي عليك": "Your documents never expire on you", "صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي ١٥ مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.": "Snap your ID, iqama, passport, licence or vehicle registration and send it to Fazaa, or type “My iqama expires on 15 March”. It reminds you a month before, a week before and on the day, with the Absher renewal steps.", "نحفظ نوع الورقة وتاريخ انتهائها بس": "We only keep the document type and expiry date", "ما نحفظ رقمها ولا صورتها": "We never keep its number or photo", "اشترك في Prime وخلّ فزعة يتابع أوراقك وأوراق اللي معك.": "Get Prime and let Fazaa track your documents and your family member's.", "أضف ورقة": "Add a document", "قراءة Gmail وتلخيصه": "Reading and summarizing Gmail"};
+    const TR = {"عدّل": "Edit", "احفظ أو شارك": "Save or share", "عدّل عليها": "Edit it", "الصورة": "Image", "سكّر": "Close", "مصاريفك ومواعيدك من رسائل الجوال": "Spending and appointments from your texts", "رسائل الجوال": "Phone texts", "خلّ فزعة يعرف رسائلك المهمة": "Let Fazaa see your important texts", "رسائل البنك تصير مصاريف مرتبة، ورسائل المواعيد والفواتير تصير تذكيرات. وأنت تختار وش يوصل.": "Bank texts become tidy spending, and appointment and bill texts become reminders. You choose what gets through.", "مصاريفك تنحسب لحالها، والفواتير والمواعيد تصير تذكيرات، وتقدر تسأل فزعة عن رسائلك.": "Your spending is tracked on its own, bills and appointments become reminders, and you can ask Fazaa about your texts.", "هذي من ميزات Prime": "This is a Prime feature", "ترقّى لـ Prime عشان فزعة يتابع مصاريفك ومواعيدك وفواتيرك من رسائل جوالك.": "Upgrade to Prime so Fazaa tracks your spending, appointments and bills from your phone texts.", "رموز التحقق تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes are thrown away instantly, never stored or read", "رموز التحقق والرسائل الشخصية تنرمى فوراً، وما تنحفظ ولا يقراها أحد": "Verification codes and personal messages are thrown away instantly, never stored or read", "رموز التحقق تنرمى فوراً، وباقي الرسائل تنحذف بعد يوم ونص بالكثير، وما يشوفها أي إنسان": "Verification codes are thrown away instantly, other texts are deleted within a day and a half, and no person ever sees them", "ما نحفظ نص الرسالة: بس المبلغ والمحل والتاريخ، أو الموعد": "We don't keep the message text: only the amount, merchant and date, or the appointment", "أرقام البطاقات والحسابات تنمسح قبل أي شي": "Card and account numbers are wiped first", "توقفه أو تغيّر رابطك متى ما بغيت": "Turn it off or change your link any time", "١) انسخ رابطك الخاص": "1) Copy your private link", "انسخ رابطي": "Copy my link", "٢) خلّ جوالك يرسل الرسائل لفزعة": "2) Let your phone send texts to Fazaa", "خلّ جوالك يرسل الرسائل لفزعة": "Let your phone send texts to Fazaa", "اضغط الزر: رابطك الخاص ينسخ لحاله، وتفتح لك صفحة الإعداد بالصور خطوة خطوة، للآيفون والأندرويد.": "Tap the button: your private link is copied and the step-by-step setup page with pictures opens, for iPhone and Android.", "انسخ رابطي وافتح طريقة الإعداد": "Copy my link and open the setup guide", "الرابط خاص فيك، لا ترسله لأحد.": "This link is private to you, don't share it.", "أوقف رسائل الجوال": "Turn off phone texts", "موجز الرسائل آخر اليوم": "Evening message digest", "رسالة كل يوم فيها ملخص رسائلك: الشخصية اللي يمكن تحتاج رد، والبنوك والفواتير. الرسائل تنحفظ لين الموجز وبعدها تنحذف، وما يشوفها أي إنسان.": "A daily message summarizing your texts: personal ones that may need a reply, plus banks and bills. Messages are kept until the digest, then deleted, and no person ever sees them.", "الوقت": "Time", "شغّل موجز الرسائل": "Turn on message digest", "قارن الباقات": "Compare plans", "رسائل بالشهر": "Messages a month", "حتى ٣٠٠": "Up to 300", "تذكيرات جديدة بالشهر": "New reminders a month", "بلا حد": "Unlimited", "مناسبات ومهام تتكرر": "Repeating occasions and tasks", "ضمن الـ١٠": "Within the 10", "كتابة وبحث وصور وسعرات": "Writing, search, photos and calories", "موجز يومك كل صبح": "Daily briefing every morning", "ربط تقويمك وبرامجك": "Connect your calendar and apps", "شخص من أهلك معك بنفس الاشتراك": "One family member on the same plan", "تذكّره عنك (دواء، موعد، مشوار)": "Remind them for you (medicine, appointment, errand)", "مستنداتك وأوراقه ما تنتهي عليكم": "Your documents and theirs never expire on you", "مصاريفك من رسائل البنك": "Your spending from bank texts", "قريباً": "Soon", "١٠٠": "100", "١٠": "10", "تقويم جوالك": "Your phone calendar", "١٠٠ رسالة بالشهر": "100 messages a month", "موجز يومك وربط تقويمك": "Daily briefing and calendar connection", "حتى ٣٠٠ رسالة بالشهر": "Up to 300 messages a month", "تذكيرات ومناسبات ومهام متكررة بلا حد": "Unlimited reminders, occasions and repeating tasks", "موجز يومك: رسالة كل صبح فيها مواعيد يومك": "Daily briefing: a message every morning with your day's appointments", "شغّل موجز يومك": "Turn on daily briefing", "اكتب بكلامك العادي، مثل ما تكلم صاحبك.": "Just type the way you'd text a friend.", "مواعيد فزعة في تقويم جوالك": "Your Fazaa appointments in your phone calendar", "اضغط الزر، وإذا سألك جوالك «اشتراك؟» وافق. بعدها أي موعد تسجله في فزعة يطلع في تقويمك لحاله.": "Tap the button, and if your phone asks “Subscribe?”, say yes. After that, every appointment you add in Fazaa shows up in your calendar on its own.", "تستخدم تقويم ثاني؟": "Use a different calendar?", "الرابط خاص فيك. لو أرسلته لأحد بالغلط": "This link is private to you. If you sent it to someone by mistake,", "تقويم الجوال": "Phone calendar", "أضف لتقويم الآيفون": "Add to iPhone Calendar", "أضف لتقويم قوقل": "Add to Google Calendar", "أضف لأوت لوك": "Add to Outlook", "غيّر الرابط": "Change link", "فزعة": "Fazaa", "مجاني": "Free", "المحادثة": "Chat", "ثبّت فزعة على شاشتك": "Add Fazaa to your home screen", "يفتح مثل أي تطبيق وتوصلك التنبيهات": "Opens like any app, with notifications", "وريني كيف": "Show me how", "إخفاء": "Hide", "🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر": "🔔 Turn on notifications to get your reminders even when the app is closed", "فعّل": "Turn on", "وش تبي فزعة يسوي لك؟": "What can Fazaa do for you?", "رسالتك": "Your message", "أرسل": "Send", "نسخة تجريبية · تقدر تربطه بتيليجرام من «حسابي»": "Beta · You can link it to Telegram from “Account”", "يومك": "Your day", "اضغط يمين أو يسار للتنقل": "Tap right or left to move between cards", "المجدول": "Schedule", "تذكيراتك ومهامك اللي تتكرر لحالها.": "Your reminders, and tasks that repeat on their own.", "أو ابدأ بوحدة من هذي": "Or start with one of these", "حسابي": "Account", "ضيف": "Guest", "الباقة المجانية · ١٠ تذكيرات بالشهر": "Free plan · 10 reminders a month", "احفظ حسابك": "Save your account", "ادخل بحساب قوقل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google so you never lose your chats and reminders, and can open them from any device.", "المتابعة باستخدام Apple": "Continue with Apple", "تسجيل خروج": "Sign out", "ربط التطبيقات": "Connected apps", "اربط تيليجرام عشان يصير حساب واحد": "Link Telegram to make it one account", "ادعُ صاحبك وخذ شهر": "Invite friends, get a month free", "٠ من ٣": "0 of 3", "الباقات": "Plans", "ترقّى لـ Prime": "Upgrade to Prime", "ثبّت التطبيق على شاشتك": "Add the app to your home screen", "الإعدادات": "Settings", "الخصوصية وبياناتك": "Privacy and your data", "تواصل معنا": "Contact us", "فزعة · نسخة تجريبية ٠٫١ · صُنع في السعودية": "Fazaa · Beta 0.1 · Made in Saudi Arabia", "التنقل": "Navigation", "رجوع": "Back", "كل ما ربطت أكثر، تابع عنك فزعة أكثر وذكّرك قبل ما تنسى.": "The more you connect, the more Fazaa can keep track for you and remind you before you forget.", "اربط تيليجرام": "Link Telegram", "يصير حسابك في التطبيق وتيليجرام واحد: محادثاتك وتذكيراتك تطلع في الثنين، والتذكير يوصلك في الثنين.": "Your app and Telegram become one account: your chats and reminders show up in both, and reminders reach you in both.", "خلّ فزعة يدفع عنك": "Let Fazaa pay for you", "فواتيرك وحجوزاتك، ويستأذنك قبل كل دفعة. قريباً": "Your bills and bookings, and it asks you before every payment. Coming soon", "ادعُ صاحبك": "Invite friends", "كل ٣ من ربعك يسجلون، لك شهر Prime مجاناً": "For every 3 friends who join, you get a free month of Prime", "ادعُ كثر ما تبي. ينحسب صاحبك أول ما يبدأ يستخدم فزعة.": "Invite as many as you like. A friend counts as soon as they start using Fazaa.", "ربعك اللي بدوا": "Friends who started", "الشهر ١": "Month 1", "الشهر ٢": "Month 2", "الشهر ٣": "Month 3", "وأكثر": "And more", "باقي لك ٣ أشخاص على شهرك الجاي": "3 more friends until your next free month", "شارك الدعوة": "Share invite", "باقتك الحالية": "Your plan", "١٠ تذكيرات بالشهر": "10 reminders a month", "كل اللي في المجاني": "Everything in Free", "تذكيرات ومناسبات بلا حد": "Unlimited reminders and occasions", "اللغة": "Language", "اسمك": "Your name", "تنبيهات الجوال": "Phone notifications", "🔔 فعّل التنبيهات": "🔔 Turn on notifications", "التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.": "Reminders reach you as a notification on your phone, even when the app is closed. On iPhone, add the app to your home screen first.", "ثبّت التطبيق": "Install the app", "ثبّت فزعة": "Install Fazaa", "فزعة على شاشتك بثواني": "Fazaa on your home screen in seconds", "بدون متجر ولا تحميل. يطلع لك أيقونة فزعة على الشاشة، يفتح مثل أي تطبيق، وتوصلك التنبيهات.": "No store, no download. You get a Fazaa icon on your screen that opens like any app and sends you notifications.", "نوع الجهاز": "Device type", "آيفون": "iPhone", "أندرويد": "Android", "كمبيوتر": "Computer", "ثبّت الحين": "Install now", "✅ فزعة مثبّت عندك. افتحه من الأيقونة على الشاشة.": "✅ Fazaa is installed. Open it from the icon on your screen.", "الخصوصية": "Privacy", "بياناتك لك، ومحد يشوفها": "Your data is yours, and no one sees it", "بيانات كل شخص محفوظة لحاله ومقفلة باسمه. المساعد يقرا رسائلك عشان يرد عليك بس، ولا احنا ولا أي أحد ثاني يطلع على محادثاتك. وما نبيع بياناتك ولا نستخدمها للإعلانات.": "Each person's data is stored separately and locked to them. The assistant reads your messages only to reply to you; neither we nor anyone else looks at your chats. We don't sell your data or use it for ads.", "احذف بياناتي": "Delete my data", "كل شي يعتمد عليك، خلّه على فزعة": "Everything's on you? Leave it to Fazaa", "يذكّرك بمواعيدك ومستنداتك ومناسباتك، ويكتب ويدوّر ويرتب عنك. بكلامك العادي.": "It reminds you of your appointments, documents and occasions, and writes, searches and plans for you. In your own words.", "وش نناديك؟": "What should we call you?", "اسمك الأول": "Your first name", "مثلاً: حامد": "e.g. Sarah", "أو": "or", "بحساب قوقل تنحفظ بياناتك وتفتحها من أي جهاز": "With a Google account your data is saved and opens on any device", "ابدأ": "Get started", "ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.": "Sign in with Google or Apple so you never lose your chats and reminders, and can open them from any device.", "إلغاء": "Cancel", "اشتراك سنوي يتجدد تلقائياً بنفس السعر، إلا لو ألغيته قبل نهاية المدة بـ٢٤ ساعة على الأقل من إعدادات حساب أبل. الدفع يكون من حساب أبل حقك.": "A yearly subscription that renews automatically at the same price unless you cancel at least 24 hours before it ends, in your Apple account settings. Payment is charged to your Apple account.", "الشروط": "Terms", "استرجاع المشتريات": "Restore purchases", "إدارة الاشتراك": "Manage subscription", "المتابعة باستخدام Google": "Continue with Google", "للبداية وتنظيم يومك": "To get started and organize your day", "لك ولشخص من أهلك": "For you and one family member", "الأكثر قيمة": "Best value", "اختر باقتك": "Choose your plan", "كل اللي في المجاني، وفوقه:": "Everything in Free, plus:", "شخص من أهلك معك بنفس الاشتراك، وتذكّره عنك": "One family member on your plan, and remind them for you", "١٠ تذكيرات جديدة بالشهر": "10 new reminders a month", "قارن بالتفصيل": "Compare in detail", "الأساسيات": "The basics", "ميزات Prime": "Prime features", "شخص من أهلك": "A family member", "معك بنفس اشتراك Prime": "On the same Prime plan", "مستنداتي": "My documents", "هويتك وجوازك ورخصتك ما تنتهي عليك": "Never let your ID, passport or licence expire", "أضف شخص واحد من أهلك ياخذ Prime معك بدون زيادة. وبعدها تقدر تقول لفزعة «ذكّر أمي بالدواء الساعة ٩» ويوصلها التذكير على جوالها.": "Add one family member to get Prime with you at no extra cost. Then you can tell Fazaa “Remind Mom to take her medicine at 9” and the reminder reaches her phone.", "كل واحد محادثاته وبياناته له، محد يشوفها": "Each of you keeps your own chats and data; nobody else sees them", "الثاني يشوف بس التذكيرات اللي سجلتها أنت له": "They only see the reminders you added for them", "تقدرون تحفظون أوراق بعض وتوصلكم تذكيراتها": "You can save each other's documents and both get the reminders", "تفك الربط متى ما بغيت": "Remove the link any time", "اشترك في Prime وأضف معك شخص من أهلك بنفس الاشتراك.": "Get Prime and add a family member on the same plan.", "وش يقرب لك؟": "How are they related to you?", "القرابة": "Relation", "زوج/زوجة": "Spouse", "ابن/بنت": "Son/daughter", "أب/أم": "Parent", "أخ/أخت": "Sibling", "أقر إنه من أهلي من الدرجة الأولى، وأعرف إن الربط ينلغى لو ما كان كذا.": "I confirm they're my immediate family, and I understand the link will be removed if not.", "جهّز رابط الدعوة": "Create invite link", "رابط الدعوة جاهز": "Your invite link is ready", "أرسله له. أول ما يفتحه ويوافق، يصير معك في Prime. الرابط يشتغل مرة وحدة، لمدة ٧ أيام.": "Send it to them. Once they open it and accept, they're on Prime with you. The link works once, for 7 days.", "أرسل الدعوة": "Send invite", "فك الربط": "Remove link", "مستنداتك ما تنتهي عليك": "Your documents never expire on you", "صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي ١٥ مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.": "Snap your ID, iqama, passport, licence or vehicle registration and send it to Fazaa, or type “My iqama expires on 15 March”. It reminds you a month before, a week before and on the day, with the Absher renewal steps.", "نحفظ نوع الورقة وتاريخ انتهائها بس": "We only keep the document type and expiry date", "ما نحفظ رقمها ولا صورتها": "We never keep its number or photo", "اشترك في Prime وخلّ فزعة يتابع مستنداتك وأوراق اللي معك.": "Get Prime and let Fazaa track your documents and your family member's.", "أضف ورقة": "Add a document", "قراءة Gmail وتلخيصه": "Reading and summarizing Gmail"};
     $$("[data-en]").forEach(el => { el.innerHTML = el.dataset.en; });
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     for (let n; (n = w.nextNode());) { const k = n.nodeValue.trim(); if (k && TR[k]) n.nodeValue = n.nodeValue.replace(k, () => TR[k]); }
@@ -1060,7 +1100,7 @@ html.i18n-wait body{visibility:hidden}
   const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
     : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
   const sugg = EN ? [["What do I have today?", "What do I have today?"], ["⏰ Remind me…", "Remind me "], ["✍️ Write a message", "Write a congratulations message for Khalid on his new baby"], ["🎨 Make an image", "Make me an image of "], ["📄 My documents", "My car registration expires on January 10, remind me before"]]
-    : [["وش عندي اليوم؟", "وش عندي اليوم؟"], ["⏰ ذكّرني…", "ذكرني "], ["✍️ اكتب لي رسالة", "اكتب لي تهنئة لخالد بالمولود"], ["🎨 سوّ لي صورة", "سوّ لي صورة "], ["📄 أوراقي", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها"]];
+    : [["وش عندي اليوم؟", "وش عندي اليوم؟"], ["⏰ ذكّرني…", "ذكرني "], ["✍️ اكتب لي رسالة", "اكتب لي تهنئة لخالد بالمولود"], ["🎨 سوّ لي صورة", "سوّ لي صورة "], ["📄 مستنداتي", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها"]];
   $("#chips").innerHTML = sugg.map(([a, b]) => `<button type="button" data-say="${esc(b)}">${esc(a)}</button>`).join("");
   $$("#chips button").forEach(c => c.addEventListener("click", () => {
     const t = c.dataset.say; if (/ $/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
@@ -1116,7 +1156,7 @@ html.i18n-wait body{visibility:hidden}
     S.msgs.forEach(bubble);
     if (S.msgs.length && fresh()) {   // رجعت بعد غيبة: تحية وبطاقات يومك تحت آخر المحادثة
       const d = document.createElement("div"); d.className = "home sess";
-      d.innerHTML = `<h2 class="hi">${esc(greeting())}</h2><div class="hcards"></div>`;
+      d.innerHTML = `<h2 class="hi">${esc(greeting())}</h2><div class="hcards"></div><div class="cpills"></div>`;
       msgs.appendChild(d); drawCards(d.querySelector(".hcards"));
     }
     syncSugg();
@@ -1272,7 +1312,7 @@ html.i18n-wait body{visibility:hidden}
       { c: "st-1", k: greet + (S.name ? " يا " + S.name : ""), h: today.length ? `عندك ${AR(today.length)} ${today.length === 1 ? "شي" : "أشياء"} اليوم` : "يومك فاضي للحين",
         list: today.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.at))]), p: today.length ? "" : "قل لي أي موعد أو شي تبي تتذكره، وأنا أرتبه لك." },
       { c: "st-2", k: "الجاي", h: next.length ? "أقرب مواعيدك" : "ما فيه مواعيد قادمة", list: next.slice(0, 4).map(x => [x.title, fmtWhen(new Date(x.at))]), p: next.length ? "" : "جرب: «ذكرني بموعد الأسنان الخميس الساعة ٤ العصر»." },
-      { c: "st-3", k: "أوراقك", h: "لا تنتظر لين تنتهي", list: [], p: "قل لي متى تنتهي إقامتك أو استمارتك أو جوازك، وأذكرك قبلها بشهر وقبلها بأسبوع." },
+      { c: "st-3", k: "مستنداتك", h: "لا تنتظر لين تنتهي", list: [], p: "قل لي متى تنتهي إقامتك أو استمارتك أو جوازك، وأذكرك قبلها بشهر وقبلها بأسبوع." },
       { c: "st-4", k: "فكرة اليوم", h: "رتب عزيمة الجمعة بدري", list: [], p: "قل لي كم شخص وأطلع لك قائمة الأكل والكميات والأغراض، وأذكرك تشتري قبلها بيوم." }
     ];
   }
@@ -1307,16 +1347,24 @@ html.i18n-wait body{visibility:hidden}
   }
   function cardData() {
     const now = Date.now(), C = [];
-    conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
+    conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`),
+      p: [[L("رتّبهم لي", "Sort them out"), L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `Help me sort out “${a.title}” and “${b.title}”`)], [L(`أجّل «${b.title}» ساعة`, `Push “${b.title}” an hour`), L(`أجّل «${b.title}» ساعة`, `Push “${b.title}” back an hour`)]] }));
     const tones = ["t-blue", "t-green", "t-sand"];
     reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now).sort((a, b) => a.t - b.t).slice(0, 3)
-      .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks" }));
+      .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks",
+        p: [[L("وش بعده؟", "What's next?"), L("وش عندي بعده؟", "What do I have after that?")], [L("أجّله ساعة", "Push it an hour"), L(`أجّل «${x.title}» ساعة`, `Push “${x.title}” back an hour`)], [L("ذكّرني قبله بساعة", "Remind me an hour before"), L(`ذكّرني قبل «${x.title}» بساعة`, `Remind me an hour before “${x.title}”`)]] }));
     papers.filter(p => p.days <= 60).sort((a, b) => a.days - b.days).slice(0, 2)
-      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("أوراقك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers" }));
+      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers",
+        p: [[L("كيف أجددها؟", "How do I renew it?"), L(`كيف أجدد ${p.label}؟`, `How do I renew my ${p.label}?`)], [L("ذكّرني بكرة", "Remind me tomorrow"), L(`ذكّرني بكرة الصبح أجدد ${p.label}`, `Remind me tomorrow morning to renew my ${p.label}`)]] }));
     if (C.length < 2) {   // يوم فاضي: أفكار تبدأ فيها
-      C.push({ t: "t-red", ic: "i-sun", k: L("موجز يومك", "Daily briefing"), h: L("مواعيد يومك توصلك كل صبح", "Your day's plan every morning"), s: L("اضغط وأشغّله لك", "Tap and I'll turn it on"), say: L("شغّل لي موجز يومك الساعة ٧ الصبح", "Turn on my daily briefing at 7 am") });
-      C.push({ t: "t-green", ic: "i-doc", k: L("أوراقك", "Your documents"), h: L("هويتك واستمارتك ما تنتهي عليك", "Never let your ID or registration expire"), s: L("أرسل صورة الورقة وأذكرك قبلها", "Send a photo and I'll remind you"), say: L("استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "My car registration expires on January 10, remind me before") });
-      C.push({ t: "t-blue", ic: "i-chat", k: L("جرّب", "Try"), h: L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid"), s: L("أكتبها وتنسخها على طول", "Ready to copy in seconds"), say: L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid on his new baby") });
+      C.push({ t: "t-red", ic: "i-sun", k: L("موجز يومك", "Daily briefing"), h: L("مواعيد يومك توصلك كل صبح", "Your day's plan every morning"), s: L("اضغط وأشغّله لك", "Tap and I'll turn it on"), say: L("شغّل لي موجز يومك الساعة ٧ الصبح", "Turn on my daily briefing at 7 am"),
+        p: [[L("إيه شغّله", "Yes, turn it on"), L("شغّل لي موجز يومك الساعة ٧ الصبح", "Turn on my daily briefing at 7 am")], [L("وش فيه؟", "What's in it?"), L("وش يكون في موجز يومي؟", "What's in the daily briefing?")], [L("مو الحين", "Not now"), ""]] });
+      C.push({ t: "t-green", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: L("هويتك واستمارتك ما تنتهي عليك", "Never let your ID or registration expire"), s: L("أرسل صورة الورقة وأذكرك قبلها", "Send a photo and I'll remind you"), say: L("استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "My car registration expires on January 10, remind me before"),
+        p: [[L("بأرسل صورة", "I'll send a photo"), "@photo"], [L("وش تقدر تتابع؟", "What can you track?"), L("وش المستندات اللي تقدر تتابعها لي؟", "Which documents can you track for me?")], [L("مو الحين", "Not now"), ""]] });
+      C.push({ t: "t-blue", ic: "i-chat", k: L("جرّب", "Try"), h: L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid"), s: L("أكتبها وتنسخها على طول", "Ready to copy in seconds"), say: L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid on his new baby"),
+        p: [[L("اكتبها", "Write it"), L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid on his new baby")], [L("سوّ لها صورة", "Make an image for it"), L("سوّ لي بطاقة تهنئة بالمولود مكتوب عليها: مبروك المولود يا خالد", "Make a congratulations card for a new baby that says: Congratulations Khalid")], [L("مو الحين", "Not now"), ""]] });
+      C.push({ t: "t-sand", ic: "i-sun", k: L("الصور", "Images"), h: L("أعدّل لك إضاءة صورة أو أشيل خلفيتها؟", "Want me to fix a photo's lighting or remove its background?"), s: L("أرسل الصورة وقل وش تبي", "Send the photo and say what you want"),
+        p: [[L("بأرسل صورة", "I'll send a photo"), "@photo"], [L("وش تقدر تعدّل؟", "What can you change?"), L("وش التعديلات اللي تقدر تسويها على الصور؟", "What edits can you make to photos?")], [L("مو الحين", "Not now"), ""]] });
     }
     return C;
   }
@@ -1324,7 +1372,51 @@ html.i18n-wait body{visibility:hidden}
     if (!el) return;
     const C = cardData();
     el.innerHTML = C.map((c, i) => `<button type="button" class="hcard ${c.t}" data-c="${i}"><span class="k">${esc(c.k)}</span><h4>${esc(c.h)}</h4><small>${esc(c.s)}</small><svg><use href="#${c.ic}"/></svg></button>`).join("");
-    el.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { const c = C[+b.dataset.c]; if (c.go) go(c.go); else if (c.sheet) { openSheet(c.sheet); if (c.sheet === "s-papers") loadPapers(); } else if (c.say) submit(c.say); });
+    el.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { const c = C[+b.dataset.c]; if (c.go) go(c.go); else if (c.sheet) { openSheet(c.sheet); if (c.sheet === "s-papers") loadPapers(); } else if (c.say) submit(c.say); else if (c.p) cardSay(c.p[0][1]); });
+    animCards(el, C);
+  }
+  // البطاقة اللي في النص كبيرة وقدام، واللي جنبها تميل لورا، وتتحرك لحالها كل كم ثانية لين يلمسها المستخدم
+  const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function cardSay(t) {
+    if (!t) return;
+    if (t === "@photo") { const b = $("#att-btn") || $("#plus") || $("[data-att]"); if (b) b.click(); else toast(L("اضغط + تحت وأرسل الصورة", "Tap + below and send the photo")); return; }
+    if (/[ :]$/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
+  }
+  function animCards(el, C) {
+    const pills = el.parentElement.querySelector(".cpills");
+    let cur = -1, timer = 0, held = false;
+    const cards = [...el.querySelectorAll(".hcard")];
+    const showPills = i => {
+      if (!pills || i === cur) return; cur = i;
+      const p = (C[i] && C[i].p) || [];
+      pills.classList.add("fade");
+      setTimeout(() => {
+        pills.innerHTML = p.map(([a, b], k) => `<button type="button" data-k="${k}">${esc(a)}</button>`).join("");
+        pills.querySelectorAll("button").forEach(b => b.onclick = () => { const v = p[+b.dataset.k][1]; if (v) cardSay(v); else { pills.innerHTML = ""; } });
+        pills.classList.remove("fade");
+      }, RM ? 0 : 200);
+    };
+    const paint = () => {
+      const r = el.getBoundingClientRect(), mid = r.left + r.width / 2; let best = 0, bd = 1e9;
+      cards.forEach((c, i) => {
+        const cr = c.getBoundingClientRect(), d = (cr.left + cr.width / 2 - mid) / r.width;
+        if (Math.abs(d) < bd) { bd = Math.abs(d); best = i; }
+        if (!RM) c.style.transform = `rotateY(${Math.max(-28, Math.min(28, -d * 46))}deg) scale(${1 - Math.min(.12, Math.abs(d) * .16)})`;
+        c.style.opacity = String(1 - Math.min(.45, Math.abs(d) * .6));
+      });
+      showPills(best);
+      return best;
+    };
+    let raf = 0;
+    el.onscroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(paint); };
+    const next = () => {
+      if (held || !el.isConnected || document.hidden || el.offsetParent === null) return;
+      const i = paint(), n = (i + 1) % cards.length, c = cards[n]; if (!c || cards.length < 2) return;
+      el.scrollTo({ left: c.offsetLeft - (el.clientWidth - c.clientWidth) / 2, behavior: RM ? "auto" : "smooth" });
+    };
+    ["pointerdown", "touchstart", "wheel"].forEach(ev => el.addEventListener(ev, () => { held = true; clearInterval(timer); }, { passive: true }));
+    clearInterval(el._t); if (!RM && cards.length > 1) { timer = setInterval(next, 4500); el._t = timer; }
+    requestAnimationFrame(paint);
   }
   const drawHome = () => { drawCards($("#hcards")); const sc = $("#msgs .sess .hcards"); if (sc) drawCards(sc); };
   async function refreshDay() {
@@ -1405,7 +1497,7 @@ html.i18n-wait body{visibility:hidden}
     const td = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && startOf(x.t) === startOf(now)).sort((a, b) => a.t - b.t);
     if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عليك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
       list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t))]), act: L("افتح المجدول", "Open schedule"), go: "tasks" });
-    papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("أوراقك", "Your documents"),
+    papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("مستنداتك", "Your documents"),
       h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : p.days === 0 ? L(`${p.label} تنتهي اليوم`, `${p.label} expires today`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`),
       p: L("جدّدها من أبشر قبل لا تنتهي، وأنا أذكرك.", "Renew it before it expires, and I'll keep reminding you."), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
     const tm = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => startOf(x.t) === startOf(now) + DAY).sort((a, b) => a.t - b.t);
@@ -1416,7 +1508,7 @@ html.i18n-wait body{visibility:hidden}
   function syncRadar(auto) {
     RI = radarItems();
     const b = $("#radar-btn"), n = $("#radar-n"), unseen = RI.filter(x => !seen().includes(x.key));
-    b.hidden = !RI.length; n.hidden = !unseen.length; n.textContent = AR(unseen.length);
+    b.hidden = false; n.hidden = !unseen.length; n.textContent = AR(unseen.length);
     if (auto && unseen.length && S.onb && $("#onb").hidden && $("#v-chat").classList.contains("on") && !$(".sheet.on")) openRadar(RI.indexOf(unseen[0]));
   }
   function showRadar(i) {
@@ -1434,7 +1526,8 @@ html.i18n-wait body{visibility:hidden}
     clearTimeout(rtimer); const r = $("#radar"); if (r.hidden) return;
     r.classList.add("out"); setTimeout(() => { r.hidden = true; r.classList.remove("out"); syncRadar(); }, 190);
   }
-  $("#radar-btn").onclick = () => { RI = radarItems(); openRadar(0); };
+  $("#radar-btn").onclick = () => { RI = radarItems(); if (!RI.length) { toast(AG.some(a => a.active) ? L("الرادار هادي، ومساعدينك يدوّرون لك 🛰️", "All quiet, your helpers are on the lookout 🛰️") : L("الرادار هادي، ما فيه شي يحتاجك الحين", "All quiet, nothing needs you right now")); return; } openRadar(0); };
+  const syncBusy = () => { const b = $("#radar-btn"); if (b) b.classList.toggle("busy", AG.some(a => a.active)); };
   $("#r-x").onclick = closeRadar;
   $("#r-next").onclick = () => ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar();
   $("#r-prev").onclick = () => showRadar(ri - 1);
@@ -1460,7 +1553,8 @@ html.i18n-wait body{visibility:hidden}
   async function loadThreads() { try { TH = (await api("/threads")).threads || []; } catch {} drawThreads(); syncHead(); }
   function drawThreads() {
     const list = TH.length ? TH : [{ id: 0, title: "", last: "", updated: "" }];
-    $("#th-list").innerHTML = list.map(t => `<div class="th${t.id === S.thread ? " on" : ""}" role="button" tabindex="0" data-th="${t.id}"><div class="tt"><b>${esc(thTitle(t.id))}</b><span>${esc(String(t.last || "").replace(/^🎙️ /, "").slice(0, 70)) || L("ما فيه رسائل للحين", "No messages yet")}</span></div>${t.id ? `<button type="button" class="tdel" data-thdel="${t.id}" aria-label="${L("احذف المحادثة", "Delete chat")}"><svg><use href="#i-trash"/></svg></button>` : ""}</div>`).join("");
+    const SQ = ["#e0213b", "#3d8bfd", "#22c58b", "#c9a45c", "#c2416b", "#7c5cff"];
+    $("#th-list").innerHTML = list.map(t => `<div class="th${t.id === S.thread ? " on" : ""}" role="button" tabindex="0" data-th="${t.id}"><span class="tsq" style="background:${SQ[Math.abs(t.id) % SQ.length]}"></span><div class="tt"><b>${esc(thTitle(t.id))}</b><span>${esc(String(t.last || "").replace(/^🎙️ /, "").slice(0, 70)) || L("ما فيه رسائل للحين", "No messages yet")}</span></div>${t.id ? `<button type="button" class="tdel" data-thdel="${t.id}" aria-label="${L("احذف المحادثة", "Delete chat")}"><svg><use href="#i-trash"/></svg></button>` : ""}</div>`).join("");
     $$("#th-list [data-th]").forEach(el => el.onclick = e => { if (e.target.closest("[data-thdel]")) return; switchThread(+el.dataset.th); });
     $$("#th-list [data-thdel]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("تحذف المحادثة؟", "Delete this chat?"), L("تنحذف رسائلها نهائياً. تذكيراتك تبقى.", "Its messages are deleted for good. Your reminders stay."), L("احذف", "Delete")))) return;
@@ -1468,7 +1562,13 @@ html.i18n-wait body{visibility:hidden}
       catch (e) { toast(errText(e)); }
     });
   }
-  const openThreads = () => { const d = $("#threads"); d.hidden = false; d.classList.remove("out"); drawThreads(); loadThreads(); };
+  const openThreads = () => {
+    const d = $("#threads"); d.hidden = false; d.classList.remove("out"); drawThreads(); loadThreads();
+    const nm = S.name || L("حسابي", "My account"); $("#th-name").textContent = nm; $("#th-av").textContent = (nm.trim()[0] || "ف").toUpperCase();
+    $("#th-plan").textContent = ($("#plan-chip") || {}).textContent || "";
+    $("#th-agents").classList.toggle("busy", AG.some(a => a.active));
+    if (!AG.length) api("/agents").then(r => { AG = r.agents || []; $("#th-agents").classList.toggle("busy", AG.some(a => a.active)); syncBusy(); }).catch(() => {});
+  };
   const closeThreads = () => { const d = $("#threads"); if (d.hidden) return; d.classList.add("out"); setTimeout(() => { d.hidden = true; d.classList.remove("out"); }, 190); };
   async function switchThread(id, stay) {
     if (!stay) closeThreads();
@@ -1482,7 +1582,11 @@ html.i18n-wait body{visibility:hidden}
     try { const r = await api("/threads", { method: "POST" }); TH.push({ id: r.id, title: "", last: "" }); await switchThread(r.id); }
     catch (e) { toast(errText(e)); }
   };
-  if (EN) { $("#th-h").textContent = "Chats"; $("#th-new-t").textContent = "New chat"; $("#th-btn").setAttribute("aria-label", "Chats"); $("#th-x").setAttribute("aria-label", "Close"); }
+  $("#th-me").onclick = () => { closeThreads(); go("me"); };
+  $("#th-radar").onclick = () => { closeThreads(); setTimeout(() => $("#radar-btn").click(), 220); };
+  $$("[data-tsheet]").forEach(b => b.onclick = () => { closeThreads(); const sh = b.dataset.tsheet; openSheet(sh); if (sh === "s-papers") loadPapers(); if (sh === "s-connect") loadConn(); });
+  if (EN) { $("#th-sec").textContent = "Recent chats"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
+  if (EN) { $("#th-h").textContent = "Menu"; $("#th-new-t").textContent = "New chat"; $("#th-btn").setAttribute("aria-label", "Chats"); $("#th-x").setAttribute("aria-label", "Close"); }
 
   // ---------- المكالمة: تكلم فزعة بصوتك ويرد عليك بصوت ----------
   const CALL = { on: false, muted: false, stream: null, ctx: null, an: null, rec: null, t0: 0, timer: 0, play: null };
@@ -1562,7 +1666,7 @@ html.i18n-wait body{visibility:hidden}
   if (EN) { $("#call-btn").setAttribute("aria-label", "Call Fazaa"); $("#c-end").setAttribute("aria-label", "End call"); $("#c-mute").setAttribute("aria-label", "Mute"); $("#call").setAttribute("aria-label", "Fazaa call"); }
 
 
-  // ---------- الوكلاء ----------
+  // ---------- المساعدين ----------
   const AGK = EN ? {
     morning: ["☀️", "Morning brief", "Your day, the weather and the news every morning", "t-red", "daily", "07:00"],
     price: ["🏷️", "Price watch", "Tells you when a product gets cheaper", "t-blue", "daily", "10:00"],
@@ -1580,7 +1684,7 @@ html.i18n-wait body{visibility:hidden}
     nutrition: ["🥗", "التغذية", "سعراتك وبروتينك ونصيحة لبكرة", "t-sand", "daily", "21:00"],
     custom: ["🔁", "أي شي يتكرر", "قل له وش يسوي ومتى", "t-blue", "daily", "09:00"],
   };
-  const AGF = {   // حقول كل وكيل: [المفتاح، العنوان، المثال، مطلوب؟]
+  const AGF = {   // حقول كل مساعد: [المفتاح، العنوان، المثال، مطلوب؟]
     morning: [["city", L("مدينتك", "Your city"), L("الرياض", "Riyadh")], ["topics", L("أخبار عن (اختياري)", "News about (optional)"), L("الاقتصاد، الهلال", "Economy, football")]],
     price: [["query", L("المنتج", "Product"), L("آيفون ١٧ برو ٢٥٦", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
     travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("إسطنبول", "Istanbul"), 1], ["date", L("التاريخ (اختياري)", "Date (optional)"), L("أول أسبوع في يناير", "First week of January")]],
@@ -1592,28 +1696,30 @@ html.i18n-wait body{visibility:hidden}
   const EVN = { daily: L("كل يوم", "Every day"), weekly: L("كل أسبوع", "Every week"), "hours:12": L("كل ١٢ ساعة", "Every 12 hours"), "hours:6": L("كل ٦ ساعات", "Every 6 hours") };
   const WDAY = EN ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] : ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"];
   let AG = [], agKind = "";
+  // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
+  setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); }).catch(() => {}), 1200);
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
   function drawAgents() {
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}"><div class="ah"><span class="ae">${a.emoji}</span><div class="at"><b>${esc(a.title)}</b><span>${a.active ? agWhen(a) : L("موقف", "Paused")}</span></div></div>`
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}"><div class="ah"><span class="ae">${a.emoji}</span><div class="at"><b>${esc(a.title)}</b><span>${a.active ? `<span class="live"><i></i>${L("يدوّر لك", "On the lookout")}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div></div>`
       + (a.last_text ? `<div class="al">${esc(a.last_text)}</div>` : "")
       + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button><button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
-      : `<p class="note">${L("ما عندك وكلاء للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون ١٧».", "No agents yet. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
+      : `<p class="note">${L("ما عندك مساعدين للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون ١٧».", "No helpers yet. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
-    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تحذف الوكيل؟", "Delete this agent?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
+    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تحذف المساعد؟", "Delete this helper?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
     $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("فريقك اللي يشتغل عنك بالخلفية", "Your team working in the background");
   }
-  async function loadAgents() { try { AG = (await api("/agents")).agents || []; } catch {} drawAgents(); }
+  async function loadAgents() { try { AG = (await api("/agents")).agents || []; } catch {} drawAgents(); syncBusy(); }
   async function agAct(id, action) {
-    if (action === "run") toast(L("الوكيل يشتغل… ⏳", "The agent is working… ⏳"));
+    if (action === "run") toast(L("المساعد يشتغل… ⏳", "The helper is working… ⏳"));
     try {
       const r = await api(`/agents/${id}/${action}`, { method: "POST" });
       if (action === "delete") AG = AG.filter(a => String(a.id) !== String(id));
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
       if (action === "run") { toast(r.sent ? L("وصلك الرد في المحادثة ✅", "Its result is in your chat ✅") : L("ما لقى شي جديد للحين", "Nothing new yet")); if (r.sent) { lastId = 0; loadHistory(); } }
-    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? L("المجاني فيه وكيل واحد شغّال. ترقّى لـ Prime لين ١٠ وكلاء", "Free includes one active agent. Upgrade to Prime for up to 10") : errText(e)); }
+    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? L("المجاني فيه مساعد واحد شغّال. ترقّى لـ Prime لين ١٠ مساعدين", "Free includes one active helper. Upgrade to Prime for up to 10") : errText(e)); }
   }
   $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => `<button type="button" class="${v[3]}" data-agk="${k}"><i>${v[0]}</i><b>${v[1]}</b><span>${v[2]}</span></button>`).join("");
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
@@ -1636,15 +1742,15 @@ html.i18n-wait body{visibility:hidden}
     const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? `${cfg.from} ← ${cfg.to}` : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
     try {
       const r = await api("/agents", { method: "POST", body: JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" }) });
-      AG.push(r.agent); drawAgents(); agBack(); toast(L("الوكيل شغّال ✅", "Your agent is on ✅"));
-    } catch (e) { toast(e.message === "prime" ? L("المجاني فيه وكيل واحد شغّال. ترقّى لـ Prime لين ١٠ وكلاء", "Free includes one active agent. Upgrade to Prime for up to 10") : errText(e)); }
+      AG.push(r.agent); drawAgents(); agBack(); toast(L("المساعد شغّال ✅", "Your helper is on ✅"));
+    } catch (e) { toast(e.message === "prime" ? L("المجاني فيه مساعد واحد شغّال. ترقّى لـ Prime لين ١٠ مساعدين", "Free includes one active helper. Upgrade to Prime for up to 10") : errText(e)); }
   };
   $("#me-agents").addEventListener("click", () => { agBack(); loadAgents(); });
   $("#th-agents").onclick = () => { closeThreads(); agBack(); openSheet("s-agents"); loadAgents(); };
   if (EN) {
-    [["#ag-h1", "Agents"], ["#ag-h2", "Your team, working for you"], ["#ag-sub", "Each agent works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add an agent"],
-     ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Start the agent"], ["#th-ag-t", "Agents"], ["#th-ag-s", "Your team working in the background"]].forEach(([q, t]) => { $(q).textContent = t; });
-    $("#me-agents .lbl").firstChild.nodeValue = "Agents";
+    [["#ag-h1", "Helpers"], ["#ag-h2", "Your team, working for you"], ["#ag-sub", "Each helper works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add a helper"],
+     ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Start the helper"], ["#th-ag-t", "Helpers"]].forEach(([q, t]) => { $(q).textContent = t; });
+    $("#me-agents .lbl").firstChild.nodeValue = "Helpers";
   }
 
   // ---------- tasks ----------
@@ -1939,7 +2045,7 @@ html.i18n-wait body{visibility:hidden}
       toast(why || errText(e));
     }
   }
-  // ---------- أوراقي ----------
+  // ---------- مستنداتي ----------
   const loadPapers = () => api("/papers").then(r => {
     $("#pap-prime").hidden = !!r.prime; $("#pap-on").hidden = !r.prime;
     $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L("تنتهي ", "Expires ")}${AR(p.expires)}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L("منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
@@ -2205,7 +2311,7 @@ html.i18n-wait body{visibility:hidden}
   const android = /android/i.test(ua);
   let deferred = null;
   addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; $("#inst-native").hidden = false; });
-  addEventListener("appinstalled", () => { deferred = null; S.hideInstall = true; save(); $("#install").hidden = true; toast(L("تم ✅ فزعة صار على شاشتك", "Done ✅ Fazaa is on your home screen")); });
+  addEventListener("appinstalled", () => { deferred = null; S.hideInstall = true; save(); toast(L("تم ✅ فزعة صار على شاشتك", "Done ✅ Fazaa is on your home screen")); });
   function setPlat(p) {
     $$(".plat button[data-plat]").forEach(b => b.setAttribute("aria-pressed", b.dataset.plat === p));
     ["ios", "and", "pc"].forEach(k => { $("#inst-" + k).hidden = k !== p; });
@@ -2224,10 +2330,6 @@ html.i18n-wait body{visibility:hidden}
     deferred = null; $("#inst-native").hidden = true;
     if (outcome === "accepted") { history.back(); }
   };
-  $("#install-open").onclick = openInstall;
-  $("#open-install").onclick = openInstall;
-  if (!standalone && !S.hideInstall && !NATIVE) $("#install").hidden = false;
-  $("#install-x").onclick = () => { S.hideInstall = true; save(); $("#install").hidden = true; };
 
   if (NATIVE) { const gp = $("#g-in p"); if (gp) gp.textContent = L("ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.", "Sign in with Google or Apple so you never lose your chats and reminders, and can open them from any device."); }
   // ---------- boot ----------

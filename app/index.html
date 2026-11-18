@@ -1071,7 +1071,7 @@ html.i18n-wait body{visibility:hidden}
   $("#set-brief").addEventListener("change", e => { if (briefOn && e.target.value) saveBrief(e.target.value); });
   syncBrief("");
   const soon = L("قريباً", "Soon");
-  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),"tg"],["a-icloud",L("تقويم الجوال","Phone calendar"),L("اربط","Link"),"cal"],["a-sms",L("رسائل الجوال","Phone texts"),L("اربط","Link"),"sms"],["a-gmail","Gmail",soon,"o:gmail"],["a-cal",L("تقويم قوقل","Google Calendar"),soon,"o:gcal"],["a-outlook","Outlook",soon,"o:outlook"],["a-drive",L("قوقل درايف","Google Drive"),soon,"o:gdrive"],["a-tasks",L("مهام قوقل","Google Tasks"),soon,"o:gtasks"],["a-notion","Notion",soon,"o:notion"],["a-wa",L("واتساب","WhatsApp"),soon],["a-slack","Slack",soon,"o:slack"]];
+  const apps = [["a-tg",L("تيليجرام","Telegram"),L("اربط","Link"),"tg"],["a-icloud",L("تقويم الجوال","Phone calendar"),L("اربط","Link"),"cal"],["a-sms",L("رسائل الجوال","Phone texts"),soon],["a-gmail","Gmail",soon,"o:gmail"],["a-cal",L("تقويم قوقل","Google Calendar"),soon,"o:gcal"],["a-outlook","Outlook",soon,"o:outlook"],["a-drive",L("قوقل درايف","Google Drive"),soon,"o:gdrive"],["a-tasks",L("مهام قوقل","Google Tasks"),soon,"o:gtasks"],["a-notion","Notion",soon,"o:notion"],["a-wa",L("واتساب","WhatsApp"),soon],["a-slack","Slack",soon,"o:slack"]];
   $("#apps").innerHTML = apps.map(([i, n, s, act]) => `<button class="app-t${act && !act.startsWith("o:") ? " live" : ""}"${act ? ` data-act="${act}"` : ""} type="button"><span class="ai"><svg><use href="#${i}"/></svg></span><b>${n}</b><small>${s}</small></button>`).join("");
   $$("#apps .app-t").forEach(b => b.onclick = () => b.dataset.act === "tg" ? linkTelegram() : b.dataset.act === "cal" ? openCal() : b.dataset.act === "sms" ? openSms() : (b.dataset.act || "").startsWith("o:") && b.classList.contains("live") ? oauthTap(b.dataset.act.slice(2)) : toast(L("هالربط قريباً", "This connection is coming soon")));
   // ---------- تقويم الجوال (رابط اشتراك) ----------
@@ -1206,7 +1206,6 @@ html.i18n-wait body{visibility:hidden}
   };
   function syncConn(cal) {
     const t = $('#apps .app-t[data-act="cal"] small'); if (t) t.textContent = cal ? L("مربوط", "Linked") : L("اربط", "Link");
-    const m = $('#apps .app-t[data-act="sms"] small'); if (m) m.textContent = conn.sms ? L("مربوط", "Linked") : L("Prime", "Prime");
   }
   // ---------- ربط البرامج (قوقل، Notion، أوت لوك) ----------
   let conn = { available: [] };
@@ -1588,7 +1587,7 @@ html.i18n-wait body{visibility:hidden}
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v41".slice(10);
+  const APPV = "fazaa-app-v42".slice(10);
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

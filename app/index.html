@@ -1641,7 +1641,7 @@ html.i18n-wait body{visibility:hidden}
   };
 
   // ---------- onboarding ----------
-  const updateHello = () => { $("#hello").textContent = greeting(); $("#hello-sub").textContent = L("وش أفزع لك اليوم؟ اكتب بكلامك العادي، أو اختر من تحت.", "How can I help today? Type the way you'd text a friend, or pick one below."); };
+  const updateHello = () => { $("#hello").textContent = greeting(); $("#hello-sub").textContent = L("اطلب أي شي، وفزعة يخلّصه. اكتب أو أرسل فويس أو صورة.", "Ask for anything, Fazaa gets it done. Type, or send a voice note or photo."); };
   function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = L("ابدأ", "Get started"); }
   $("#onb-go").onclick = () => {
     if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = L("يلا", "Let's go"); gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }

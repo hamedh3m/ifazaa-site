@@ -125,6 +125,88 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .pushbar .x svg{width:16px;height:16px;margin:auto}
 .demo-note{text-align:center;font-size:11px;color:#6b6b72;margin-top:6px}
 
+/* شاشة البداية: تحية + بطاقات تنسحب + اقتراحات فوق الكتابة */
+.home{padding:14px 2px 4px;text-align:start}
+.home .hi{font-size:30px;font-weight:800;line-height:1.25}
+.home .hi-sub{color:var(--muted);margin-top:6px;font-size:15px}
+.hcards{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:18px -18px 2px;padding:2px 18px 10px;scrollbar-width:none}
+.hcards::-webkit-scrollbar{display:none}
+.hcards:empty{display:none}
+.hcard{flex:0 0 76%;max-width:290px;scroll-snap-align:center;min-height:148px;border-radius:22px;padding:16px;display:flex;flex-direction:column;text-align:start;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);transition:transform 160ms var(--ease)}
+.hcard:active{transform:scale(.98)}
+.hcard .k{font-size:12px;font-weight:700;color:rgba(255,255,255,.72)}
+.hcard h4{font-size:19px;font-weight:800;line-height:1.35;margin-top:8px;padding-inline-end:28px}
+.hcard small{font-size:13px;color:rgba(255,255,255,.72);margin-top:auto;padding-top:12px}
+.hcard svg{position:absolute;inset-inline-end:14px;top:14px;width:22px;height:22px;opacity:.55}
+.t-red{background:radial-gradient(120% 90% at 85% 0%,#8f1528,#2a070d 70%)}
+.t-sand{background:radial-gradient(120% 90% at 85% 0%,#6f6250,#211c15 70%)}
+.t-green{background:radial-gradient(120% 90% at 85% 0%,#22634a,#0c1f17 70%)}
+.t-blue{background:radial-gradient(120% 90% at 85% 0%,#264a7c,#0c1424 70%)}
+.sess{padding:14px 2px 2px;margin-top:4px;border-top:1px solid var(--line)}
+.sess .hi{font-size:21px}
+.sugg{display:flex;gap:8px;overflow-x:auto;padding:0 12px 8px;scrollbar-width:none}
+.sugg::-webkit-scrollbar{display:none}
+.sugg[hidden],body.kb .sugg.idle{display:none}
+.sugg button{flex:none;padding:9px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:14px;white-space:nowrap;transition:transform 140ms var(--ease),background .2s}
+.sugg button:active{transform:scale(.96);background:var(--s2)}
+/* بطاقات داخل المحادثة */
+.worked{align-self:flex-end;font-size:12px;color:var(--muted);margin-bottom:-4px;display:flex;align-items:center;gap:5px}
+.worked::before{content:"";width:6px;height:6px;border-radius:50%;background:#6fe6a5}
+.ccard{align-self:flex-end;width:min(84%,340px);border-radius:18px;background:var(--s1);border:1px solid var(--line);padding:12px 14px;animation:pop 220ms var(--ease)}
+.ccard .hd{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-weight:700}
+.ccard .hd i{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-style:normal;font-size:12px;background:rgba(224,33,59,.18)}
+.ccard .hd .st{margin-inline-start:auto;color:#6fe6a5}
+.ccard .hd .st.off{color:var(--muted)}
+.ccard h4{font-size:16px;font-weight:800;margin-top:8px;line-height:1.4}
+.ccard .w{font-size:14px;color:var(--muted);margin-top:2px}
+.ccard .body{margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--s2);font-size:15px;white-space:pre-wrap;word-wrap:break-word;max-height:220px;overflow-y:auto}
+.ccard .acts{display:flex;gap:8px;margin-top:10px}
+.ccard .acts button{flex:1;height:40px;border-radius:999px;font-weight:700;font-size:14px;background:var(--s2);border:1px solid var(--line);transition:transform 140ms var(--ease)}
+.ccard .acts button.pri{background:var(--ink);color:#111;border-color:transparent}
+.ccard .acts button:active{transform:scale(.97)}
+.ccard.gone{opacity:.55}
+.qr{align-self:flex-end;display:flex;gap:8px;animation:pop 220ms var(--ease)}
+.qr button{padding:9px 20px;border-radius:999px;border:1px solid rgba(245,245,242,.25);font-weight:700;font-size:14px;transition:transform 140ms var(--ease)}
+.qr button.pri{background:var(--ink);color:#111;border-color:transparent}
+.qr button:active{transform:scale(.96)}
+/* الرادار: تنبيهات فزعة بشكل الستوري */
+.bar-r{display:flex;align-items:center;gap:8px}
+.radar-btn{position:relative;width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--line);display:grid;place-items:center;transition:transform 140ms var(--ease)}
+.radar-btn:active{transform:scale(.92)}
+.radar-btn[hidden]{display:none}
+.radar-btn svg{width:18px;height:18px}
+.radar-btn b{position:absolute;top:-4px;inset-inline-end:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--red2);font-size:10px;line-height:17px;color:#fff;text-align:center}
+.radar{position:fixed;inset:0;z-index:60;background:var(--bg)}
+.radar[hidden]{display:none}
+.radar .rin{position:absolute;inset:0;max-width:560px;margin-inline:auto;display:flex;flex-direction:column;padding:calc(var(--top) + 10px) 18px calc(var(--bot) + 18px);animation:rin 280ms var(--ease)}
+.radar.out .rin{animation:rout 200ms var(--ease) forwards}
+@keyframes rin{from{opacity:0;transform:scale(.96)}}
+@keyframes rout{to{opacity:0;transform:translateY(28px)}}
+.radar .rbg{position:absolute;inset:0;transition:opacity .3s}
+.radar .rbg.t-red{background:radial-gradient(90% 60% at 80% 8%,#a8182f,#2a070d 62%,#0d0305)}
+.radar .rbg.t-sand{background:radial-gradient(90% 60% at 80% 8%,#8a7a5f,#2c261c 62%,#0f0d09)}
+.radar .rbg.t-green{background:radial-gradient(90% 60% at 80% 8%,#2a7a5a,#0d241a 62%,#060f0b)}
+.radar .rbg.t-blue{background:radial-gradient(90% 60% at 80% 8%,#2f5a96,#0f1b30 62%,#060a12)}
+.radar .stories{position:relative;margin:4px 0 10px}
+.radar .stories i{background:rgba(255,255,255,.22)}
+.radar .stories i b{background:#fff}
+.radar .rtop{position:relative;display:flex;align-items:center;gap:10px;z-index:3}
+.radar .rtop b{font-size:17px;font-weight:800}
+.radar .rtop span{font-size:13px;color:rgba(255,255,255,.65)}
+.radar .rtop button{margin-inline-start:auto;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center}
+.radar .rtop button svg{width:18px;height:18px}
+.radar .rbody{position:relative;margin-top:auto;padding-bottom:6px}
+.radar .rk{font-size:14px;color:rgba(255,255,255,.72)}
+.radar h3{font-size:32px;font-weight:800;line-height:1.25;margin:6px 0 12px}
+.radar p{font-size:17px;color:rgba(255,255,255,.86)}
+.radar ul{list-style:none;display:grid;gap:8px;margin-top:14px}
+.radar li{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);font-size:15px}
+.radar li small{color:rgba(255,255,255,.7);white-space:nowrap}
+.radar .ract{position:relative;z-index:3;margin-top:22px;height:52px;width:100%;border-radius:999px;background:#fff;color:#111;font-weight:800;font-size:16px;transition:transform 140ms var(--ease)}
+.radar .ract:active{transform:scale(.97)}
+.radar .tapzone{top:70px;bottom:90px}
+@media (prefers-reduced-motion:reduce){.radar .rin,.radar.out .rin,.ccard,.qr{animation:none}}
+
 /* today (radar) */
 .stories{display:flex;gap:6px;margin:14px 0 12px}
 .stories i{flex:1;height:3px;border-radius:3px;background:var(--s3);overflow:hidden}
@@ -391,6 +473,7 @@ html.i18n-wait body{visibility:hidden}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="logo" viewBox="0 0 64 64"><rect width="64" height="64" rx="15" fill="#c8102e"/><path fill="#fff" transform="translate(9.34 51.39) scale(0.06366 -0.06366)" d="M682 198Q682 154 670.0 110.5Q658 67 634 29Q591 12 518.5 2.5Q446 -7 352 -7Q203 -7 30 20Q43 119 72 202Q151 194 232.0 187.5Q313 181 374 179Q375 225 396.5 274.0Q418 323 456.0 355.0Q494 387 542 387Q606 387 644.0 332.0Q682 277 682 198ZM515 189Q560 189 603 201Q586 216 559.5 226.0Q533 236 509 236Q470 236 463 213Q456 189 515 189ZM427 519Q430 532 442.5 554.5Q455 577 471.0 595.5Q487 614 499 616Q510 618 532.5 606.0Q555 594 574.5 576.5Q594 559 596 549Q600 534 573.5 496.5Q547 459 529 447Q508 455 474.0 478.5Q440 502 427 519Z"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-radar" viewBox="0 0 24 24"><path d="M12 12 18.5 5.5M20.5 12A8.5 8.5 0 1 1 12 3.5M16.5 12A4.5 4.5 0 1 1 12 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
@@ -429,21 +512,21 @@ html.i18n-wait body{visibility:hidden}
 <div class="app">
   <header class="bar">
     <div class="brand"><svg><use href="#logo"/></svg><span id="bar-title">فزعة</span></div>
-    <span class="plan-chip" id="plan-chip">مجاني</span>
+    <div class="bar-r"><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار" hidden><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><span class="plan-chip" id="plan-chip">مجاني</span></div>
   </header>
 
   <main class="views">
     <!-- chat -->
     <section class="view on" id="v-chat" aria-label="المحادثة">
       <div class="msgs" id="msgs" aria-live="polite">
-        <div class="empty" id="empty">
-          <div class="orb"><svg style="border-radius:12px"><use href="#logo"/></svg></div>
-          <h2 id="hello">هلا! وش أفزع لك اليوم؟</h2>
-          <p>اكتب بكلامك العادي، مثل ما تكلم صاحبك.</p>
+        <div class="empty home" id="empty">
+          <h2 class="hi" id="hello">هلا! وش أفزع لك اليوم؟</h2>
+          <p class="hi-sub" id="hello-sub">اكتب بكلامك العادي، مثل ما تكلم صاحبك.</p>
+          <div class="hcards" id="hcards"></div>
           <div class="install" id="install" hidden><div><b>ثبّت فزعة على شاشتك</b><span>يفتح مثل أي تطبيق وتوصلك التنبيهات</span></div><button type="button" class="inst-go" id="install-open">وريني كيف</button><button type="button" id="install-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
-          <div class="chips" id="chips"></div>
         </div>
       </div>
+      <div class="sugg" id="chips"></div>
       <div class="pushbar" id="pushbar" hidden><span>🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر</span><button class="go" type="button" id="push-go">فعّل</button><button class="x" type="button" id="push-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
       <div class="composer">
         <div class="comp">
@@ -693,6 +776,15 @@ html.i18n-wait body{visibility:hidden}
 </section>
 
 <!-- onboarding -->
+<section class="radar" id="radar" hidden role="dialog" aria-modal="true" aria-label="الرادار">
+  <div class="rin"><div class="rbg" id="r-bg"></div>
+    <div class="stories" id="r-bars"></div>
+    <div class="rtop"><b id="r-title">رادار</b><span id="r-n"></span><button type="button" id="r-x" aria-label="إغلاق"><svg><use href="#i-x"/></svg></button></div>
+    <div class="rbody" id="r-body"></div>
+    <div class="tapzone"><button type="button" id="r-next" aria-label="التالي"></button><button type="button" id="r-prev" aria-label="السابق"></button></div>
+    <button class="ract" type="button" id="r-act"></button>
+  </div>
+</section>
 <section class="onb" id="onb" hidden>
   <button class="lang-t" type="button" id="onb-lang" lang="en">English</button>
   <div class="step1" id="step1">
@@ -825,8 +917,15 @@ html.i18n-wait body{visibility:hidden}
   document.addEventListener("focusout", () => setTimeout(() => { if (!typing(document.activeElement)) document.body.classList.remove("kb"); }, 60));
   const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
     : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
-  $("#chips").innerHTML = ideas.map(i => `<button class="chip" type="button">${i}<svg><use href="#i-chev"/></svg></button>`).join("");
-  $$("#chips .chip").forEach(c => c.addEventListener("click", () => submit(c.textContent)));
+  const sugg = EN ? [["What do I have today?", "What do I have today?"], ["⏰ Remind me…", "Remind me "], ["✍️ Write a message", "Write a congratulations message for Khalid on his new baby"], ["📄 My documents", "My car registration expires on January 10, remind me before"]]
+    : [["وش عندي اليوم؟", "وش عندي اليوم؟"], ["⏰ ذكّرني…", "ذكرني "], ["✍️ اكتب لي رسالة", "اكتب لي تهنئة لخالد بالمولود"], ["📄 أوراقي", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها"]];
+  $("#chips").innerHTML = sugg.map(([a, b]) => `<button type="button" data-say="${esc(b)}">${esc(a)}</button>`).join("");
+  $$("#chips button").forEach(c => c.addEventListener("click", () => {
+    const t = c.dataset.say; if (/ $/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
+  }));
+  const STALE = 6 * 3600e3;   // بعد ٦ ساعات من آخر رسالة نرجع نعرض التحية والبطاقات
+  const fresh = () => !S.msgs.length || Date.now() - S.msgs[S.msgs.length - 1].ts > STALE;
+  const syncSugg = () => { const c = $("#chips"); c.hidden = !!inp.value.trim() || !fresh(); c.classList.toggle("idle", !!S.msgs.length); };
 
   function bubble(m) {
     const el = document.createElement("div");
@@ -836,9 +935,15 @@ html.i18n-wait body{visibility:hidden}
     return el;
   }
   function renderChat() {
-    $$("#msgs .m, #msgs .typing").forEach(x => x.remove());
+    $$("#msgs .m, #msgs .typing, #msgs .sess, #msgs .ccard, #msgs .qr, #msgs .worked").forEach(x => x.remove());
     $("#empty").style.display = S.msgs.length ? "none" : "";
     S.msgs.forEach(bubble);
+    if (S.msgs.length && fresh()) {   // رجعت بعد غيبة: تحية وبطاقات يومك تحت آخر المحادثة
+      const d = document.createElement("div"); d.className = "home sess";
+      d.innerHTML = `<h2 class="hi">${esc(greeting())}</h2><div class="hcards"></div>`;
+      msgs.appendChild(d); drawCards(d.querySelector(".hcards"));
+    }
+    syncSugg();
     msgs.scrollTop = S.msgs.length ? msgs.scrollHeight : 0;
   }
   const fromServer = m => ({ me: m.role === "user", text: String(m.text).replace(/^🎙️ /, ""), ts: Date.parse(m.at) || Date.now() });
@@ -869,14 +974,20 @@ html.i18n-wait body{visibility:hidden}
     inp.value = ""; grow(); syncSend();
     $("#empty").style.display = "none";
     const me = { me: true, text, ts: Date.now() }; S.msgs.push(me); bubble(me); save();
+    $$("#msgs .qr").forEach(x => x.remove()); syncSugg();
     const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
     msgs.scrollTop = msgs.scrollHeight;
+    const t0 = Date.now(), before = new Set(reminders.map(x => String(x.id)));
     try {
       const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "", client: PLAT }) });
       ty.remove();
+      worked(Date.now() - t0);
       const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
-      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
+      S.msgs.push(bot); S.msgs = S.msgs.slice(-80);
+      const dm = draftOf(bot.text);   // فيه مسودة: النص يطلع في بطاقة لحاله، والفقاعة تبقى فيها الكلام اللي حوله
+      if (dm) bubble({ ...bot, text: bot.text.replace(dm[0], "").replace(/\n{3,}/g, "\n\n").trim() || "👇" }); else bubble(bot);
       lastId = Math.max(lastId, r.last || 0); save();
+      enrich(bot.text, before);
     } catch (e) {
       ty.remove(); toast(errText(e));
       S.msgs.pop(); save(); renderChat(); inp.value = text; grow(); syncSend();
@@ -886,7 +997,7 @@ html.i18n-wait body{visibility:hidden}
   }
   const grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, inp.scrollHeight) + "px"; };
   const syncSend = () => { const has = !!inp.value.trim(); send.classList.toggle("go", has); $("#send-ic").innerHTML = `<use href="#${has ? "i-send" : "i-mic"}"/>`; send.setAttribute("aria-label", has ? L("أرسل", "Send") : L("فويس", "Voice")); };
-  inp.addEventListener("input", () => { grow(); syncSend(); });
+  inp.addEventListener("input", () => { grow(); syncSend(); syncSugg(); });
   inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); submit(); } });
   send.addEventListener("click", () => inp.value.trim() ? submit() : (rec ? stopRec(true) : startRec()));
 
@@ -1000,6 +1111,149 @@ html.i18n-wait body{visibility:hidden}
     clearTimeout(stimer); stimer = setTimeout(() => { if ($("#v-today").classList.contains("on")) showStory(si + 1); }, 6000);
   }
   const startStories = async () => { showStory(0); try { reminders = (await api("/reminders")).reminders; showStory(0); } catch {} };
+
+
+  // ---------- شاشة البداية: التحية والبطاقات ----------
+  let papers = [];
+  const greeting = () => {
+    const h = new Date().getHours();
+    const g = EN ? (h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening") : h < 5 ? "مساء الخير" : h < 12 ? "صباح الخير" : h < 18 ? "مساك الله بالخير" : "مساء الخير";
+    return g + (S.name ? (EN ? ", " : " يا ") + S.name : "");
+  };
+  const DAY = 864e5;
+  const startOf = t => { const d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); };
+  function conflicts() {   // موعدين بينهم أقل من ساعة، في الأسبوع الجاي
+    const now = Date.now(), up = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && x.t < now + 7 * DAY).sort((a, b) => a.t - b.t), out = [];
+    for (let i = 1; i < up.length; i++) if (up[i].t - up[i - 1].t < 3600e3) out.push([up[i - 1], up[i]]);
+    return out;
+  }
+  function cardData() {
+    const now = Date.now(), C = [];
+    conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
+    const tones = ["t-blue", "t-green", "t-sand"];
+    reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now).sort((a, b) => a.t - b.t).slice(0, 3)
+      .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks" }));
+    papers.filter(p => p.days <= 60).sort((a, b) => a.days - b.days).slice(0, 2)
+      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("أوراقك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers" }));
+    if (C.length < 2) {   // يوم فاضي: أفكار تبدأ فيها
+      C.push({ t: "t-red", ic: "i-sun", k: L("موجز يومك", "Daily briefing"), h: L("مواعيد يومك توصلك كل صبح", "Your day's plan every morning"), s: L("اضغط وأشغّله لك", "Tap and I'll turn it on"), say: L("شغّل لي موجز يومك الساعة ٧ الصبح", "Turn on my daily briefing at 7 am") });
+      C.push({ t: "t-green", ic: "i-doc", k: L("أوراقك", "Your documents"), h: L("هويتك واستمارتك ما تنتهي عليك", "Never let your ID or registration expire"), s: L("أرسل صورة الورقة وأذكرك قبلها", "Send a photo and I'll remind you"), say: L("استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "My car registration expires on January 10, remind me before") });
+      C.push({ t: "t-blue", ic: "i-chat", k: L("جرّب", "Try"), h: L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid"), s: L("أكتبها وتنسخها على طول", "Ready to copy in seconds"), say: L("اكتب لي تهنئة لخالد بالمولود", "Write a congratulations message for Khalid on his new baby") });
+    }
+    return C;
+  }
+  function drawCards(el) {
+    if (!el) return;
+    const C = cardData();
+    el.innerHTML = C.map((c, i) => `<button type="button" class="hcard ${c.t}" data-c="${i}"><span class="k">${esc(c.k)}</span><h4>${esc(c.h)}</h4><small>${esc(c.s)}</small><svg><use href="#${c.ic}"/></svg></button>`).join("");
+    el.querySelectorAll("[data-c]").forEach(b => b.onclick = () => { const c = C[+b.dataset.c]; if (c.go) go(c.go); else if (c.sheet) { openSheet(c.sheet); if (c.sheet === "s-papers") loadPapers(); } else if (c.say) submit(c.say); });
+  }
+  const drawHome = () => { drawCards($("#hcards")); const sc = $("#msgs .sess .hcards"); if (sc) drawCards(sc); };
+  async function refreshDay() {
+    try { reminders = (await api("/reminders")).reminders || []; } catch {}
+    try { papers = (await api("/papers")).papers || []; } catch {}
+    drawHome(); syncRadar(true);
+  }
+
+  // ---------- بطاقات داخل المحادثة ----------
+  function worked(ms) {
+    if (ms < 2500) return;
+    const s = Math.round(ms / 1000), el = document.createElement("div"); el.className = "worked";
+    el.textContent = EN ? `Worked for ${s}s` : `اشتغل عليها ${AR(s)} ${s <= 10 ? "ثواني" : "ثانية"}`;
+    msgs.appendChild(el);
+  }
+  const card = html => { const el = document.createElement("div"); el.className = "ccard"; el.innerHTML = html; msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight; return el; };
+  function remCard(x) {
+    const el = card(`<div class="hd"><i>⏰</i>${L("تذكير", "Reminder")}<span class="st">${L("✓ انحفظ", "✓ Saved")}</span></div><h4>${esc(x.title)}</h4><p class="w">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</p><div class="acts"><button type="button" class="pri" data-a="open">${L("المجدول", "Schedule")}</button><button type="button" data-a="del">${L("احذف", "Delete")}</button></div>`);
+    el.querySelector('[data-a="open"]').onclick = () => go("tasks");
+    el.querySelector('[data-a="del"]').onclick = async () => {
+      if (!(await ask(L("تحذف هالتذكير؟", "Delete this reminder?"), L("بينحذف ولا يوصلك.", "It will be deleted and won't reach you."), L("احذف", "Delete")))) return;
+      try { await api("/reminders/" + x.id, { method: "DELETE" }); reminders = reminders.filter(r => String(r.id) !== String(x.id)); el.classList.add("gone"); el.querySelector(".st").textContent = L("انحذف", "Deleted"); el.querySelector(".st").classList.add("off"); el.querySelector(".acts").remove(); drawHome(); }
+      catch (e) { toast(errText(e)); }
+    };
+  }
+  function draftCard(t) {
+    const el = card(`<div class="hd"><i>✍️</i>${L("جاهزة ترسلها", "Ready to send")}</div><div class="body">${esc(t)}</div><div class="acts"><button type="button" class="pri" data-a="copy">${L("انسخ", "Copy")}</button><button type="button" data-a="wa">${L("واتساب", "WhatsApp")}</button></div>`);
+    el.querySelector('[data-a="copy"]').onclick = async () => { try { await navigator.clipboard.writeText(t); toast(L("انسخت ✅", "Copied ✅")); } catch { toast(L("ما قدرت أنسخ، اضغط على النص مطولاً", "Couldn't copy, long-press the text")); } };
+    el.querySelector('[data-a="wa"]').onclick = () => window.open("https://wa.me/?text=" + encodeURIComponent(t), "_blank", "noopener");
+  }
+  function quick(text) {
+    const ask_ = /[؟?][\s\p{Extended_Pictographic}\uFE0F]*$/u.test(text.trim());
+    const verb = EN ? /\b(should i|want me|shall i|do you want|would you like|ok to|confirm)\b/i : /(أرسل|أحفظ|أضيف|أسجل|أذكر|تبي|تبغى|تبغي|أكمل|أعدل|أسوي|أأكد|أحذف|أغير|أثبت|أشغل)/;
+    if (!ask_ || !verb.test(text.slice(-160))) return;
+    const el = document.createElement("div"); el.className = "qr";
+    el.innerHTML = `<button type="button" class="pri">${L("إيه", "Yes")}</button><button type="button">${L("لا", "No")}</button>`;
+    const [y, n] = el.querySelectorAll("button");
+    y.onclick = () => { el.remove(); submit(L("إيه", "Yes")); }; n.onclick = () => { el.remove(); submit(L("لا", "No")); };
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  }
+  const draftOf = text => text.match(/«([^»]{30,})»/) || text.match(/“([^”]{30,})”/);
+  async function enrich(text, before) {
+    const m = draftOf(text);
+    if (m) draftCard(m[1].trim());
+    if (/⏰|✅|ذكر|أذكر|remind/i.test(text)) {
+      try {
+        reminders = (await api("/reminders")).reminders || [];
+        reminders.filter(x => !before.has(String(x.id))).slice(0, 3).forEach(remCard);
+        drawHome(); syncRadar();
+      } catch {}
+    }
+    quick(text);
+  }
+
+  // ---------- الرادار: فزعة ينبهك قبل ما تسأل ----------
+  const RKEY = "fazaa-radar-seen";
+  const todayKey = () => new Date().toISOString().slice(0, 10);
+  const seen = () => { try { const o = JSON.parse(localStorage.getItem(RKEY)) || {}; return o.d === todayKey() ? o.k || [] : []; } catch { return []; } };
+  const markSeen = keys => { try { localStorage.setItem(RKEY, JSON.stringify({ d: todayKey(), k: [...new Set([...seen(), ...keys])] })); } catch {} };
+  function radarItems() {
+    const now = Date.now(), R = [];
+    conflicts().slice(0, 2).forEach(([a, b]) => R.push({ key: "c" + a.id + "-" + b.id, t: "t-red", k: L("مواعيدك", "Your schedule"), h: L("عندك موعدين بنفس الوقت", "You have two things at the same time"),
+      list: [[a.title, fmtWhen(new Date(a.t))], [b.title, fmtTime(new Date(b.t))]], act: L("رتّبهم مع فزعة", "Sort it out with Fazaa"), say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
+    const td = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && startOf(x.t) === startOf(now)).sort((a, b) => a.t - b.t);
+    if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عليك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
+      list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t))]), act: L("افتح المجدول", "Open schedule"), go: "tasks" });
+    papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("أوراقك", "Your documents"),
+      h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : p.days === 0 ? L(`${p.label} تنتهي اليوم`, `${p.label} expires today`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`),
+      p: L("جدّدها من أبشر قبل لا تنتهي، وأنا أذكرك.", "Renew it before it expires, and I'll keep reminding you."), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
+    const tm = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => startOf(x.t) === startOf(now) + DAY).sort((a, b) => a.t - b.t);
+    if (tm.length && new Date().getHours() >= 17) R.push({ key: "m" + tm[0].id, t: "t-green", k: L("بكرة", "Tomorrow"), h: L(`أول شي بكرة: ${tm[0].title}`, `First thing tomorrow: ${tm[0].title}`), p: L(`الساعة ${fmtTime(new Date(tm[0].t))}. نم بدري 😴`, `At ${fmtTime(new Date(tm[0].t))}. Get some sleep 😴`), act: L("وش عندي بكرة؟", "What's on tomorrow?"), say: L("وش عندي بكرة؟", "What do I have tomorrow?") });
+    return R;
+  }
+  let RI = [], ri = 0, rtimer;
+  function syncRadar(auto) {
+    RI = radarItems();
+    const b = $("#radar-btn"), n = $("#radar-n"), unseen = RI.filter(x => !seen().includes(x.key));
+    b.hidden = !RI.length; n.hidden = !unseen.length; n.textContent = AR(unseen.length);
+    if (auto && unseen.length && S.onb && $("#onb").hidden && $("#v-chat").classList.contains("on") && !$(".sheet.on")) openRadar(RI.indexOf(unseen[0]));
+  }
+  function showRadar(i) {
+    ri = Math.max(0, Math.min(i, RI.length - 1)); const d = RI[ri]; if (!d) return closeRadar();
+    $("#r-bg").className = "rbg " + d.t;
+    $("#r-bars").innerHTML = RI.map((_, j) => `<i class="${j < ri ? "done" : j === ri ? "now" : ""}"><b></b></i>`).join("");
+    $("#r-n").textContent = AR(ri + 1) + L(" من ", " of ") + AR(RI.length);
+    $("#r-body").innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b]) => `<li>${esc(a)}<small>${b}</small></li>`).join("")}</ul>` : "");
+    $("#r-act").textContent = d.act;
+    markSeen([d.key]);
+    clearTimeout(rtimer); rtimer = setTimeout(() => { if (!$("#radar").hidden) ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); }, 6000);
+  }
+  function openRadar(i = 0) { if (!RI.length) return; $("#radar").hidden = false; $("#radar").classList.remove("out"); showRadar(i); }
+  function closeRadar() {
+    clearTimeout(rtimer); const r = $("#radar"); if (r.hidden) return;
+    r.classList.add("out"); setTimeout(() => { r.hidden = true; r.classList.remove("out"); syncRadar(); }, 190);
+  }
+  $("#radar-btn").onclick = () => { RI = radarItems(); openRadar(0); };
+  $("#r-x").onclick = closeRadar;
+  $("#r-next").onclick = () => ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar();
+  $("#r-prev").onclick = () => showRadar(ri - 1);
+  $("#r-act").onclick = () => { const d = RI[ri]; closeRadar(); if (d.go) go(d.go); else if (d.say) { go("chat"); submit(d.say); } };
+  (() => { let y0 = null; const r = $("#radar");
+    r.addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });
+    r.addEventListener("touchend", e => { if (y0 !== null && e.changedTouches[0].clientY - y0 > 90) closeRadar(); y0 = null; }, { passive: true });
+    addEventListener("keydown", e => { if (!r.hidden && e.key === "Escape") closeRadar(); });
+  })();
+  if (EN) { $("#r-title").textContent = "Radar"; $("#radar-btn").setAttribute("aria-label", "Radar"); $("#r-x").setAttribute("aria-label", "Close"); $("#r-next").setAttribute("aria-label", "Next"); $("#r-prev").setAttribute("aria-label", "Previous"); $("#radar").setAttribute("aria-label", "Radar"); }
+  else $("#radar-btn").setAttribute("aria-label", "الرادار");
 
   // ---------- tasks ----------
   const taskIdeas = EN ? [
@@ -1387,7 +1641,7 @@ html.i18n-wait body{visibility:hidden}
   };
 
   // ---------- onboarding ----------
-  const updateHello = () => { $("#hello").textContent = EN ? (S.name ? `Hi ${S.name}! How can I help you today?` : "Hi! How can I help you today?") : S.name ? `هلا ${S.name}! وش أفزع لك اليوم؟` : "هلا! وش أفزع لك اليوم؟"; };
+  const updateHello = () => { $("#hello").textContent = greeting(); $("#hello-sub").textContent = L("وش أفزع لك اليوم؟ اكتب بكلامك العادي، أو اختر من تحت.", "How can I help today? Type the way you'd text a friend, or pick one below."); };
   function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = L("ابدأ", "Get started"); }
   $("#onb-go").onclick = () => {
     if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = L("يلا", "Let's go"); gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }
@@ -1581,7 +1835,8 @@ html.i18n-wait body{visibility:hidden}
   if (NATIVE) { const gp = $("#g-in p"); if (gp) gp.textContent = L("ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.", "Sign in with Google or Apple so you never lose your chats and reminders, and can open them from any device."); }
   // ---------- boot ----------
   if (!S.onb) showOnb();
-  updateHello(); renderChat(); renderMe(); loadHistory();
+  updateHello(); renderChat(); renderMe(); loadHistory(); refreshDay();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshDay(); });
   if (S.onb) joinFamily();
   syncPushUI();
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }

@@ -70,8 +70,8 @@ svg{display:block}
 
 /* tab bar */
 body.kb .tabs,body.kb .demo-note{display:none}
-.tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px calc(var(--bot) + 6px);border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:11px;font-weight:700}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(var(--bot) + 6px);border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap}
 .tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--ink)}
 .tab[aria-current="page"] .tab-dot{background:var(--red2)}
@@ -690,6 +690,27 @@ html.i18n-wait body{visibility:hidden}
       <div id="task-ideas"></div>
     </section>
 
+    <section class="view" id="v-crew" aria-label="طاقم عملك">
+    <div id="ag-main">
+      <h2 class="h2" id="ag-h2">يشتغلون عنك وأنت مرتاح</h2>
+      <p class="sub" id="ag-sub">كل واحد في طاقمك يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
+      <div class="agl" id="ag-list"></div>
+      <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف لطاقمك</p>
+      <div class="agt" id="ag-tpl"></div>
+    </div>
+    <div class="agf" id="ag-form" hidden>
+      <h2 class="h2" id="agf-title"></h2>
+      <p class="sub" id="agf-sub"></p>
+      <div id="agf-fields"></div>
+      <div class="row2">
+        <label class="field"><span id="agf-every-l">كل</span><select id="agf-every"></select></label>
+        <label class="field"><span id="agf-at-l">الساعة</span><input id="agf-at" type="time" value="09:00"></label>
+      </div>
+      <label class="field" id="agf-day-w" hidden><span id="agf-day-l">اليوم</span><select id="agf-day"></select></label>
+      <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">ضيفه للطاقم</button></div>
+    </div>
+    </section>
+
     <!-- account -->
     <section class="view" id="v-me" aria-label="حسابي">
       <div class="me-card"><div class="avatar" id="av">ف</div><div><b id="me-name">ضيف</b><span id="me-plan">الباقة المجانية · ١٠ تذكيرات بالشهر</span></div><button type="button" class="me-edit" id="me-edit">عدّل</button></div>
@@ -698,7 +719,6 @@ html.i18n-wait body{visibility:hidden}
       <div class="menu">
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-agents" id="me-agents"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5;font-size:17px">🛰️</span><span class="lbl">طاقم عملك<br><small id="ag-small">طاقمك اللي يشتغل عنك بالخلفية</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">مستنداتي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">٠ من ٣</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>ترقّى لـ Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -714,6 +734,7 @@ html.i18n-wait body{visibility:hidden}
 
   <nav class="tabs" aria-label="التنقل">
     <button class="tab" data-v="chat" aria-current="page"><svg><use href="#i-chat"/></svg>فزعة<i class="tab-dot"></i></button>
+    <button class="tab" data-v="crew"><svg><use href="#i-radar"/></svg><span id="tab-crew">طاقم عملك</span><i class="tab-dot"></i></button>
     <button class="tab" data-v="today"><svg><use href="#i-sun"/></svg>يومك<i class="tab-dot"></i></button>
     <button class="tab" data-v="tasks"><svg><use href="#i-clock"/></svg>المجدول<i class="tab-dot"></i></button>
     <button class="tab" data-v="me"><svg><use href="#i-user"/></svg>حسابي<i class="tab-dot"></i></button>
@@ -809,30 +830,6 @@ html.i18n-wait body{visibility:hidden}
     <div id="pap-on" hidden>
       <div id="pap-list"></div>
       <button class="btn btn-primary" type="button" id="pap-add" style="margin-top:16px">أضف ورقة</button>
-    </div>
-  </div>
-</section>
-
-<section class="sheet" id="s-agents" aria-label="طاقم عملك">
-  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ag-h1">طاقم عملك</h1><span style="width:42px"></span></header>
-  <div class="body">
-    <div id="ag-main">
-      <h2 class="h2" id="ag-h2">يشتغلون عنك وأنت مرتاح</h2>
-      <p class="sub" id="ag-sub">كل واحد في طاقمك يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
-      <div class="agl" id="ag-list"></div>
-      <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف لطاقمك</p>
-      <div class="agt" id="ag-tpl"></div>
-    </div>
-    <div class="agf" id="ag-form" hidden>
-      <h2 class="h2" id="agf-title"></h2>
-      <p class="sub" id="agf-sub"></p>
-      <div id="agf-fields"></div>
-      <div class="row2">
-        <label class="field"><span id="agf-every-l">كل</span><select id="agf-every"></select></label>
-        <label class="field"><span id="agf-at-l">الساعة</span><input id="agf-at" type="time" value="09:00"></label>
-      </div>
-      <label class="field" id="agf-day-w" hidden><span id="agf-day-l">اليوم</span><select id="agf-day"></select></label>
-      <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">ضيفه للطاقم</button></div>
     </div>
   </div>
 </section>
@@ -1029,7 +1026,7 @@ html.i18n-wait body{visibility:hidden}
   });
 
   // ---------- tabs ----------
-  const titles = EN ? { chat: "Fazaa", today: "Your day", tasks: "Schedule", me: "Account" } : { chat: "فزعة", today: "يومك", tasks: "المجدول", me: "حسابي" };
+  const titles = EN ? { chat: "Fazaa", crew: "Your crew", today: "Your day", tasks: "Schedule", me: "Account" } : { chat: "فزعة", crew: "طاقم عملك", today: "يومك", tasks: "المجدول", me: "حسابي" };
   const go = v => {
     $$(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
     $$(".tab").forEach(t => { if (t.dataset.v === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
@@ -1038,6 +1035,7 @@ html.i18n-wait body{visibility:hidden}
     if (v === "today") startStories();
     if (v === "tasks") renderTasks();
     if (v === "me") renderMe();
+    if (v === "crew") { agBack(); loadAgents(); }
   };
   $$(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.v)));
 
@@ -1352,6 +1350,14 @@ html.i18n-wait body{visibility:hidden}
     conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`),
       p: [[L("رتّبهم لي", "Sort them out"), L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `Help me sort out “${a.title}” and “${b.title}”`)], [L(`أجّل «${b.title}» ساعة`, `Push “${b.title}” an hour`), L(`أجّل «${b.title}» ساعة`, `Push “${b.title}” back an hour`)]] }));
     const tones = ["t-blue", "t-green", "t-sand"];
+    // آخر موجز وأخبار من طاقم عملك (موجز الصباح، الأخبار، فريقك)، مو كل الطاقم
+    (typeof AG !== "undefined" ? AG : []).filter(a => a.active && a.last_text && ["morning", "news", "team"].includes(a.kind)).slice(0, 3).forEach(a => {
+      const line = String(a.last_text).replace(/\s+/g, " ").trim();
+      C.push({ t: a.kind === "morning" ? "t-sand" : a.kind === "team" ? "t-green" : "t-blue", ic: a.kind === "morning" ? "i-sun" : "i-radar",
+        k: a.title, h: line.length > 90 ? line.slice(0, 88) + "…" : line, s: L("من طاقم عملك", "From your crew"),
+        say: L(`عطني تفاصيل أكثر عن آخر ${a.title}`, `Give me more on the latest ${a.title}`),
+        p: [[L("التفاصيل", "Details"), L(`عطني تفاصيل أكثر عن آخر ${a.title}`, `Give me more on the latest ${a.title}`)], [L("افتح طاقمك", "Open your crew"), "@crew"]] });
+    });
     reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now).sort((a, b) => a.t - b.t).slice(0, 3)
       .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks",
         p: [[L("وش بعده؟", "What's next?"), L("وش عندي بعده؟", "What do I have after that?")], [L("أجّله ساعة", "Push it an hour"), L(`أجّل «${x.title}» ساعة`, `Push “${x.title}” back an hour`)], [L("ذكّرني قبله بساعة", "Remind me an hour before"), L(`ذكّرني قبل «${x.title}» بساعة`, `Remind me an hour before “${x.title}”`)]] }));
@@ -1381,6 +1387,7 @@ html.i18n-wait body{visibility:hidden}
   const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
   function cardSay(t) {
     if (!t) return;
+    if (t === "@crew") { go("crew"); return; }
     if (t === "@photo") { const b = $("#att-btn") || $("#plus") || $("[data-att]"); if (b) b.click(); else toast(L("اضغط + تحت وأرسل الصورة", "Tap + below and send the photo")); return; }
     if (/[ :]$/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
   }
@@ -1679,7 +1686,7 @@ html.i18n-wait body{visibility:hidden}
     nutrition: ["🥗", "Nutrition", "Your calories and protein, with tips", "t-sand", "daily", "21:00"],
     custom: ["🔁", "Anything, on repeat", "Tell it what to do and when", "t-blue", "daily", "09:00"],
   } : {
-    morning: ["☀️", "موجز الصبح", "مواعيدك والطقس والأخبار كل صبح", "t-red", "daily", "07:00"],
+    morning: ["☀️", "موجز الصباح", "مواعيدك والطقس والأخبار كل صباح", "t-red", "daily", "07:00"],
     price: ["🏷️", "متابعة سعر", "ينبهك إذا نزل سعر منتج تبيه", "t-blue", "daily", "10:00"],
     travel: ["✈️", "أسعار الطيران", "يتابع رحلتك وينبهك إذا رخصت", "t-green", "daily", "11:00"],
     news: ["📰", "أخبار تهمك", "أهم الأخبار عن اللي تتابعه", "t-sand", "daily", "08:00"],
@@ -1703,7 +1710,7 @@ html.i18n-wait body{visibility:hidden}
   let AG = [], agKind = "";
   const agBadge = a => /^(https:\/\/api\.ifazaa\.com\/fz-app\/api\/badge\/\d+\.png|data:image\/png;base64,[A-Za-z0-9+\/=]+)$/.test(a.badge || "") ? a.badge : "";
   // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
-  setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); }).catch(() => {}), 1200);
+  setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
   function drawAgents() {
@@ -1714,9 +1721,10 @@ html.i18n-wait body{visibility:hidden}
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
     $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تشيله من الطاقم؟", "Remove from your crew?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
-    $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
+    if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
   async function loadAgents() { try { AG = (await api("/agents")).agents || []; } catch {} drawAgents(); syncBusy(); }
+  const redrawHomeCards = () => drawHome();
   async function agAct(id, action) {
     if (action === "run") toast(L("يشتغل الحين… ⏳", "On it… ⏳"));
     try {
@@ -1736,7 +1744,7 @@ html.i18n-wait body{visibility:hidden}
     $("#agf-title").textContent = v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
     $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph]) => `<label class="field"><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="120"></label>`).join("");
     $("#agf-every").value = v[4]; $("#agf-at").value = v[5]; $("#agf-day").value = "3"; $("#agf-every").onchange();
-    $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#s-agents .body").scrollTop = 0;
+    $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#v-crew").scrollTop = 0;
     const f = $("#agf-fields input"); if (f) setTimeout(() => f.focus(), 120);
   });
   const agBack = () => { $("#ag-form").hidden = true; $("#ag-main").hidden = false; };
@@ -1751,12 +1759,10 @@ html.i18n-wait body{visibility:hidden}
       AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
     } catch (e) { toast(e.message === "prime" ? L("المجاني فيه واحد شغّال في طاقمك. ترقّى لـ Prime ويصير طاقمك لين ١٠", "Free includes one active crew member. Upgrade to Prime for a crew of up to 10") : errText(e)); }
   };
-  $("#me-agents").addEventListener("click", () => { agBack(); loadAgents(); });
-  $("#th-agents").onclick = () => { closeThreads(); agBack(); openSheet("s-agents"); loadAgents(); };
+  $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {
-    [["#ag-h1", "Your crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add to your crew"],
+    [["#tab-crew", "Crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add to your crew"],
      ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
-    $("#me-agents .lbl").firstChild.nodeValue = "Your crew";
   }
 
   // ---------- tasks ----------

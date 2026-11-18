@@ -1,0 +1,24 @@
+# Fazaa (فزعة)
+
+> Fazaa is a smart personal assistant for people in Saudi Arabia and the Gulf, in Arabic (Saudi dialect by default, other dialects on request) and English. People talk to it in plain language by text, voice or photo on the Fazaa app (https://ifazaa.com/app/) or Telegram. It saves appointments and reminders, tracks document expiry dates (Istimara, Iqama, passport, license), writes messages and emails, searches the web with sources, plans trips and budgets, estimates meal calories from photos, and runs background agents (morning brief, price and flight tracking). Businesses can get an assistant on WhatsApp that answers customers and takes bookings.
+
+## Plans
+- Free forever, no card: 100 messages and 10 reminders a month.
+- Prime: SAR 199 a year. Up to 300 messages a month, unlimited reminders, a family member on the same plan, document tracking and Gmail reading.
+
+## Privacy
+- Chats are locked to the user; no one on the team reads them. Data is not sold, not used for ads, and not used to train AI models. Users delete everything themselves at any time.
+
+## Key pages
+- [Home (Arabic)](https://ifazaa.com/): what Fazaa does, plans, and the app
+- [Home (English)](https://ifazaa.com/en/)
+- [Fazaa app](https://ifazaa.com/app/): works in the browser on iPhone, Android and computers
+- [FAQ (Arabic)](https://ifazaa.com/asila.html) · [FAQ (English)](https://ifazaa.com/en/asila.html)
+- [Car registration (Istimara) renewal reminder](https://ifazaa.com/en/istimara-renewal-reminder.html) · [Arabic](https://ifazaa.com/tathkeer-istimara.html)
+- [Iqama expiry reminder](https://ifazaa.com/en/iqama-expiry-reminder.html) · [Arabic](https://ifazaa.com/tathkeer-iqama.html)
+- [Arabic AI assistant](https://ifazaa.com/en/arabic-ai-assistant.html) · [Arabic](https://ifazaa.com/musaed-thaki.html)
+- [For businesses](https://ifazaa.com/en/biz.html) · [Arabic](https://ifazaa.com/biz.html)
+- [Privacy policy](https://ifazaa.com/en/privacy.html) · [Terms](https://ifazaa.com/en/terms.html)
+
+## Contact
+- info@ifazaa.com · WhatsApp +966 53 000 4565

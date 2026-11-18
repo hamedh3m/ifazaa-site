@@ -1035,7 +1035,7 @@ html.i18n-wait body{visibility:hidden}
   const KEY = "fazaa-app-v1";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
   let S = Object.assign({ thread: 0, name: "", msgs: [], onb: false, hideInstall: false, brief: "07:00", token: "", email: "", lang: "" }, load());
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} try { window.__fzSync && window.__fzSync(); } catch {} };
 
   // ---------- toast / confirm ----------
   let tt;
@@ -1090,6 +1090,10 @@ html.i18n-wait body{visibility:hidden}
   const CAP = window.Capacitor, NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
   const NP = NATIVE ? (CAP.Plugins || {}) : {};
   const PLAT = NATIVE && CAP.getPlatform ? CAP.getPlatform() : "web";       // ios | android | web
+  // «شارك لفزعة»: إضافة المشاركة في الآيفون تحتاج مفتاح الجلسة، فنحفظه في سلسلة المفاتيح المشتركة (Keychain) عن طريق التطبيق
+  let nativeTok = "";
+  window.__fzSync = () => { const P = NP.FazaaShared; if (!P || !P.setSession || !S.token || nativeTok === S.token) return; nativeTok = S.token;
+    P.setSession({ token: S.token, api: API, name: S.name || "", lang: EN ? "en" : "ar" }).catch(() => { nativeTok = ""; }); };
   if (NATIVE) document.documentElement.classList.add("native");
   async function api(path, opt = {}) {
     let r;
@@ -1697,6 +1701,18 @@ html.i18n-wait body{visibility:hidden}
     loadHistory();
   }
   $("#call-btn").onclick = startCall; $("#c-end").onclick = endCall;
+  // من أزرار الجوال (مركز التحكم، شاشة القفل، زر الأكشن، الاختصارات): fazaa://call أو fazaa://chat أو fazaa://new
+  window.fzGo = what => {
+    try {
+      closeThreads(); closeSheets();
+      go("chat");
+      if (what === "call") { setTimeout(() => $("#call-btn").click(), 250); }
+      else if (what === "new") { $("#th-new").click(); setTimeout(() => inp.focus(), 400); }
+      else setTimeout(() => inp.focus(), 250);
+      return true;
+    } catch { return false; }
+  };
+  window.__fzSync();
   $("#c-mute").onclick = () => {
     CALL.muted = !CALL.muted; $("#c-mute").classList.toggle("off", CALL.muted);
     if (CALL.muted && CALL.rec && CALL.rec.state === "recording") { CALL.rec._cancel = true; try { CALL.rec.stop(); } catch {} cStatus(L("المايك مكتوم", "Mic muted")); }

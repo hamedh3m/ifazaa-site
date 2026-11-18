@@ -312,6 +312,8 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .at b{display:block;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ag .at span{font-size:13px;color:var(--muted)}
 .ag .ae{position:relative}
+.ag .ae.badge{background:#f3f3f1}
+.ag .ae img{width:30px;height:30px;object-fit:contain}
 .ag:not(.off) .ae::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid transparent;border-top-color:#ff4d64;border-right-color:rgba(255,77,100,.35);animation:sweep 1.6s linear infinite}
 .ag .live{display:inline-flex;align-items:center;gap:5px;color:#ff8a9b;font-weight:700}
 .ag .live i{width:6px;height:6px;border-radius:50%;background:#ff4d64;animation:blink 1.2s ease-in-out infinite}
@@ -696,7 +698,7 @@ html.i18n-wait body{visibility:hidden}
       <div class="menu">
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-agents" id="me-agents"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5;font-size:17px">🛰️</span><span class="lbl">المساعدين<br><small id="ag-small">فريقك اللي يشتغل عنك بالخلفية</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-agents" id="me-agents"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5;font-size:17px">🛰️</span><span class="lbl">طاقم عملك<br><small id="ag-small">طاقمك اللي يشتغل عنك بالخلفية</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">مستنداتي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">٠ من ٣</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>ترقّى لـ Prime</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -811,14 +813,14 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
-<section class="sheet" id="s-agents" aria-label="المساعدين">
-  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ag-h1">المساعدين</h1><span style="width:42px"></span></header>
+<section class="sheet" id="s-agents" aria-label="طاقم عملك">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ag-h1">طاقم عملك</h1><span style="width:42px"></span></header>
   <div class="body">
     <div id="ag-main">
-      <h2 class="h2" id="ag-h2">فريقك اللي يشتغل عنك</h2>
-      <p class="sub" id="ag-sub">كل مساعد يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
+      <h2 class="h2" id="ag-h2">يشتغلون عنك وأنت مرتاح</h2>
+      <p class="sub" id="ag-sub">كل واحد في طاقمك يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
       <div class="agl" id="ag-list"></div>
-      <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف مساعد</p>
+      <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف لطاقمك</p>
       <div class="agt" id="ag-tpl"></div>
     </div>
     <div class="agf" id="ag-form" hidden>
@@ -830,7 +832,7 @@ html.i18n-wait body{visibility:hidden}
         <label class="field"><span id="agf-at-l">الساعة</span><input id="agf-at" type="time" value="09:00"></label>
       </div>
       <label class="field" id="agf-day-w" hidden><span id="agf-day-l">اليوم</span><select id="agf-day"></select></label>
-      <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">شغّل المساعد</button></div>
+      <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">ضيفه للطاقم</button></div>
     </div>
   </div>
 </section>
@@ -939,7 +941,7 @@ html.i18n-wait body{visibility:hidden}
     <div class="dh"><b id="th-h">القائمة</b><button class="icon-btn" type="button" id="th-x" aria-label="إغلاق"><svg><use href="#i-x"/></svg></button></div>
     <button class="dprof" type="button" id="th-me"><span class="dav" id="th-av">ف</span><span class="dn"><b id="th-name">حسابي</b><small id="th-plan">مجاني</small></span><svg><use href="#i-chev"/></svg></button>
     <div class="dtiles">
-      <button type="button" id="th-agents"><i class="tsw"></i><span class="ti">🛰️</span><b id="th-ag-t">المساعدين</b></button>
+      <button type="button" id="th-agents"><i class="tsw"></i><span class="ti">🛰️</span><b id="th-ag-t">طاقمك</b></button>
       <button type="button" data-tsheet="s-papers"><span class="ti">📄</span><b>مستنداتي</b></button>
       <button type="button" data-tsheet="s-connect"><span class="ti">🔌</span><b>ربط</b></button>
       <button type="button" id="th-radar"><span class="ti">📡</span><b>الرادار</b></button>
@@ -1526,7 +1528,7 @@ html.i18n-wait body{visibility:hidden}
     clearTimeout(rtimer); const r = $("#radar"); if (r.hidden) return;
     r.classList.add("out"); setTimeout(() => { r.hidden = true; r.classList.remove("out"); syncRadar(); }, 190);
   }
-  $("#radar-btn").onclick = () => { RI = radarItems(); if (!RI.length) { toast(AG.some(a => a.active) ? L("الرادار هادي، ومساعدينك يدوّرون لك 🛰️", "All quiet, your helpers are on the lookout 🛰️") : L("الرادار هادي، ما فيه شي يحتاجك الحين", "All quiet, nothing needs you right now")); return; } openRadar(0); };
+  $("#radar-btn").onclick = () => { RI = radarItems(); if (!RI.length) { toast(AG.some(a => a.active) ? L("الرادار هادي، وطاقم عملك يدوّر لك 🛰️", "All quiet, your crew is on the lookout 🛰️") : L("الرادار هادي، ما فيه شي يحتاجك الحين", "All quiet, nothing needs you right now")); return; } openRadar(0); };
   const syncBusy = () => { const b = $("#radar-btn"); if (b) b.classList.toggle("busy", AG.some(a => a.active)); };
   $("#r-x").onclick = closeRadar;
   $("#r-next").onclick = () => ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar();
@@ -1672,6 +1674,7 @@ html.i18n-wait body{visibility:hidden}
     price: ["🏷️", "Price watch", "Tells you when a product gets cheaper", "t-blue", "daily", "10:00"],
     travel: ["✈️", "Flight prices", "Watches a route and tells you when it drops", "t-green", "daily", "11:00"],
     news: ["📰", "News for you", "The top stories on what you follow", "t-sand", "daily", "08:00"],
+    team: ["⚽", "Your team", "Matches, results, transfers and injuries, all of it", "t-green", "hours:6", "09:00"],
     finance: ["💰", "Finance", "Your spending vs your budget, every week", "t-green", "weekly", "20:00"],
     nutrition: ["🥗", "Nutrition", "Your calories and protein, with tips", "t-sand", "daily", "21:00"],
     custom: ["🔁", "Anything, on repeat", "Tell it what to do and when", "t-blue", "daily", "09:00"],
@@ -1680,6 +1683,7 @@ html.i18n-wait body{visibility:hidden}
     price: ["🏷️", "متابعة سعر", "ينبهك إذا نزل سعر منتج تبيه", "t-blue", "daily", "10:00"],
     travel: ["✈️", "أسعار الطيران", "يتابع رحلتك وينبهك إذا رخصت", "t-green", "daily", "11:00"],
     news: ["📰", "أخبار تهمك", "أهم الأخبار عن اللي تتابعه", "t-sand", "daily", "08:00"],
+    team: ["⚽", "فريقك المفضل", "مبارياته ونتايجه وانتقالاته وإصاباته، كل أخباره", "t-green", "hours:6", "09:00"],
     finance: ["💰", "المالية", "مصاريفك وميزانيتك كل أسبوع", "t-green", "weekly", "20:00"],
     nutrition: ["🥗", "التغذية", "سعراتك وبروتينك ونصيحة لبكرة", "t-sand", "daily", "21:00"],
     custom: ["🔁", "أي شي يتكرر", "قل له وش يسوي ومتى", "t-blue", "daily", "09:00"],
@@ -1689,6 +1693,7 @@ html.i18n-wait body{visibility:hidden}
     price: [["query", L("المنتج", "Product"), L("آيفون ١٧ برو ٢٥٦", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
     travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("إسطنبول", "Istanbul"), 1], ["date", L("التاريخ (اختياري)", "Date (optional)"), L("أول أسبوع في يناير", "First week of January")]],
     news: [["topics", L("وش تتابع؟", "What do you follow?"), L("الذهب، التقنية، الدوري", "Gold, tech, the league"), 1]],
+    team: [["team", L("وش فريقك؟", "Which team?"), L("الهلال", "Al Hilal"), 1], ["league", L("الدوري (اختياري)", "League (optional)"), L("دوري روشن", "Saudi Pro League")]],
     finance: [["budget", L("ميزانيتك بالشهر (ريال، اختياري)", "Monthly budget (SAR, optional)"), "6000"]],
     nutrition: [["goal", L("هدف السعرات باليوم (اختياري)", "Daily calorie goal (optional)"), "2000"], ["diet", L("نظامك (اختياري)", "Your diet (optional)"), L("كيتو، نباتي…", "Keto, vegetarian…")]],
     custom: [["task", L("وش تبي يسوي؟", "What should it do?"), L("أرسل لي سعر الذهب والدولار", "Send me the gold and dollar price"), 1]],
@@ -1696,30 +1701,31 @@ html.i18n-wait body{visibility:hidden}
   const EVN = { daily: L("كل يوم", "Every day"), weekly: L("كل أسبوع", "Every week"), "hours:12": L("كل ١٢ ساعة", "Every 12 hours"), "hours:6": L("كل ٦ ساعات", "Every 6 hours") };
   const WDAY = EN ? ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] : ["الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"];
   let AG = [], agKind = "";
+  const agBadge = a => /^(https:\/\/api\.ifazaa\.com\/fz-app\/api\/badge\/\d+\.png|data:image\/png;base64,[A-Za-z0-9+\/=]+)$/.test(a.badge || "") ? a.badge : "";
   // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
   setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); }).catch(() => {}), 1200);
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
   function drawAgents() {
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}"><div class="ah"><span class="ae">${a.emoji}</span><div class="at"><b>${esc(a.title)}</b><span>${a.active ? `<span class="live"><i></i>${L("يدوّر لك", "On the lookout")}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div></div>`
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(a.title)}</b><span>${a.active ? `<span class="live"><i></i>${L("يدوّر لك", "On the lookout")}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div></div>`
       + (a.last_text ? `<div class="al">${esc(a.last_text)}</div>` : "")
       + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button><button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
-      : `<p class="note">${L("ما عندك مساعدين للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون ١٧».", "No helpers yet. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
+      : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون ١٧».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
-    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تحذف المساعد؟", "Delete this helper?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
-    $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("فريقك اللي يشتغل عنك بالخلفية", "Your team working in the background");
+    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تشيله من الطاقم؟", "Remove from your crew?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
+    $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
   async function loadAgents() { try { AG = (await api("/agents")).agents || []; } catch {} drawAgents(); syncBusy(); }
   async function agAct(id, action) {
-    if (action === "run") toast(L("المساعد يشتغل… ⏳", "The helper is working… ⏳"));
+    if (action === "run") toast(L("يشتغل الحين… ⏳", "On it… ⏳"));
     try {
       const r = await api(`/agents/${id}/${action}`, { method: "POST" });
       if (action === "delete") AG = AG.filter(a => String(a.id) !== String(id));
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
       if (action === "run") { toast(r.sent ? L("وصلك الرد في المحادثة ✅", "Its result is in your chat ✅") : L("ما لقى شي جديد للحين", "Nothing new yet")); if (r.sent) { lastId = 0; loadHistory(); } }
-    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? L("المجاني فيه مساعد واحد شغّال. ترقّى لـ Prime لين ١٠ مساعدين", "Free includes one active helper. Upgrade to Prime for up to 10") : errText(e)); }
+    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? L("المجاني فيه واحد شغّال في طاقمك. ترقّى لـ Prime ويصير طاقمك لين ١٠", "Free includes one active crew member. Upgrade to Prime for a crew of up to 10") : errText(e)); }
   }
   $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => `<button type="button" class="${v[3]}" data-agk="${k}"><i>${v[0]}</i><b>${v[1]}</b><span>${v[2]}</span></button>`).join("");
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
@@ -1739,18 +1745,18 @@ html.i18n-wait body{visibility:hidden}
     const cfg = {}; let missing = false;
     AGF[agKind].forEach(([k, , , req]) => { const v = $(`[data-agf="${k}"]`).value.trim(); if (v) cfg[k] = v; else if (req) missing = true; });
     if (missing) { toast(L("عبّ الخانة المطلوبة", "Fill in the required field")); return; }
-    const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? `${cfg.from} ← ${cfg.to}` : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
+    const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? `${cfg.from} ← ${cfg.to}` : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "team" ? cfg.team : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
     try {
       const r = await api("/agents", { method: "POST", body: JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" }) });
-      AG.push(r.agent); drawAgents(); agBack(); toast(L("المساعد شغّال ✅", "Your helper is on ✅"));
-    } catch (e) { toast(e.message === "prime" ? L("المجاني فيه مساعد واحد شغّال. ترقّى لـ Prime لين ١٠ مساعدين", "Free includes one active helper. Upgrade to Prime for up to 10") : errText(e)); }
+      AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
+    } catch (e) { toast(e.message === "prime" ? L("المجاني فيه واحد شغّال في طاقمك. ترقّى لـ Prime ويصير طاقمك لين ١٠", "Free includes one active crew member. Upgrade to Prime for a crew of up to 10") : errText(e)); }
   };
   $("#me-agents").addEventListener("click", () => { agBack(); loadAgents(); });
   $("#th-agents").onclick = () => { closeThreads(); agBack(); openSheet("s-agents"); loadAgents(); };
   if (EN) {
-    [["#ag-h1", "Helpers"], ["#ag-h2", "Your team, working for you"], ["#ag-sub", "Each helper works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add a helper"],
-     ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Start the helper"], ["#th-ag-t", "Helpers"]].forEach(([q, t]) => { $(q).textContent = t; });
-    $("#me-agents .lbl").firstChild.nodeValue = "Helpers";
+    [["#ag-h1", "Your crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add to your crew"],
+     ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
+    $("#me-agents .lbl").firstChild.nodeValue = "Your crew";
   }
 
   // ---------- tasks ----------

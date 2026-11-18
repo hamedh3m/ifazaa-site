@@ -1764,6 +1764,8 @@ html.i18n-wait body{visibility:hidden}
     }
     el.insertBefore(box, el.querySelector("time"));
   }
+const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A Prime feature")}</h3><p>${t}</p><button type="button" class="btn btn-primary" data-goplans style="width:100%">${L("شوف Prime", "See Prime")}</button></div>`;
+  const wirePlans = el => el.querySelectorAll("[data-goplans]").forEach(b => b.onclick = () => openSheet("s-plans"));
   async function loadMeds() { try { MEDS = await api("/meds"); } catch {} drawMeds(); drawHome(); }
   function drawMeds() {
     const b = $("#meds-body"); if (!b) return;
@@ -1771,6 +1773,10 @@ html.i18n-wait body{visibility:hidden}
     const day = d => d.toLocaleDateString(EN ? "en-GB" : "ar-SA", { weekday: "short", day: "numeric", month: "short" });
     const rows = (MEDS.log || []).map(x => { const due = new Date(x.due_at), tk = x.taken_at ? new Date(x.taken_at) : null, s_ = st[x.status] || [x.status, ""];
       return `<div class="medl"><div class="mt"><b>${esc(x.title)}</b><small>${day(due)} · ${L("موعده", "Due")} ${fmtTime(due)}${tk ? ` · ${L("أخذته", "Taken")} ${day(tk)} ${fmtTime(tk)}` : ""}</small></div>${x.status === "pending" ? `<button type="button" class="btn btn-primary" data-med="${x.id}" style="padding:8px 14px">${L("أخذته", "Taken")}</button>` : `<span class="st ${s_[1]}">${s_[0]}</span>`}</div>`; }).join("");
+    if (MEDS.prime === false) {
+      b.innerHTML = `<h2 class="h2">${L("سجل أدويتك", "Your medicine log")}</h2>` + primeBox(L("مع Prime، لما يجي وقت دواك فزعة يسألك «أخذته؟»، وتضغط «أخذته» ونسجل التاريخ والوقت بالضبط، وتشوف سجلك كامل.", "With Prime, Fazaa asks if you took your medicine on time, you tap «Taken» and we log the exact date and time, with your full history."));
+      wirePlans(b); return;
+    }
     b.innerHTML = `<h2 class="h2">${L("سجل أدويتك", "Your medicine log")}</h2>
       <p class="sub">${L("لما يجي وقت دواك فزعة يسألك «أخذته؟». اضغط «أخذته» ونسجل التاريخ والوقت بالضبط.", "When it's time for your medicine, Fazaa asks if you took it. Tap «Taken» and we log the exact date and time.")}</p>
       <div class="care-box"><h3>${L("أخذت دواء الحين؟", "Took a medicine just now?")}</h3><div class="care-row"><input id="med-now" class="inp-like" maxlength="60" placeholder="${L("مثلاً: حبة الضغط", "e.g. blood pressure pill")}" style="flex:2;min-width:150px;padding:12px;border-radius:14px;background:var(--s2);border:1px solid var(--line);color:var(--ink)"><button type="button" class="btn btn-primary" id="med-now-go">${L("سجّل", "Log it")}</button></div></div>
@@ -1783,7 +1789,8 @@ html.i18n-wait body{visibility:hidden}
   const telOk = v => /^\+?[0-9]{6,15}$/.test(String(v || "").replace(/[\s-]/g, ""));
   const telOf = v => String(v || "").replace(/[\s-]/g, "").replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
   const mapLink = p => /Android/i.test(navigator.userAgent) ? `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}` : `https://maps.apple.com/?daddr=${p.lat},${p.lng}&q=${encodeURIComponent(p.name)}`;
-  let carePlaces = null, careMsg = "";
+  let carePlaces = null, careMsg = "", careFallback = null;
+  const mapSearch = p => /Android/i.test(navigator.userAgent) ? `https://www.google.com/maps/search/${encodeURIComponent(L("مستشفى طوارئ", "emergency hospital"))}/@${p.lat},${p.lng},14z` : `https://maps.apple.com/?q=${encodeURIComponent(L("مستشفى طوارئ", "emergency hospital"))}&sll=${p.lat},${p.lng}`;
   function drawCare() {
     const b = $("#care-body"); if (!b) return;
     const em = S.emPhone ? `<div class="care-row"><a class="btn btn-primary" href="tel:${esc(telOf(S.emPhone))}">${L("اتصل على", "Call")} ${esc(S.emName || L("الشخص القريب", "your contact"))}</a><button type="button" class="btn btn-ghost" id="em-edit">${L("عدّل", "Edit")}</button></div>`
@@ -1794,11 +1801,13 @@ html.i18n-wait body{visibility:hidden}
          <button type="button" class="btn btn-ghost" id="loc-off" style="width:100%;margin-top:8px">${L("وقّف استخدام موقعي", "Stop using my location")}</button>`
       : `<button type="button" class="btn btn-primary" id="loc-on" style="width:100%">📍 ${L("اسمح بموقعي وقت الطوارئ", "Allow my location for emergencies")}</button>`;
     const list = carePlaces ? (carePlaces.length ? carePlaces.map(p => `<div class="care-pl"><div class="cn"><b>${esc(p.name)}</b><small>${p.type === "hospital" ? L("مستشفى", "Hospital") : L("مستوصف", "Clinic")} · ${EN ? p.km + " km" : AR(p.km) + " كم"}</small></div>${telOk(p.phone) ? `<a href="tel:${esc(telOf(p.phone))}">${L("اتصل", "Call")}</a>` : ""}<a href="${esc(mapLink(p))}" target="_blank" rel="noopener">${L("الطريق", "Directions")}</a></div>`).join("")
-      : `<p class="note">${L("ما لقيت مستشفى قريب على الخريطة. اتصل بالإسعاف ٩٩٧.", "No hospital found nearby on the map. Call 997.")}</p>`) : (careMsg ? `<p class="note">${esc(careMsg)}</p>` : "");
+      : `<p class="note">${L("ما لقيت مستشفى قريب على الخريطة. اتصل بالإسعاف ٩٩٧.", "No hospital found nearby on the map. Call 997.")}</p>`) : (careMsg ? `<p class="note">${esc(careMsg)}</p>` : careFallback ? `<a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none" href="${esc(mapSearch(careFallback))}" target="_blank" rel="noopener">🗺️ ${L("افتح أقرب مستشفى في الخرائط", "Open the nearest hospital in Maps")}</a>` : "");
     b.innerHTML = `<h2 class="h2">${L("وقت الطوارئ، فزعة معك", "In an emergency, Fazaa has your back")}</h2>
       <a class="care-sos" href="tel:997">🚑 ${L("اتصل بالإسعاف ٩٩٧", "Call an ambulance 997")}</a>
-      <div class="care-box"><h3>${L("أقرب مستشفى", "Nearest hospital")}</h3><p>${L("اختياري. إذا سمحت، فزعة يشوف موقعك بس لما تطلب أقرب مستشفى أو مستوصف. ما نحفظ موقعك.", "Optional. If you allow it, Fazaa checks your location only when you ask for the nearest hospital or clinic. We don't store it.")}</p>${loc}${list ? `<div style="margin-top:10px">${list}</div>` : ""}</div>
-      <div class="care-box"><h3>${L("شخص قريب منك", "Emergency contact")}</h3><p>${L("اختياري. رقم شخص تثق فيه، تتصل عليه بضغطة. يتخزن على جوالك بس.", "Optional. Someone you trust, one tap to call. Saved on your phone only.")}</p>${em}</div>`;
+      ${S.paid ? "" : primeBox(L("مع Prime: فزعة يلقى لك أقرب مستشفى أو مستوصف من موقعك وقتها، ويحفظ رقم شخص قريب منك تتصل عليه بضغطة.", "With Prime: Fazaa finds the nearest hospital or clinic from your location when you need it, and keeps an emergency contact one tap away."))}
+      <div class="care-box"${S.paid ? "" : " hidden"}><h3>${L("أقرب مستشفى", "Nearest hospital")}</h3><p>${L("اختياري. إذا سمحت، فزعة يشوف موقعك بس لما تطلب أقرب مستشفى أو مستوصف. ما نحفظ موقعك.", "Optional. If you allow it, Fazaa checks your location only when you ask for the nearest hospital or clinic. We don't store it.")}</p>${loc}${list ? `<div style="margin-top:10px">${list}</div>` : ""}</div>
+      <div class="care-box"${S.paid ? "" : " hidden"}><h3>${L("شخص قريب منك", "Emergency contact")}</h3><p>${L("اختياري. رقم شخص تثق فيه، تتصل عليه بضغطة. يتخزن على جوالك بس.", "Optional. Someone you trust, one tap to call. Saved on your phone only.")}</p>${em}</div>`;
+    wirePlans(b);
     const on = (id, f) => { const e = $("#" + id); if (e) e.onclick = f; };
     on("em-save", () => { const n = $("#em-name").value.trim(), ph = telOf($("#em-phone").value); if (!telOk(ph)) { toast(L("اكتب رقم جوال صحيح", "Enter a valid mobile number")); return; } S.emName = n.slice(0, 30); S.emPhone = ph; save(); drawCare(); syncCareSmall(); toast(L("انحفظ ✅", "Saved ✅")); });
     on("em-edit", () => { const n = S.emName, ph = S.emPhone; S.emPhone = ""; drawCare(); $("#em-name").value = n || ""; $("#em-phone").value = ph || ""; S.emPhone = ph; });
@@ -1809,13 +1818,17 @@ html.i18n-wait body{visibility:hidden}
   const syncCareSmall = () => { const e = $("#care-small"); if (e) e.textContent = S.emPhone ? `${L("شخص قريب", "Contact")}: ${S.emName || S.emPhone}` + (S.locOk ? L(" · الموقع مسموح", " · location on") : "") : L("أقرب مستشفى ورقم شخص قريب منك (اختياري)", "Nearest hospital and an emergency contact (optional)"); };
   function getLoc(first) {
     if (!navigator.geolocation) { toast(L("جوالك ما يدعم الموقع هنا", "Location isn't available here")); return; }
-    careMsg = L("أدوّر على أقرب مستشفى… ⏳", "Finding the nearest hospital… ⏳"); carePlaces = null; drawCare();
+    careMsg = L("أدوّر على أقرب مستشفى… ⏳", "Finding the nearest hospital… ⏳"); carePlaces = null; careFallback = null; drawCare();
     navigator.geolocation.getCurrentPosition(async pos => {
       if (first) { S.locOk = true; save(); syncCareSmall(); }
       try {
         const r = await api("/care", { method: "POST", body: JSON.stringify({ lat: +pos.coords.latitude.toFixed(4), lng: +pos.coords.longitude.toFixed(4), lang: EN ? "en" : "ar" }) });
         carePlaces = r.places || []; careMsg = "";
-      } catch { carePlaces = null; careMsg = L("ما قدرت أوصل للخريطة الحين. اتصل بالإسعاف ٩٩٧ لو الوضع مستعجل.", "Couldn't reach the map right now. Call 997 if it's urgent."); }
+      } catch (e) {
+        carePlaces = null;
+        if (e && e.message === "prime") { S.paid = false; save(); careMsg = ""; drawCare(); return; }
+        careMsg = ""; careFallback = { lat: +pos.coords.latitude.toFixed(4), lng: +pos.coords.longitude.toFixed(4) };
+      }
       drawCare();
     }, () => { careMsg = L("ما وصلني موقعك. اسمح لفزعة بالموقع من إعدادات جوالك.", "Couldn't get your location. Allow it for Fazaa in your phone settings."); carePlaces = null; drawCare(); },
     { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
@@ -1922,6 +1935,7 @@ html.i18n-wait body{visibility:hidden}
     $("#set-name").value = S.name || "";
     api("/me").then(m => {
       const paid = m.plan && m.plan !== "free";
+      if (S.paid !== !!paid) { S.paid = !!paid; save(); }
       $("#plan-chip").textContent = paid ? "Prime" : L("مجاني", "Free");
       $("#tier-prime .cur-b").hidden = !paid; $("#tier-free .cur-b").hidden = paid; $("#buy").hidden = paid;
       $("#me-plan").textContent = paid ? ("Prime" + (m.plan_until ? L(" · لين ", " · until ") + AR(m.plan_until.slice(0, 10)) : ""))

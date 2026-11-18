@@ -111,6 +111,12 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .send.go{background:var(--ink)}
 .send svg{width:20px;height:20px}
 .send.go svg{color:#111}
+.send.att{background:transparent}
+.send.rec{background:#e0213b;animation:recp 1.2s ease-in-out infinite}
+.send.rec svg{color:#fff}
+@keyframes recp{50%{box-shadow:0 0 0 8px rgba(224,33,59,.18)}}
+.recbar{display:flex;align-items:center;gap:8px;flex:1;min-height:40px;padding:0 10px;color:#e0213b;font-weight:700;font-variant-numeric:tabular-nums}
+.recbar button{margin-inline-start:auto;color:var(--mut,#9d9da4);font-size:14px}
 .pushbar{margin:0 12px 6px;padding:10px 12px;border-radius:16px;background:rgba(224,33,59,.12);border:1px solid rgba(224,33,59,.3);display:flex;align-items:center;gap:10px;font-size:14px}
 .pushbar[hidden]{display:none}
 .pushbar span{flex:1}
@@ -441,6 +447,8 @@ html.i18n-wait body{visibility:hidden}
       <div class="pushbar" id="pushbar" hidden><span>🔔 فعّل التنبيهات عشان توصلك تذكيراتك حتى والتطبيق مسكّر</span><button class="go" type="button" id="push-go">فعّل</button><button class="x" type="button" id="push-x" aria-label="إخفاء"><svg><use href="#i-x"/></svg></button></div>
       <div class="composer">
         <div class="comp">
+          <button class="send att" id="att" type="button" aria-label="أرفق صورة أو ملف"><svg><use href="#i-plus"/></svg></button>
+          <input id="file" type="file" accept="image/*,application/pdf" hidden>
           <textarea id="inp" rows="1" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
           <button class="send" id="send" type="button" aria-label="أرسل"><svg id="send-ic"><use href="#i-mic"/></svg></button>
         </div>
@@ -793,10 +801,15 @@ html.i18n-wait body{visibility:hidden}
     } catch { throw new Error("offline"); }
     if (r.status === 429) throw new Error("rate");
     if (r.status === 402) throw new Error("prime");
+    if (r.status === 413) throw new Error("size");
+    if (r.status === 415) throw new Error("type");
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
   const errText = e => e.message === "rate" ? L("شوي شوي 🙏 جرب بعد دقيقة", "Easy there 🙏 try again in a minute")
+    : e.message === "size" ? L("الملف كبير، الحد ٥ ميقا", "That file is too big (5 MB max)")
+    : e.message === "type" ? L("أقدر أقرا الصور وملفات PDF بس", "I can read photos and PDF files only")
+    : e.message === "mic" ? L("اسمح لفزعة يستخدم المايك من الإعدادات", "Allow Fazaa to use the microphone in Settings")
     : e.message === "offline" ? L("فزعة مو متصل الحين، جرب بعد شوي", "Fazaa isn't reachable right now, try again shortly")
     : L("صار خلل بسيط، جرب مرة ثانية", "Something went wrong, please try again");
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -873,7 +886,81 @@ html.i18n-wait body{visibility:hidden}
   const syncSend = () => { const has = !!inp.value.trim(); send.classList.toggle("go", has); $("#send-ic").innerHTML = `<use href="#${has ? "i-send" : "i-mic"}"/>`; send.setAttribute("aria-label", has ? L("أرسل", "Send") : L("فويس", "Voice")); };
   inp.addEventListener("input", () => { grow(); syncSend(); });
   inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); submit(); } });
-  send.addEventListener("click", () => inp.value.trim() ? submit() : toast(L("الفويس قريباً في التطبيق، وهو شغال على تيليجرام", "Voice is coming soon to the app, and it already works on Telegram")));
+  send.addEventListener("click", () => inp.value.trim() ? submit() : (rec ? stopRec(true) : startRec()));
+
+  // ---------- صورة أو ملف أو فويس: نفس طريقة الرسالة، والسيرفر يتحقق من النوع والحجم ----------
+  const toB64 = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1] || ""); r.onerror = rej; r.readAsDataURL(blob); });
+  async function shrink(file) {
+    // الصور: نصغرها لـ ١٦٠٠ بكسل JPEG (أسرع وأرخص، وتكفي لقراءة الفاتورة أو الورقة)
+    try {
+      const bmp = await createImageBitmap(file);
+      const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
+      const cv = document.createElement("canvas"); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+      cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+      return await new Promise(r => cv.toBlob(b => r(b || file), "image/jpeg", 0.82));
+    } catch { return file; }
+  }
+  async function sendMedia(kind, blob, label) {
+    if (busy) return;
+    if (blob.size > 5_000_000) { toast(errText(new Error("size"))); return; }
+    busy = true;
+    const caption = kind === "image" ? inp.value.trim() : "";
+    if (caption) { inp.value = ""; grow(); syncSend(); }
+    $("#empty").style.display = "none";
+    const me = { me: true, text: label + (caption ? " " + caption : ""), ts: Date.now() }; S.msgs.push(me); bubble(me); save();
+    const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
+    msgs.scrollTop = msgs.scrollHeight;
+    try {
+      const data = await toB64(blob);
+      const r = await api(kind === "image" ? "/image" : "/voice", { method: "POST", body: JSON.stringify({ [kind === "image" ? "image" : "audio"]: data, text: caption, name: S.name || "", client: PLAT }) });
+      ty.remove();
+      const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
+      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(bot);
+      lastId = Math.max(lastId, r.last || 0); save();
+    } catch (e) {
+      ty.remove(); toast(errText(e)); S.msgs.pop(); save(); renderChat();
+      if (caption) { inp.value = caption; grow(); syncSend(); }
+    }
+    busy = false; msgs.scrollTop = msgs.scrollHeight;
+  }
+  const fileIn = $("#file");
+  $("#att").setAttribute("aria-label", L("أرفق صورة أو ملف", "Attach a photo or file"));
+  $("#att").addEventListener("click", () => fileIn.click());
+  fileIn.addEventListener("change", async () => {
+    const f = fileIn.files && fileIn.files[0]; fileIn.value = ""; if (!f) return;
+    if (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) return sendMedia("image", f, "📄 " + L("ملف", "File"));
+    if (!/^image\//.test(f.type) && !/\.(heic|heif|jpe?g|png|webp|gif)$/i.test(f.name)) { toast(errText(new Error("type"))); return; }
+    sendMedia("image", await shrink(f), "📷 " + L("صورة", "Photo"));
+  });
+  let rec = null, recChunks = [], recT0 = 0, recTimer = null;
+  async function startRec() {
+    if (busy) return;
+    if (!navigator.mediaDevices || !window.MediaRecorder) { toast(L("جوالك ما يدعم التسجيل هنا", "Recording isn't supported here")); return; }
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { toast(errText(new Error("mic"))); return; }
+    const type = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"].find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || "";
+    rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined); recChunks = [];
+    rec.ondataavailable = e => { if (e.data && e.data.size) recChunks.push(e.data); };
+    rec.start(); recT0 = Date.now();
+    send.classList.add("rec"); send.setAttribute("aria-label", L("أوقف وأرسل", "Stop and send")); $("#send-ic").innerHTML = `<use href="#i-send"/>`;
+    inp.style.display = "none"; $("#att").style.display = "none";
+    const bar = document.createElement("div"); bar.className = "recbar"; bar.id = "recbar";
+    bar.innerHTML = `<span id="rect">0:00</span><button type="button" id="reccancel">${L("إلغاء", "Cancel")}</button>`;
+    send.before(bar); $("#reccancel").onclick = () => stopRec(false);
+    recTimer = setInterval(() => { const t = Math.floor((Date.now() - recT0) / 1000); $("#rect").textContent = Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); if (t >= 120) stopRec(true); }, 250);
+  }
+  function stopRec(go) {
+    if (!rec) return;
+    const r = rec; rec = null; clearInterval(recTimer);
+    r.onstop = () => {
+      r.stream.getTracks().forEach(t => t.stop());
+      const blob = new Blob(recChunks, { type: r.mimeType || "audio/mp4" });
+      if (go && Date.now() - recT0 > 700 && blob.size > 1000) sendMedia("voice", blob, "🎙️ " + L("رسالة صوتية", "Voice note"));
+    };
+    try { r.stop(); } catch {}
+    send.classList.remove("rec"); const b = $("#recbar"); if (b) b.remove();
+    inp.style.display = ""; $("#att").style.display = ""; syncSend();
+  }
 
   // ---------- today (stories) ----------
   let si = 0, stimer;
@@ -1499,7 +1586,7 @@ html.i18n-wait body{visibility:hidden}
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v39".slice(10);
+  const APPV = "fazaa-app-v40".slice(10);
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

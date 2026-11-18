@@ -69,6 +69,7 @@ svg{display:block}
 .sub{color:var(--muted);font-size:15px}
 
 /* tab bar */
+body.kb .tabs,body.kb .demo-note{display:none}
 .tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px calc(var(--bot) + 6px);border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:11px;font-weight:700}
 .tab svg{width:24px;height:24px}
@@ -803,6 +804,10 @@ html.i18n-wait body{visibility:hidden}
 
   // ---------- chat ui ----------
   const msgs = $("#msgs"), inp = $("#inp"), send = $("#send");
+  // الكيبورد مفتوح: نخفي شريط التنقل تحت عشان المحادثة تاخذ المساحة كلها
+  const typing = el => el && (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && !/^(checkbox|radio|button|submit|range|file)$/.test(el.type)));
+  document.addEventListener("focusin", e => { if (typing(e.target)) { document.body.classList.add("kb"); if (e.target === inp) setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 250); } });
+  document.addEventListener("focusout", () => setTimeout(() => { if (!typing(document.activeElement)) document.body.classList.remove("kb"); }, 60));
   const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
     : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي ١٠ يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
   $("#chips").innerHTML = ideas.map(i => `<button class="chip" type="button">${i}<svg><use href="#i-chev"/></svg></button>`).join("");
@@ -1494,7 +1499,7 @@ html.i18n-wait body{visibility:hidden}
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v38".slice(10);
+  const APPV = "fazaa-app-v39".slice(10);
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

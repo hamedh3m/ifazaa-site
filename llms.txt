@@ -3,8 +3,8 @@
 > Fazaa is a smart personal assistant for people in Saudi Arabia and the Gulf, in Arabic (Saudi dialect by default, other dialects on request) and English. People talk to it in plain language by text, voice or photo on the Fazaa app (https://ifazaa.com/app/) or Telegram. It saves appointments and reminders, tracks document expiry dates (Istimara, Iqama, passport, license), writes messages and emails, searches the web with sources, plans trips and budgets, estimates meal calories from photos, and runs background agents (morning brief, price and flight tracking). Businesses can get an assistant on WhatsApp that answers customers and takes bookings.
 
 ## Plans
-- Free forever, no card: 100 messages and 10 reminders a month.
-- Prime: SAR 199 a year. Up to 300 messages a month, unlimited reminders, a family member on the same plan, document tracking and Gmail reading.
+- Free forever, no card: 100 messages, 10 reminders and 10 AI images a month.
+- Prime: SAR 199 a year. Up to 300 messages a month, unlimited reminders, a family member on the same plan, document tracking, Gmail reading, 70 AI images a month (creation and editing, with correct Arabic text), and a designed website for your business in minutes.
 
 ## Privacy
 - Chats are locked to the user; no one on the team reads them. Data is not sold, not used for ads, and not used to train AI models. Users delete everything themselves at any time.
@@ -14,9 +14,14 @@
 - [Home (English)](https://ifazaa.com/en/)
 - [Fazaa app](https://ifazaa.com/app/): works in the browser on iPhone, Android and computers
 - [FAQ (Arabic)](https://ifazaa.com/asila.html) · [FAQ (English)](https://ifazaa.com/en/asila.html)
+- [All guides](https://ifazaa.com/en/guides.html) · [Arabic](https://ifazaa.com/adilla.html)
 - [Car registration (Istimara) renewal reminder](https://ifazaa.com/en/istimara-renewal-reminder.html) · [Arabic](https://ifazaa.com/tathkeer-istimara.html)
 - [Iqama expiry reminder](https://ifazaa.com/en/iqama-expiry-reminder.html) · [Arabic](https://ifazaa.com/tathkeer-iqama.html)
-- [Arabic AI assistant](https://ifazaa.com/en/arabic-ai-assistant.html) · [Arabic](https://ifazaa.com/musaed-thaki.html)
+- [Arabic AI assistant for daily life](https://ifazaa.com/en/arabic-ai-assistant.html) · [Arabic](https://ifazaa.com/musaed-thaki.html)
+- [Passport renewal reminder](https://ifazaa.com/en/passport-renewal-reminder.html) · [Arabic](https://ifazaa.com/tathkeer-jawaz.html)
+- [Child vaccination reminder](https://ifazaa.com/en/vaccination-reminder.html) · [Arabic](https://ifazaa.com/tathkeer-tateemat.html)
+- [Split the bill fairly](https://ifazaa.com/en/split-the-bill.html) · [Arabic](https://ifazaa.com/taqseem-alfatura.html)
+- [AI assistant for home businesses](https://ifazaa.com/en/home-business-assistant.html) · [Arabic](https://ifazaa.com/alusar-almuntija.html)
 - [For businesses](https://ifazaa.com/en/biz.html) · [Arabic](https://ifazaa.com/biz.html)
 - [Privacy policy](https://ifazaa.com/en/privacy.html) · [Terms](https://ifazaa.com/en/terms.html)
 

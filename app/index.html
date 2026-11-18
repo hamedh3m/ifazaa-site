@@ -817,6 +817,8 @@ html.i18n-wait body{visibility:hidden}
 
   // ---------- chat ui ----------
   const msgs = $("#msgs"), inp = $("#inp"), send = $("#send");
+  // تطبيق الآيفون: نشيل شريط (السابق، التالي، تم) اللي فوق الكيبورد (يحتاج إضافة Keyboard في النسخة الأصلية)
+  try { const KB = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Keyboard; if (KB && KB.setAccessoryBarVisible) KB.setAccessoryBarVisible({ isVisible: false }).catch(() => {}); } catch {}
   // الكيبورد مفتوح: نخفي شريط التنقل تحت عشان المحادثة تاخذ المساحة كلها
   const typing = el => el && (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && !/^(checkbox|radio|button|submit|range|file)$/.test(el.type)));
   document.addEventListener("focusin", e => { if (typing(e.target)) { document.body.classList.add("kb"); if (e.target === inp) setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 250); } });
@@ -1586,7 +1588,7 @@ html.i18n-wait body{visibility:hidden}
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v40".slice(10);
+  const APPV = "fazaa-app-v41".slice(10);
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

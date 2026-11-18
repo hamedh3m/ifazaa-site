@@ -1377,8 +1377,6 @@ html.i18n-wait body{visibility:hidden}
     conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`),
       p: [[L("رتّبهم لي", "Sort them out"), L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `Help me sort out “${a.title}” and “${b.title}”`)], [L(`أجّل «${b.title}» ساعة`, `Push “${b.title}” an hour`), L(`أجّل «${b.title}» ساعة`, `Push “${b.title}” back an hour`)]] }));
     const tones = ["t-blue", "t-green", "t-sand"];
-    (typeof MEDS !== "undefined" ? MEDS.pending : []).slice(0, 2).forEach(x => C.push({ t: "t-red", ic: "i-clock", k: L("دواك", "Your medicine"), h: L(`أخذت «${x.title}»؟`, `Did you take “${x.title}”?`), s: L("اضغط «أخذته» ونسجل الوقت", "Tap «Taken» and we log the time"), sheet: "s-meds",
-      p: [[L("أخذته ✅", "Taken ✅"), "@med:" + x.id], [L("سجل أدويتي", "My medicine log"), "@meds"]] }));
     // آخر موجز وأخبار من طاقم عملك (موجز الصباح، الأخبار، فريقك)، مو كل الطاقم
     (typeof AG !== "undefined" ? AG : []).filter(a => a.active && a.last_text && ["morning", "news", "team"].includes(a.kind)).slice(0, 3).forEach(a => {
       const line = String(a.last_text).replace(/\s+/g, " ").trim();
@@ -1389,7 +1387,7 @@ html.i18n-wait body{visibility:hidden}
     });
     reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now).sort((a, b) => a.t - b.t).slice(0, 3)
       .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks",
-        p: [[L("وش بعده؟", "What's next?"), L("وش عندي بعده؟", "What do I have after that?")], [L("أجّله ساعة", "Push it an hour"), L(`أجّل «${x.title}» ساعة`, `Push “${x.title}” back an hour`)], [L("ذكّرني قبله بساعة", "Remind me an hour before"), L(`ذكّرني قبل «${x.title}» بساعة`, `Remind me an hour before “${x.title}”`)]] }));
+        p: [[L("أجّله ساعة", "Push it an hour"), L(`أجّل «${x.title}» ساعة`, `Push “${x.title}” back an hour`)], [L("ذكّرني قبله بساعة", "Remind me an hour before"), L(`ذكّرني قبل «${x.title}» بساعة`, `Remind me an hour before “${x.title}”`)]] }));
     papers.filter(p => p.days <= 60).sort((a, b) => a.days - b.days).slice(0, 2)
       .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers",
         p: [[L("كيف أجددها؟", "How do I renew it?"), L(`كيف أجدد ${p.label}؟`, `How do I renew my ${p.label}?`)], [L("ذكّرني بكرة", "Remind me tomorrow"), L(`ذكّرني بكرة الصبح أجدد ${p.label}`, `Remind me tomorrow morning to renew my ${p.label}`)]] }));
@@ -1418,7 +1416,7 @@ html.i18n-wait body{visibility:hidden}
     if (!t) return;
     if (t === "@crew") { go("crew"); return; }
     if (t === "@meds") { openSheet("s-meds"); drawMeds(); loadMeds(); return; }
-    if (/^@med:\d+$/.test(t)) { medTake("", +t.slice(5)).then(() => toast(L("انسجل ✅", "Logged ✅"))).catch(() => toast(L("ما قدرت أسجله", "Couldn't log it"))); return; }
+    if (/^@med:\d+$/.test(t)) { medTake("", +t.slice(5)).then(() => toast(L("تم التسجيل ✅", "Logged ✅"))).catch(() => toast(L("ما قدرت أسجله", "Couldn't log it"))); return; }
     if (t === "@photo") { const b = $("#att-btn") || $("#plus") || $("[data-att]"); if (b) b.click(); else toast(L("اضغط + تحت وأرسل الصورة", "Tap + below and send the photo")); return; }
     if (/[ :]$/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
   }
@@ -1752,7 +1750,7 @@ html.i18n-wait body{visibility:hidden}
     const title = medTitle(m.text); if (!title) return;
     const box = document.createElement("div"); box.className = "medq";
     const done = medDone()[m.ts];
-    const paint = at => { box.innerHTML = `<span class="done">✅ ${L("انسجل إنك أخذته", "Logged as taken")} ${fmtTime(new Date(at))}</span>`; };
+    const paint = at => { box.innerHTML = `<span class="done">✅ ${L("تم التسجيل الساعة", "Logged at")} ${fmtTime(new Date(at))}</span>`; };
     if (done) paint(done);
     else {
       box.innerHTML = `<button type="button">${L("أخذته ✅", "Taken ✅")}</button>`;
@@ -1780,8 +1778,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A 
       <p class="sub">${L("لما يجي وقت دواك فزعة يسألك «أخذته؟». اضغط «أخذته» ونسجل التاريخ والوقت بالضبط.", "When it's time for your medicine, Fazaa asks if you took it. Tap «Taken» and we log the exact date and time.")}</p>
       <div class="care-box"><h3>${L("أخذت دواء الحين؟", "Took a medicine just now?")}</h3><div class="care-row"><input id="med-now" class="inp-like" maxlength="60" placeholder="${L("مثلاً: حبة الضغط", "e.g. blood pressure pill")}" style="flex:2;min-width:150px;padding:12px;border-radius:14px;background:var(--s2);border:1px solid var(--line);color:var(--ink)"><button type="button" class="btn btn-primary" id="med-now-go">${L("سجّل", "Log it")}</button></div></div>
       <div class="care-box">${rows || `<p class="note" style="margin:0">${L("ما فيه شي للحين. قل لفزعة «ذكرني بحبة الضغط كل يوم الساعة ٩ الليل».", "Nothing yet. Tell Fazaa “Remind me to take my blood pressure pill every day at 9 pm”.")}</p>`}</div>`;
-    b.querySelectorAll("[data-med]").forEach(x => x.onclick = async () => { try { await medTake("", +x.dataset.med); toast(L("انسجل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } });
-    const go_ = $("#med-now-go"); if (go_) go_.onclick = async () => { const t = $("#med-now").value.trim(); if (!t) { toast(L("اكتب اسم الدواء", "Type the medicine name")); return; } try { await medTake(t); toast(L("انسجل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } };
+    b.querySelectorAll("[data-med]").forEach(x => x.onclick = async () => { try { await medTake("", +x.dataset.med); toast(L("تم التسجيل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } });
+    const go_ = $("#med-now-go"); if (go_) go_.onclick = async () => { const t = $("#med-now").value.trim(); if (!t) { toast(L("اكتب اسم الدواء", "Type the medicine name")); return; } try { await medTake(t); toast(L("تم التسجيل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } };
   }
   $("#me-meds").addEventListener("click", () => { drawMeds(); loadMeds(); });
   setTimeout(loadMeds, 1500);

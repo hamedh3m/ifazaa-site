@@ -428,9 +428,20 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 
 /* account */
 html{touch-action:manipulation}
-.me-edit{margin-inline-start:auto;flex:none;padding:8px 16px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:700;color:var(--ink)}
+.me-who{min-width:0;flex:1}.me-nm{display:flex;align-items:center;gap:6px;max-width:100%;text-align:start}.me-nm b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.me-nm .chev{width:16px;height:16px;flex:none;opacity:.6}
+.me-fill{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;background:var(--redsoft,rgba(224,33,59,.15));color:#ff6b7e;font-size:12px;font-weight:700}
+.avatar img,.dav img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}.avatar{color:#fff;overflow:hidden;padding:0}
+.pf-top{display:flex;align-items:center;gap:16px;margin-top:6px}
+.pf-av{position:relative;width:92px;height:92px;border-radius:30px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:36px;color:#fff;flex:none}
+.pf-av>span{width:100%;height:100%;display:grid;place-items:center;border-radius:inherit;overflow:hidden}.pf-av img{width:100%;height:100%;object-fit:cover}
+.pf-cam{position:absolute;bottom:-4px;inset-inline-end:-4px;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#111;display:grid;place-items:center;border:3px solid var(--bg)}.pf-cam svg{width:16px;height:16px}
+.pf-pick{display:flex;flex-direction:column;gap:8px;align-items:flex-start}.pf-pick .btn{width:auto;padding:10px 18px}
+.pf-rm{font-size:14px;color:#ff6b7e;font-weight:700;padding:4px 2px}
+.pf-date{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;text-align:start;color:var(--ink)}.pf-date.empty{color:var(--muted)}
+.req{color:#ff6b7e;font-weight:700}.field.bad input,.field.bad .plat button{border-color:#ff6b7e}
 .me-card{display:flex;align-items:center;gap:14px;padding:18px;border-radius:24px;background:var(--s1);border:1px solid var(--line);margin-top:8px}
 .avatar{width:54px;height:54px;border-radius:18px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
+.dprof .dav{overflow:hidden}
 .me-card b{font-size:18px;display:block}
 .me-card span{color:var(--muted);font-size:14px}
 .gbox{margin-top:12px;padding:16px 18px;border-radius:24px;background:var(--s1);border:1px solid var(--line)}
@@ -774,7 +785,7 @@ html.i18n-wait body{visibility:hidden}
 
     <!-- account -->
     <section class="view" id="v-me" aria-label="حسابي">
-      <div class="me-card"><div class="avatar" id="av">ف</div><div><b id="me-name">ضيف</b><span id="me-plan">الباقة المجانية · 10 تذكيرات بالشهر</span></div><button type="button" class="me-edit" id="me-edit">عدّل</button></div>
+      <div class="me-card"><button type="button" class="avatar" id="av" aria-label="صورتك وملفك الشخصي">ف</button><div class="me-who"><button type="button" class="me-nm" id="me-nm"><b id="me-name">ضيف</b><svg class="chev"><use href="#i-chev"/></svg></button><span id="me-plan">الباقة المجانية · 10 تذكيرات بالشهر</span><button type="button" class="me-fill" id="me-fill" hidden>أكمل ملفك الشخصي</button></div></div>
       <div class="gbox" id="g-in" hidden><b>احفظ حسابك</b><p>ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.</p><div class="g-slot" id="g-me"></div><button class="a-btn" type="button" data-apple hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1ZM13.9 4.9c.7-.9 1.2-2 1-3.2-1 .1-2.2.7-3 1.6-.6.7-1.2 1.9-1 3.1 1.1.1 2.3-.6 3-1.5Z"/></svg>المتابعة باستخدام Apple</button><button class="a-btn" type="button" data-gnative hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2.1-1.9 3.3-4.8 3.3-8Z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.8 14.1a6.6 6.6 0 0 1 0-4.2V7.1H2.1a11 11 0 0 0 0 9.8l3.7-2.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4Z"/></svg>المتابعة باستخدام Google</button></div>
       <div class="gbox g-out" id="g-out" hidden><span id="g-email"></span><button type="button" id="g-signout">تسجيل خروج</button></div>
       <div class="menu">
@@ -952,12 +963,27 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
+<section class="sheet" id="s-profile" aria-label="ملفك الشخصي">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="pf-h">ملفك الشخصي</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <div class="pf-top"><button type="button" class="pf-av" id="pf-av" aria-label="غيّر الصورة"><span id="pf-av-i">ف</span><i class="pf-cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></i></button>
+      <div class="pf-pick"><button type="button" class="btn btn-ghost" id="pf-photo">أرفق صورة</button><button type="button" class="pf-rm" id="pf-rm" hidden>شيل الصورة</button></div>
+      <input type="file" id="pf-file" accept="image/*" hidden></div>
+    <label class="field"><span id="pf-l-name">الاسم</span><input id="pf-name" autocomplete="given-name" maxlength="30"></label>
+    <div class="field"><span id="pf-l-g">الجنس <b class="req">*</b></span><div class="plat" role="group" aria-labelledby="pf-l-g" style="margin-top:0"><button type="button" data-g="m" id="pf-gm">ذكر</button><button type="button" data-g="f" id="pf-gf">أنثى</button></div></div>
+    <label class="field"><span id="pf-l-ph">رقم الجوال (اختياري)</span><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="05xxxxxxxx" dir="ltr"></label>
+    <div class="field"><span id="pf-l-b">تاريخ الميلاد (اختياري)</span><button type="button" class="pf-date" id="pf-birth"></button></div>
+    <label class="field"><span id="pf-l-e">البريد الإلكتروني (اختياري)</span><input id="pf-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="name@example.com" dir="ltr"></label>
+    <button class="btn btn-red" type="button" id="pf-save" style="margin-top:22px">احفظ</button>
+    <p class="note" id="pf-note">فزعة يناديك باسمك ويخاطبك حسب جنسك. الجوال والميلاد والإيميل لك بس، ما نشاركها مع أحد، وتنحذف مع حسابك.</p>
+  </div>
+</section>
+
 <section class="sheet" id="s-settings" aria-label="الإعدادات">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>الإعدادات</h1><span style="width:42px"></span></header>
   <div class="body">
     <label class="field"><span>اللغة</span></label>
     <div class="plat" role="group" aria-label="اللغة" style="margin-top:0"><button type="button" data-setlang="ar" lang="ar">عربي</button><button type="button" data-setlang="en" lang="en">English</button></div>
-    <label class="field"><span>اسمك</span><input id="set-name" autocomplete="given-name" maxlength="30"></label>
     <label class="field"><span>موجز يومك: رسالة كل صبح فيها مواعيد يومك</span><input id="set-brief" type="time" value="07:00"></label>
     <button class="btn btn-ghost" id="brief-btn" type="button" style="margin-top:10px">شغّل موجز يومك</button>
     <label class="field"><span>تنبيهات الجوال</span></label>
@@ -1169,7 +1195,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full") throw new Error(j.error); }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -1810,7 +1836,7 @@ html.i18n-wait body{visibility:hidden}
   }
   const openThreads = () => {
     const d = $("#threads"); d.hidden = false; d.classList.remove("out"); drawThreads(); loadThreads();
-    const nm = S.name || L("حسابي", "My account"); $("#th-name").textContent = nm; $("#th-av").textContent = (nm.trim()[0] || "ف").toUpperCase();
+    const nm = S.name || L("حسابي", "My account"); $("#th-name").textContent = nm; drawAvatars();
     $("#th-plan").textContent = ($("#plan-chip") || {}).textContent || "";
     $("#th-agents").classList.toggle("busy", AG.some(a => a.active));
     if (!AG.length) api("/agents").then(r => { AG = r.agents || []; $("#th-agents").classList.toggle("busy", AG.some(a => a.active)); syncBusy(); }).catch(() => {});
@@ -2271,8 +2297,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   let invite = "";
   function renderMe() {
     $("#me-name").textContent = S.name || L("ضيف", "Guest");
-    $("#av").textContent = (S.name || L("ف", "F")).trim()[0];
-    $("#set-name").value = S.name || "";
+    drawAvatars();
     api("/me").then(m => {
       const paid = m.plan && m.plan !== "free";
       if (S.paid !== !!paid) { S.paid = !!paid; save(); }
@@ -2289,15 +2314,90 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       invite = m.invite || "";
       if ((m.email || "") !== S.email) { S.email = m.email || ""; save(); syncGoogleUI(); }
       tgLinked = !!m.telegram; syncTg(); syncBrief(m.brief || "");
+      if (m.has_avatar && !S.av) api("/profile").then(p => { if (p.avatar) { S.av = p.avatar; save(); drawAvatars(); } }).catch(() => {});
+      else if (m.has_avatar === false && S.av) { S.av = ""; save(); drawAvatars(); }
+      $("#me-fill").hidden = !!m.gender; if (m.name && m.name !== S.name && !S.name) { S.name = m.name; save(); }
     }).catch(() => {});
     syncGoogleUI();
   }
-  $("#set-name").addEventListener("change", e => {
-    const n = e.target.value.trim(); if (!n) { e.target.value = S.name || ""; return; }
-    S.name = n; save(); renderMe(); updateHello();
-    api("/settings", { method: "POST", body: JSON.stringify({ display_name: n }) }).then(() => toast(L("انحفظ", "Saved"))).catch(err => toast(errText(err)));
-  });
-  $("#me-edit").onclick = () => { openSheet("s-settings"); setTimeout(() => { const f = $("#set-name"); f.focus(); f.select(); }, 350); };
+  // ---------- الملف الشخصي: الصورة والاسم والجنس (لازم) والجوال والميلاد والإيميل (اختيارية) ----------
+  let PF = { gender: "", birth: "", avatar: "" };
+  function drawAvatars() {
+    const ch = (S.name || L("ف", "F")).trim()[0] || "ف", av = S.av || "";
+    const put = (el, big) => { if (!el) return; el.textContent = ""; if (av) { const i = new Image(); i.alt = ""; i.src = av; el.append(i); } else el.textContent = big ? ch.toUpperCase() : ch.toUpperCase(); };
+    put($("#av")); put($("#th-av")); put($("#pf-av-i"), true);
+    $("#pf-rm").hidden = !av;
+    $("#pf-photo").textContent = av ? L("غيّر الصورة", "Change photo") : L("أرفق صورة", "Add a photo");
+  }
+  const pfBirthText = () => { const b = $("#pf-birth"); if (PF.birth) { const d = new Date(PF.birth + "T12:00:00"); b.textContent = fmtDay(d); b.classList.remove("empty"); } else { b.textContent = L("اختر التاريخ", "Pick a date"); b.classList.add("empty"); } };
+  const pfGender = () => $$("[data-g]").forEach(b => b.setAttribute("aria-pressed", b.dataset.g === PF.gender ? "true" : "false"));
+  async function openProfile() {
+    openSheet("s-profile");
+    $("#pf-name").value = S.name || ""; pfBirthText(); pfGender(); drawAvatars();
+    $$("#s-profile .field").forEach(f => f.classList.remove("bad"));
+    try {
+      const p = await api("/profile");
+      PF = { gender: p.gender || "", birth: p.birth || "", avatar: p.avatar || "" };
+      if (p.name && !$("#pf-name").value) $("#pf-name").value = p.name;
+      $("#pf-phone").value = p.phone ? p.phone.replace(/^\+966/, "0") : ""; $("#pf-email").value = p.email || "";
+      if ((p.avatar || "") !== (S.av || "")) { S.av = p.avatar || ""; save(); }
+      pfBirthText(); pfGender(); drawAvatars();
+    } catch {}
+  }
+  if (EN) [["#pf-h", "Your profile"], ["#pf-l-name", "Name"], ["#pf-gm", "Male"], ["#pf-gf", "Female"], ["#pf-l-ph", "Phone number (optional)"],
+    ["#pf-l-b", "Date of birth (optional)"], ["#pf-l-e", "Email (optional)"], ["#pf-save", "Save"], ["#pf-rm", "Remove photo"], ["#me-fill", "Complete your profile"],
+    ["#pf-note", "Fazaa calls you by your name and addresses you correctly. Your phone, birth date and email are only for you, never shared, and are deleted with your account."]].forEach(([q, t]) => { $(q).textContent = t; });
+  if (EN) { $("#pf-l-g").innerHTML = 'Gender <b class="req">*</b>'; $("#pf-phone").placeholder = "+9665xxxxxxxx"; $("#av").setAttribute("aria-label", "Your photo and profile"); $("#pf-av").setAttribute("aria-label", "Change photo"); }
+  ["#pf-name", "#pf-phone", "#pf-email"].forEach(q => $(q).addEventListener("input", () => $(q).closest(".field").classList.remove("bad")));
+  $("#av").onclick = openProfile; $("#me-nm").onclick = openProfile; $("#me-fill").onclick = openProfile;
+  $$("[data-g]").forEach(b => b.onclick = () => { PF.gender = b.dataset.g; pfGender(); b.closest(".field").classList.remove("bad"); });
+  $("#pf-birth").onclick = async () => {
+    const d = await wheelPick("date", PF.birth ? new Date(PF.birth + "T12:00:00") : new Date(new Date().getFullYear() - 25, 0, 1)); if (!d) return;
+    if (d > new Date()) { toast(L("التاريخ لازم يكون قبل اليوم", "The date must be in the past")); return; }
+    PF.birth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; pfBirthText();
+  };
+  // الصورة تنقص في الجوال لـ 512 قبل الرفع، والسيرفر يحفظها 256×256 (حوالي 20 كيلوبايت)
+  function shrinkImg(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), im = new Image();
+      im.onload = () => { const n = Math.min(im.naturalWidth, im.naturalHeight), z = Math.min(512, n), cv = document.createElement("canvas"); cv.width = cv.height = z;
+        cv.getContext("2d").drawImage(im, (im.naturalWidth - n) / 2, (im.naturalHeight - n) / 2, n, n, 0, 0, z, z); URL.revokeObjectURL(url); res(cv.toDataURL("image/jpeg", 0.85)); };
+      im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+      im.src = url;
+    });
+  }
+  $("#pf-photo").onclick = $("#pf-av").onclick = () => $("#pf-file").click();
+  $("#pf-file").onchange = async e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
+    if (!/^image\//.test(f.type || "image/")) { toast(L("اختر صورة", "Pick an image")); return; }
+    try {
+      toast(L("يرفع الصورة…", "Uploading…"));
+      const r = await api("/profile/avatar", { method: "POST", body: JSON.stringify({ image: await shrinkImg(f) }) });
+      S.av = r.avatar || ""; save(); drawAvatars(); toast(L("انحفظت صورتك ✅", "Photo saved ✅"));
+    } catch (x) { toast(x.message === "img" ? L("ما قدرت أقرا الصورة، جرب وحدة ثانية", "Couldn't read that image, try another") : errText(x)); }
+  };
+  $("#pf-rm").onclick = async () => {
+    if (!(await ask(L("تشيل صورتك؟", "Remove your photo?"), L("يرجع يطلع أول حرف من اسمك.", "Your initial will show instead."), L("شيلها", "Remove")))) return;
+    try { await api("/profile/avatar", { method: "POST", body: JSON.stringify({ remove: true }) }); S.av = ""; save(); drawAvatars(); } catch (x) { toast(errText(x)); }
+  };
+  $("#pf-save").onclick = async () => {
+    const name = $("#pf-name").value.trim(), bad = q => $(q).closest(".field").classList.add("bad");
+    $$("#s-profile .field").forEach(f => f.classList.remove("bad"));
+    if (!name) { bad("#pf-name"); toast(L("اكتب اسمك", "Enter your name")); return; }
+    if (!PF.gender) { bad("#pf-gm"); toast(L("اختر الجنس: ذكر أو أنثى", "Choose your gender: male or female")); return; }
+    const b = $("#pf-save"); b.disabled = true;
+    try {
+      const r = await api("/profile", { method: "POST", body: JSON.stringify({ name, gender: PF.gender, phone: $("#pf-phone").value.trim(), birth: PF.birth, email: $("#pf-email").value.trim() }) });
+      S.name = r.name || name; save(); renderMe(); updateHello(); $("#me-fill").hidden = true;
+      toast(L("انحفظ ملفك ✅", "Profile saved ✅")); history.back();
+    } catch (x) {
+      const fld = x.field;
+      if (fld === "phone") { bad("#pf-phone"); toast(L("رقم الجوال غلط. مثال: 0551234567", "That phone number looks wrong. Example: +966551234567")); }
+      else if (fld === "email") { bad("#pf-email"); toast(L("البريد الإلكتروني غلط", "That email looks wrong")); }
+      else if (fld === "birth") { bad("#pf-birth"); toast(L("تاريخ الميلاد غلط", "That birth date looks wrong")); }
+      else toast(errText(x));
+    } finally { b.disabled = false; }
+  };
   // ---------- موجز يومك (ينحفظ في السيرفر، ويوصلك كل يوم) ----------
   let briefOn = false;
   function syncBrief(b) {

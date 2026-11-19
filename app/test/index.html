@@ -472,6 +472,11 @@ html{touch-action:manipulation}
 .bday-card p{color:var(--muted);font-size:16px;line-height:1.7;margin:0}.bday-card small{display:block;margin-top:10px;color:var(--sand);font-weight:700}.bday-card .btn{margin-top:20px;width:100%}
 @keyframes bdIn{from{opacity:0}}@keyframes bdPop{from{opacity:0;transform:scale(.85) translateY(20px)}}@keyframes bdBob{50%{transform:translateY(-8px) rotate(-4deg)}}
 @media (prefers-reduced-motion:reduce){.bday,.bday-card,.bday-cake{animation:none}}
+.paste-cta{display:flex;align-items:center;gap:12px;width:100%;text-align:start;padding:14px 16px;border-radius:20px;background:linear-gradient(135deg,rgba(224,33,59,.16),rgba(224,33,59,.05));border:1px solid rgba(224,33,59,.35);margin:6px 0 14px;transition:transform .14s cubic-bezier(.23,1,.32,1)}
+.paste-cta:active{transform:scale(.98)}.paste-cta .pi{width:40px;height:40px;border-radius:14px;background:var(--s2);display:grid;place-items:center;font-size:19px;flex:none}
+.paste-cta .pt{flex:1;min-width:0}.paste-cta b{display:block;font-size:15px}.paste-cta small{display:block;color:var(--muted);font-size:13px;line-height:1.5}.paste-cta .chev{width:18px;height:18px;opacity:.6}
+.ps-txt{width:100%;margin-top:14px;padding:14px 16px;border-radius:18px;background:var(--s1);border:1px solid var(--line);color:var(--ink);font:inherit;font-size:16px;line-height:1.6;resize:vertical}
+.paste-chip{position:absolute;bottom:calc(100% + 8px);inset-inline-start:12px;padding:8px 14px;border-radius:999px;background:var(--ink);color:#111;font-weight:700;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.4);animation:up .2s var(--ease)}
 .lang-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--s1);border:1px solid var(--line);margin-top:12px}
 .lang-row .mi{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:17px}.lang-row .lbl{font-weight:700;flex:1}
 .lang-row .plat{margin:0;flex:none;gap:6px}.lang-row .plat button{flex:none;padding:7px 14px;font-size:13px}
@@ -838,6 +843,7 @@ html.i18n-wait body{visibility:hidden}
     <section class="view" id="v-tasks" aria-label="المجدول">
       <h2 class="h2">المجدول</h2>
       <p class="sub">تذكيراتك ومهامك اللي تتكرر لحالها.</p>
+      <button type="button" class="paste-cta" id="paste-cta"><span class="pi">📋</span><span class="pt"><b id="paste-t">وصلتك رسالة موعد؟</b><small id="paste-s">انسخها والصقها هنا، وفزعة يسجلها ويذكّرك فيها</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       <div id="task-list"></div>
       <div class="sep" id="ideas-sep">أمثلة تقدر تعدّلها قبل ما ترسلها</div>
       <div id="task-ideas"></div>
@@ -1038,6 +1044,17 @@ html.i18n-wait body{visibility:hidden}
 </section>
 
 <div class="bday" id="bday" hidden role="dialog" aria-modal="true" aria-labelledby="bday-t"><canvas id="bday-cv"></canvas><div class="bday-card"><div class="bday-cake">🎂</div><h2 id="bday-t"></h2><p id="bday-p"></p><small id="bday-s">— فريق فزعة</small><button class="btn btn-red" type="button" id="bday-ok">شكراً 🤍</button></div></div>
+
+<section class="sheet" id="s-paste" aria-label="الصق رسالة موعد">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ps-h">رسالة موعد</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <p class="sub" id="ps-sub">رسالة من مستشفى أو عيادة أو أي جهة؟ الصقها هنا كما هي، وفزعة يطلّع التاريخ والوقت والمكان ويسجّلها تذكير.</p>
+    <textarea id="ps-txt" class="ps-txt" rows="7" placeholder="اضغط هنا مطوّل واختر «لصق»"></textarea>
+    <button class="btn btn-ghost" type="button" id="ps-clip" style="margin-top:10px">📋 الصق من الحافظة</button>
+    <button class="btn btn-primary" type="button" id="ps-go" style="margin-top:10px">سجّل الموعد</button>
+    <p class="note" id="ps-note">الرسالة تنرسل لفزعة في محادثتك مثل أي رسالة، وتقدر تمسح المحادثة متى ما بغيت.</p>
+  </div>
+</section>
 
 <section class="sheet" id="s-limits" aria-label="حدودي">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="lim-h">حدودي</h1><span style="width:42px"></span></header>
@@ -2388,6 +2405,28 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
      ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
   }
 
+  // ---------- رسالة موعد: يلصقها وفزعة يسجلها (بدون ما يكتب شي) ----------
+  const APPT_RE = /موعد|مواعيد|حجز|عياد|مستشف|مستوصف|مركز|الطبيب|د\.|appointment|booking|clinic|hospital|reservation|\d{1,2}[:\/.-]\d{1,2}/i;
+  const apptMsg = t => L("وصلتني هذي الرسالة عن موعد. سجّلها تذكير بالتاريخ والوقت والمكان اللي فيها، وذكرني قبله بوقت مناسب:\n", "I got this message about an appointment. Save it as a reminder with its date, time and place, and remind me ahead of time:\n") + t.trim().slice(0, 1500);
+  async function openPaste() {
+    openSheet("s-paste"); const ta = $("#ps-txt"); ta.value = "";
+    try { const t = navigator.clipboard && navigator.clipboard.readText ? await navigator.clipboard.readText() : ""; if (t && t.trim().length > 8) ta.value = t.trim(); } catch {}
+    if (!ta.value) setTimeout(() => ta.focus(), 300);
+  }
+  $("#paste-cta").onclick = openPaste;
+  $("#ps-clip").onclick = async () => { try { const t = await navigator.clipboard.readText(); if (t && t.trim()) { $("#ps-txt").value = t.trim(); return; } } catch {} toast(L("اضغط على الخانة مطوّل واختر «لصق»", "Long-press the box and choose “Paste”")); $("#ps-txt").focus(); };
+  $("#ps-go").onclick = () => { const t = $("#ps-txt").value.trim(); if (t.length < 6) { toast(L("الصق رسالة الموعد أول", "Paste the appointment message first")); $("#ps-txt").focus(); return; } history.back(); setTimeout(() => { go("chat"); submit(apptMsg(t)); }, 250); };
+  if (EN) [["#paste-t", "Got an appointment text?"], ["#paste-s", "Copy it and paste it here, and Fazaa saves it and reminds you"], ["#ps-h", "Appointment text"], ["#ps-sub", "A text from a hospital, clinic or any business? Paste it here as is, and Fazaa picks out the date, time and place and saves a reminder."], ["#ps-clip", "📋 Paste from clipboard"], ["#ps-go", "Save the appointment"], ["#ps-note", "The text is sent to Fazaa in your chat like any message, and you can delete the chat any time."]].forEach(([q, t]) => { $(q).textContent = t; });
+  if (EN) $("#ps-txt").placeholder = "Long-press here and choose “Paste”";
+  // لو لصق رسالة موعد في المحادثة: زر صغير «سجّلها موعد»
+  inp.addEventListener("paste", () => setTimeout(() => {
+    const t = inp.value.trim(); $$(".paste-chip").forEach(x => x.remove());
+    if (t.length < 25 || !APPT_RE.test(t)) return;
+    const c = document.createElement("button"); c.type = "button"; c.className = "paste-chip"; c.textContent = L("📅 سجّلها موعد", "📅 Save as appointment");
+    c.onclick = () => { c.remove(); inp.value = ""; grow(); syncSend(); submit(apptMsg(t)); };
+    const host = $(".composer"); host.style.position = host.style.position || "relative"; host.append(c);
+    setTimeout(() => c.remove(), 12000);
+  }, 30));
   // ---------- tasks ----------
   const taskIdeas = EN ? [
     ["Daily briefing: your appointments every morning", "Every day · 7:00 AM", "Turn on my daily briefing at 7 am"],

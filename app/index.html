@@ -353,6 +353,12 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .live{display:inline-flex;align-items:center;gap:5px;color:#ff8a9b;font-weight:700}
 .ag .live i{width:6px;height:6px;border-radius:50%;background:#ff4d64;animation:blink 1.2s ease-in-out infinite}
 @keyframes blink{50%{opacity:.25}}
+#ag-tpl .soon{opacity:.45;cursor:default}#ag-tpl .soon span{font-weight:700}
+.ag .grip{margin-inline-start:auto;flex:none;width:36px;height:36px;border:0;border-radius:10px;background:none;color:var(--muted);display:grid;place-items:center;touch-action:none;cursor:grab}
+.ag .grip svg{width:20px;height:20px}.ag.drag{position:relative;z-index:5;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:none;opacity:.96}.sorting{user-select:none;-webkit-user-select:none}
+#agf-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}#agf-fields>.field{grid-column:1/-1}#agf-fields>.field.half{grid-column:auto}
+.ag .srcs{margin-top:8px;font-size:13px}.ag .srcs summary{cursor:pointer;color:var(--muted);list-style:none;padding:4px 0}.ag .srcs summary::-webkit-details-marker{display:none}
+.ag .srcs a{display:inline-block;margin:4px 0 0 6px;padding:6px 10px;border-radius:999px;background:var(--s2);color:var(--ink);text-decoration:none;font-weight:700}
 .ag .al{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--s2);font-size:14px;color:#d8d8d4;white-space:pre-wrap;max-height:96px;overflow:hidden}
 .ag .aa{display:flex;gap:8px;margin-top:10px}
 .ag .aa button{flex:1;height:38px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--s2);border:1px solid var(--line);transition:transform 140ms var(--ease)}
@@ -1158,6 +1164,19 @@ html.i18n-wait body{visibility:hidden}
     : e.message === "offline" ? L("فزعة مو متصل الحين، جرب بعد شوي", "Fazaa isn't reachable right now, try again shortly")
     : L("صار خلل بسيط، جرب مرة ثانية", "Something went wrong, please try again");
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // اتجاه الرحلة: بالعربي «جدة ← برشلونة»، وبالإنجليزي «JED → BCN» (معزول عشان ما ينقلب في الصفحة العربية)
+  const routeTitle = (a, b) => /[A-Za-z]/.test(a + b) ? `\u2066${a} → ${b}\u2069` : `${a} ← ${b}`;
+  const agTitle = a => { const t = String(a.title || ""); if (a.kind !== "travel" || !/[A-Za-z]/.test(t) || !t.includes("←") || t.includes("\u2066")) return t;
+    const [x, y] = t.split("←").map(z => z.trim()); return routeTitle(x, y); };
+  const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } };
+  function srcSplit(t) {   // نص رسالة الطاقم ← الكلام + روابط المصادر
+    t = String(t || "");
+    const i = t.search(/\n\s*(المصادر|Sources)\s*:/);
+    const links = [...new Set((t.match(/https?:\/\/[^\s<>()]+/g) || []).map(u => u.replace(/[.,،)]+$/, "")))].slice(0, 6);
+    let body = i >= 0 ? t.slice(0, i) : t;
+    body = body.replace(/https?:\/\/[^\s<>()]+/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+    return { body, links };
+  }
   const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="text-decoration:underline">$1</a>')
     .replace(/(📞[^:\n<]{0,40}:\s*)(\+?\d{8,15})/g, '$1<a href="tel:$2" class="tel">$2</a>');
 
@@ -1884,7 +1903,15 @@ html.i18n-wait body{visibility:hidden}
   const AGF = {   // حقول كل مساعد: [المفتاح، العنوان، المثال، مطلوب؟]
     morning: [["city", L("مدينتك", "Your city"), L("الرياض", "Riyadh")], ["topics", L("أخبار عن (اختياري)", "News about (optional)"), L("الاقتصاد، الهلال", "Economy, football")]],
     price: [["query", L("المنتج", "Product"), L("آيفون 17 برو 256", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
-    travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("إسطنبول", "Istanbul"), 1], ["date", L("التاريخ (اختياري)", "Date (optional)"), L("أول أسبوع في يناير", "First week of January")]],
+    travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("إسطنبول", "Istanbul"), 1],
+      ["trip", L("نوع الرحلة", "Trip type"), "", 0, [["oneway", L("ذهاب فقط", "One way")], ["round", L("ذهاب وعودة", "Round trip")]]],
+      ["date", L("تاريخ الذهاب (اختياري)", "Departure date (optional)"), L("أول أسبوع في يناير", "First week of January")],
+      ["back", L("تاريخ العودة (للذهاب والعودة)", "Return date (round trip)"), L("بعد أسبوعين", "Two weeks later")],
+      ["adults", L("البالغين", "Adults"), "", 0, [1, 2, 3, 4, 5, 6, 7, 8].map(n => [String(n), String(n)])],
+      ["kids", L("الأطفال (2 إلى 11 سنة)", "Children (2–11)"), "", 0, [0, 1, 2, 3, 4, 5, 6].map(n => [String(n), String(n)])],
+      ["infants", L("الرضّع (أقل من سنتين)", "Infants (under 2)"), "", 0, [0, 1, 2, 3].map(n => [String(n), String(n)])],
+      ["cabin", L("الدرجة", "Class"), "", 0, [["economy", L("سياحية", "Economy")], ["business", L("أعمال", "Business")], ["first", L("أولى", "First")]]],
+      ["bags", L("الشنط", "Bags"), "", 0, [["cabin", L("شنطة يد بس", "Cabin bag only")], ["1", L("شنطة مشحونة لكل مسافر", "1 checked bag each")], ["2", L("شنطتين مشحونة لكل مسافر", "2 checked bags each")]]]],
     news: [["topics", L("وش تتابع؟", "What do you follow?"), L("الذهب، التقنية، الدوري", "Gold, tech, the league"), 1]],
     team: [["team", L("وش فريقك؟", "Which team?"), L("الهلال", "Al Hilal"), 1], ["league", L("الدوري (اختياري)", "League (optional)"), L("دوري روشن", "Saudi Pro League")]],
     finance: [["budget", L("ميزانيتك بالشهر (ريال، اختياري)", "Monthly budget (SAR, optional)"), "6000"]],
@@ -1999,23 +2026,53 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
   setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
-    return a.every.startsWith("hours:") ? EVN[a.every] : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
+    return a.every.startsWith("hours:") ? EVN[a.every] + (a.at ? " · " + L("من ", "from ") + fmtTime(d) : "") : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
+  function wireReorder() {   // سحب البطاقة من المقبض وترتيبها، ونحفظ الترتيب
+    const list = $("#ag-list");
+    list.querySelectorAll(".grip").forEach(g => {
+      g.onpointerdown = e => {
+        e.preventDefault();
+        const card = g.closest(".ag"); if (!card) return;
+        g.setPointerCapture(e.pointerId); card.classList.add("drag"); list.classList.add("sorting");
+        let lastY = e.clientY;
+        const move = ev => {
+          const dy = ev.clientY - lastY;
+          const sib = dy < 0 ? card.previousElementSibling : card.nextElementSibling;
+          if (sib && sib.classList.contains("ag")) {
+            const r = sib.getBoundingClientRect(), mid = r.top + r.height / 2;
+            if ((dy < 0 && ev.clientY < mid) || (dy > 0 && ev.clientY > mid)) { dy < 0 ? list.insertBefore(card, sib) : list.insertBefore(sib, card); lastY = ev.clientY; }
+          }
+          card.style.transform = `translateY(${(ev.clientY - lastY) * 0.4}px)`;
+        };
+        const up = async () => {
+          g.removeEventListener("pointermove", move); g.removeEventListener("pointerup", up); g.removeEventListener("pointercancel", up);
+          card.classList.remove("drag"); card.style.transform = ""; list.classList.remove("sorting");
+          const ids = [...list.querySelectorAll(".ag[data-agid]")].map(x => +x.dataset.agid);
+          if (ids.join() === AG.map(a => a.id).join()) return;
+          AG.sort((x, y) => ids.indexOf(x.id) - ids.indexOf(y.id)); redrawHomeCards();
+          try { await api("/agents/order", { method: "POST", body: JSON.stringify({ ids }) }); toast(L("انحفظ الترتيب ✅", "Order saved ✅")); } catch (x) { toast(errText(x)); }
+        };
+        g.addEventListener("pointermove", move); g.addEventListener("pointerup", up); g.addEventListener("pointercancel", up);
+      };
+    });
+  }
   const crewLimitMsg = () => myTier === "free"
-    ? L("ميزة طاقم العمل ما هي متوفرة بالباقة المجانية. تقدر تستفيد منها عند ترقية حسابك: 4 موظفين في باقة برايم، أو 10 موظفين في باقة إيليت. ادخل «حسابي» ثم «الباقات» واختر الباقة المناسبة.",
-        "The crew feature isn't available on the free plan. Upgrade your account to get 4 crew members with Prime or 10 with Elite: go to Account, then Plans, and pick the plan that suits you.")
-    : L("وصلت حد طاقم عملك: برايم فيه 4 موظفين، وإيليت 10. تقدر تنتقل لإيليت من «حسابي» ثم «الباقات».", "You've reached your crew limit: Prime has 4 crew members, Elite has 10. Switch to Elite from Account, then Plans.");
+    ? L("ميزة طاقم العمل ما هي متوفرة بالباقة المجانية. تقدر تستفيد منها عند ترقية حسابك: 3 موظفين في باقة برايم، أو 10 موظفين في باقة إيليت. ادخل «حسابي» ثم «الباقات» واختر الباقة المناسبة.",
+        "The crew feature isn't available on the free plan. Upgrade your account to get 3 crew members with Prime or 10 with Elite: go to Account, then Plans, and pick the plan that suits you.")
+    : L("وصلت حد طاقم عملك: برايم فيه 3 موظفين، وإيليت 10. تقدر تنتقل لإيليت من «حسابي» ثم «الباقات».", "You've reached your crew limit: Prime has 3 crew members, Elite has 10. Switch to Elite from Account, then Plans.");
   function drawAgents() {
     if (myTier === "free" && !AG.length) {
-      $("#ag-list").innerHTML = primeBox(L("طاقم عملك يشتغلون عنك بالخلفية: موجز الصباح، ومتابعة الأسعار والطيران، وفريقك المفضل، والأخبار. مع برايم يصير عندك 4، ومع إيليت 10.",
-        "Your crew works for you in the background: morning brief, price and flight tracking, your favorite team and the news. Prime gives you 4, Elite 10."));
+      $("#ag-list").innerHTML = primeBox(L("طاقم عملك يشتغلون عنك بالخلفية: موجز الصباح، ومتابعة الأسعار والطيران، وفريقك المفضل، والأخبار. مع برايم يصير عندك 3، ومع إيليت 10.",
+        "Your crew works for you in the background: morning brief, price and flight tracking, your favorite team and the news. Prime gives you 3, Elite 10."));
       wirePlans($("#ag-list"));
       if ($("#ag-small")) $("#ag-small").textContent = L("من ميزات برايم", "A Prime feature");
       return;
     }
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(a.title)}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div></div>`
-      + (a.last_text ? `<div class="al">${esc(a.last_text)}</div>` : "")
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="grip" aria-label="${L("اسحب عشان ترتّب", "Drag to reorder")}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></button>` : ""}</div>`
+      + (a.last_text ? (() => { const sp = srcSplit(a.last_text); return `<div class="al">${esc(sp.body)}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
       + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button><button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
+    wireReorder();
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
     $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تشيله من الطاقم؟", "Remove from your crew?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
@@ -2033,14 +2090,20 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       if (action === "run") { toast(r.sent ? L("وصلك الرد في المحادثة ✅", "Its result is in your chat ✅") : L("ما لقى شي جديد للحين", "Nothing new yet")); if (r.sent) { lastId = 0; loadHistory(); } }
     } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? crewLimitMsg() : errText(e)); }
   }
-  $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => `<button type="button" class="${v[3]}" data-agk="${k}"><i>${v[0]}</i><b>${v[1]}</b><span>${v[2]}</span></button>`).join("");
+  const AG_SOON = new Set(["finance"]);   // المالية: قريباً (لين تجهز صلاحية رسائل البنك)
+  $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => AG_SOON.has(k)
+    ? `<button type="button" class="${v[3]} soon" disabled aria-disabled="true"><i>${v[0]}</i><b>${v[1]}</b><span>${L("قريباً", "Coming soon")}</span></button>`
+    : `<button type="button" class="${v[3]}" data-agk="${k}"><i>${v[0]}</i><b>${v[1]}</b><span>${v[2]}</span></button>`).join("");
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
   $("#agf-day").innerHTML = WDAY.map((d, i) => `<option value="${i}">${d}</option>`).join("");
-  $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = e.startsWith("hours:"); syncAt(); };
+  $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة", "At"); syncAt(); };
   $$("[data-agk]").forEach(b => b.onclick = () => {
     agKind = b.dataset.agk; const v = AGK[agKind];
     $("#agf-title").textContent = v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
-    $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph]) => `<label class="field"><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="120"></label>`).join("");
+    $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph, , opts]) => opts
+      ? `<label class="field${["adults", "kids", "infants", "cabin"].includes(k) ? " half" : ""}"><span>${t}</span><select data-agf="${k}">${opts.map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join("")}</select></label>`
+      : `<label class="field"${k === "back" ? ' data-backw hidden' : ""}><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="120"></label>`).join("");
+    const trip = $('[data-agf="trip"]'); if (trip) trip.onchange = () => { const w = $("[data-backw]"); if (w) w.hidden = trip.value !== "round"; };
     $("#agf-every").value = v[4]; $("#agf-at").value = v[5]; $("#agf-day").value = "3"; $("#agf-every").onchange();
     $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#v-crew").scrollTop = 0;
     const f = $("#agf-fields input"); if (f) setTimeout(() => f.focus(), 120);
@@ -2049,9 +2112,10 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#agf-back").onclick = agBack;
   $("#agf-go").onclick = async () => {
     const cfg = {}; let missing = false;
-    AGF[agKind].forEach(([k, , , req]) => { const v = $(`[data-agf="${k}"]`).value.trim(); if (v) cfg[k] = v; else if (req) missing = true; });
+    AGF[agKind].forEach(([k, , , req]) => { const el = $(`[data-agf="${k}"]`); const v = el ? el.value.trim() : ""; if (v) cfg[k] = v; else if (req) missing = true; });
+    if (cfg.trip !== "round") delete cfg.back;
     if (missing) { toast(L("عبّ الخانة المطلوبة", "Fill in the required field")); return; }
-    const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? `${cfg.from} ← ${cfg.to}` : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "team" ? cfg.team : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
+    const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? routeTitle(cfg.from, cfg.to) : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "team" ? cfg.team : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
     try {
       const r = await api("/agents", { method: "POST", body: JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" }) });
       AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
@@ -2472,7 +2536,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("تذكيرات جديدة بالشهر", "New reminders a month"), TX("10"), TX(L("بلا حد", "Unlimited")), TX(L("بلا حد", "Unlimited")))}
       ${row(L("المكالمة الصوتية مع فزعة", "Voice calls with Fazaa"), TX("70", L("رد بالشهر", "replies a month")), CK, CK)}
       ${row(L("صناعة الصور وتعديلها", "Creating and editing images"), TX("3", L("بالشهر", "a month")), TX("20", L("بالشهر", "a month")), TX("40", L("بالشهر", "a month")))}
-      ${row(L("طاقم عملك (24/7)", "Your crew (24/7)"), NO, TX("4"), TX("10"))}
+      ${row(L("طاقم عملك (24/7)", "Your crew (24/7)"), NO, TX("3"), TX("10"))}
       ${row(L("كتابة وبحث وسعرات", "Writing, search and calories"), CK, CK, CK)}
       ${row(L("موجز يومك كل صباح", "Daily morning brief"), CK, CK, CK)}
       ${row(L("ربط تقويمك وبرامجك", "Connect your calendar and apps"), CK, CK, CK)}

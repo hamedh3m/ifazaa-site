@@ -353,7 +353,7 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .live{display:inline-flex;align-items:center;gap:5px;color:#ff8a9b;font-weight:700}
 .ag .live i{width:6px;height:6px;border-radius:50%;background:#ff4d64;animation:blink 1.2s ease-in-out infinite}
 @keyframes blink{50%{opacity:.25}}
-#ag-tpl .soon{opacity:.45;cursor:default}#ag-tpl .soon span{font-weight:700}
+#ag-tpl .soon,#ag-tpl .full{opacity:.45;cursor:default}#ag-tpl .soon span{font-weight:700}
 .ag .grip{margin-inline-start:auto;flex:none;width:36px;height:36px;border:0;border-radius:10px;background:none;color:var(--muted);display:grid;place-items:center;touch-action:none;cursor:grab}
 .ag .grip svg{width:20px;height:20px}.ag.drag{position:relative;z-index:5;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:none;opacity:.96}.sorting{user-select:none;-webkit-user-select:none}
 #agf-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}#agf-fields>.field{grid-column:1/-1}#agf-fields>.field.half{grid-column:auto}
@@ -1169,7 +1169,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon") throw new Error(j.error); }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full") throw new Error(j.error); }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -2141,6 +2141,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
     $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تشيله من الطاقم؟", "Remove from your crew?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
+    syncTpl();
     if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
   async function loadAgents() { try { AG = (await api("/agents")).agents || []; } catch {} drawAgents(); syncBusy(); }
@@ -2152,13 +2153,23 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       if (action === "delete") AG = AG.filter(a => String(a.id) !== String(id));
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
-      if (action === "run") { toast(r.sent ? L("وصلك الرد في المحادثة ✅", "Its result is in your chat ✅") : L("ما لقى شي جديد للحين", "Nothing new yet")); if (r.sent) { lastId = 0; loadHistory(); } }
+      if (action === "run") toast(r.sent ? L("انضاف في «كل اللي جابه لك» 📜", "Added to “Everything it found” 📜") : L("ما لقى شي جديد للحين", "Nothing new yet"));
     } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
+  }
+  const AG_PER_KIND = 2, AG_UNCAPPED = new Set(["custom"]);   // كل نوع بحد أقصى 2، و«أي شي يتكرر» لين حد الباقة
+  const kindFullMsg = () => L("وصلت الحد: موظفين اثنين من هالنوع. احذف واحد منهم لو تبي تضيف غيره، أو استخدم «أي شي يتكرر».", "You've reached the limit of 2 for this type. Remove one to add another, or use “Anything, on repeat”.");
+  function syncTpl() {
+    $$("#ag-tpl [data-agk]").forEach(b => {
+      const k = b.dataset.agk, full = !AG_UNCAPPED.has(k) && AG.filter(a => a.kind === k).length >= AG_PER_KIND;
+      b.disabled = full; b.classList.toggle("full", full); b.setAttribute("aria-disabled", full ? "true" : "false");
+      b.querySelector("span").textContent = full ? L(`وصلت الحد (${AR(AG_PER_KIND)})`, `Limit reached (${AG_PER_KIND})`) : AGK[k][2];
+    });
   }
   const AG_SOON = new Set(["finance"]);   // المالية: قريباً (لين تجهز صلاحية رسائل البنك)
   $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => AG_SOON.has(k)
     ? `<button type="button" class="${v[3]} soon" disabled aria-disabled="true"><i>${v[0]}</i><b>${v[1]}</b><span>${L("قريباً", "Coming soon")}</span></button>`
     : `<button type="button" class="${v[3]}" data-agk="${k}"><i>${v[0]}</i><b>${v[1]}</b><span>${v[2]}</span></button>`).join("");
+  syncTpl();
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
   $("#agf-day").innerHTML = WDAY.map((d, i) => `<option value="${i}">${d}</option>`).join("");
   $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة", "At"); syncAt(); };
@@ -2184,7 +2195,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     try {
       const r = await api("/agents", { method: "POST", body: JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" }) });
       AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
-    } catch (e) { toast(e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
+    } catch (e) { toast(e.message === "prime" || e.message === "limit" ? crewLimitMsg() : e.message === "kind_full" ? kindFullMsg() : errText(e)); }
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {

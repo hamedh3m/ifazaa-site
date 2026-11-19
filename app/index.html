@@ -1158,7 +1158,7 @@ html.i18n-wait body{visibility:hidden}
   }));
   const STALE = 6 * 3600e3;   // بعد 6 ساعات من آخر رسالة نرجع نعرض التحية والبطاقات
   const fresh = () => !S.msgs.length || Date.now() - S.msgs[S.msgs.length - 1].ts > STALE;
-  const syncSugg = () => { const c = $("#chips"); c.hidden = !!inp.value.trim() || !fresh(); c.classList.toggle("idle", !!S.msgs.length); };
+  function syncSugg() { const c = $("#chips"); c.hidden = !!inp.value.trim() || !fresh() || !!S.thread; c.classList.toggle("idle", !!S.msgs.length); }
 
   // صور سوّاها فزعة: الرابط يتحول صورة داخل الرسالة
   const IMG_RE = /https:\/\/api\.ifazaa\.com\/fz-app\/api\/img\/[A-Za-z0-9_-]{20,}\.(?:png|jpg)/g;
@@ -1204,7 +1204,8 @@ html.i18n-wait body{visibility:hidden}
   }
   function renderChat() {
     $$("#msgs .m, #msgs .typing, #msgs .sess, #msgs .ccard, #msgs .qr, #msgs .worked").forEach(x => x.remove());
-    $("#empty").style.display = S.msgs.length ? "none" : "";
+    $("#empty").style.display = S.msgs.length || S.thread ? "none" : "";   // محادثة جديدة: صفحة فاضية للمحادثة بس
+    try { syncSugg(); } catch {}
     S.msgs.forEach(bubble);
     if (S.msgs.length && fresh()) {   // رجعت بعد غيبة: تحية وبطاقات يومك تحت آخر المحادثة
       const d = document.createElement("div"); d.className = "home sess";

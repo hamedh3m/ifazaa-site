@@ -1878,7 +1878,17 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A 
   setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
+  const crewLimitMsg = () => myTier === "free"
+    ? L("طاقم عملك من ميزات Prime (4) وإيليت (10). ترقّى من «الباقات».", "Your crew is a Prime (4) and Elite (10) feature. Upgrade from Plans.")
+    : L("وصلت حد طاقم عملك: Prime فيه 4، وإيليت 10.", "You've reached your crew limit: Prime has 4, Elite 10.");
   function drawAgents() {
+    if (myTier === "free" && !AG.length) {
+      $("#ag-list").innerHTML = primeBox(L("طاقم عملك يشتغلون عنك بالخلفية: موجز الصباح، ومتابعة الأسعار والطيران، وفريقك المفضل، والأخبار. مع Prime يصير عندك 4، ومع إيليت 10.",
+        "Your crew works for you in the background: morning brief, price and flight tracking, your favorite team and the news. Prime gives you 4, Elite 10."));
+      wirePlans($("#ag-list"));
+      if ($("#ag-small")) $("#ag-small").textContent = L("من ميزات Prime", "A Prime feature");
+      return;
+    }
     $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(a.title)}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div></div>`
       + (a.last_text ? `<div class="al">${esc(a.last_text)}</div>` : "")
       + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button><button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
@@ -1898,7 +1908,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A 
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
       if (action === "run") { toast(r.sent ? L("وصلك الرد في المحادثة ✅", "Its result is in your chat ✅") : L("ما لقى شي جديد للحين", "Nothing new yet")); if (r.sent) { lastId = 0; loadHistory(); } }
-    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? L("وصلت حد طاقم عملك في باقتك: المجاني 1، وPrime فيه 4، وإيليت 10.", "You've reached your plan's crew limit: Free 1, Prime 4, Elite 10.") : errText(e)); }
+    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? crewLimitMsg() : errText(e)); }
   }
   $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => `<button type="button" class="${v[3]}" data-agk="${k}"><i>${v[0]}</i><b>${v[1]}</b><span>${v[2]}</span></button>`).join("");
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
@@ -1922,7 +1932,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A 
     try {
       const r = await api("/agents", { method: "POST", body: JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" }) });
       AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
-    } catch (e) { toast(e.message === "prime" ? L("وصلت حد طاقم عملك في باقتك: المجاني 1، وPrime فيه 4، وإيليت 10.", "You've reached your plan's crew limit: Free 1, Prime 4, Elite 10.") : errText(e)); }
+    } catch (e) { toast(e.message === "prime" ? crewLimitMsg() : errText(e)); }
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {
@@ -2323,8 +2333,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A 
       ${row(L("رسائل بالشهر", "Messages a month"), TX("100"), TX("300"), TX("600", L("لك ولشخص من أهلك", "shared with family")))}
       ${row(L("تذكيرات جديدة بالشهر", "New reminders a month"), TX("10"), TX(L("بلا حد", "Unlimited")), TX(L("بلا حد", "Unlimited")))}
       ${row(L("المكالمة الصوتية مع فزعة", "Voice calls with Fazaa"), TX("70", L("رد بالشهر", "replies a month")), CK, CK)}
-      ${row(L("صناعة الصور وتعديلها", "Creating and editing images"), TX("3", L("بالشهر", "a month")), TX("50", L("بالشهر", "a month")), TX("50", L("بالشهر", "a month")))}
-      ${row(L("طاقم عملك", "Your crew"), TX("1"), TX("4"), TX("10"))}
+      ${row(L("صناعة الصور وتعديلها", "Creating and editing images"), TX("3", L("بالشهر", "a month")), TX("50", L("بالشهر", "a month")), TX("100", L("بالشهر", "a month")))}
+      ${row(L("طاقم عملك (يشتغلون عنك بالخلفية)", "Your crew (working for you in the background)"), NO, TX("4"), TX("10"))}
       ${row(L("كتابة وبحث وسعرات", "Writing, search and calories"), CK, CK, CK)}
       ${row(L("موجز يومك كل صباح", "Daily morning brief"), CK, CK, CK)}
       ${row(L("ربط تقويمك وبرامجك", "Connect your calendar and apps"), CK, CK, CK)}

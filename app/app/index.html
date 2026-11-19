@@ -519,6 +519,11 @@ html{touch-action:manipulation}
 .mdn{margin:22px 0 8px;padding:12px 14px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.08));font-size:12.5px;line-height:1.75;color:var(--muted)}
 .ag .aa .tog.on{background:#25d366;color:#04120a;border-color:transparent}
 .ag .alive{margin:8px 2px 0;font-size:12px;color:#6fe6a0;opacity:.85}
+.introc{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0 4px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(230,57,70,.18),rgba(230,57,70,.06));border:1px solid rgba(230,57,70,.35);text-align:start;color:var(--ink);transition:transform 140ms var(--ease)}
+.introc:active{transform:scale(.98)}.introc .ip{width:40px;height:40px;border-radius:50%;background:#e63946;color:#fff;display:grid;place-items:center;flex:none}.introc .ip svg{width:18px;height:18px;margin-inline-start:2px}
+.introc .it{flex:1;display:flex;flex-direction:column;gap:2px}.introc .it b{font-size:15px}.introc .it small{font-size:12.5px;color:var(--muted)}.introc .ix{font-size:12.5px;color:var(--muted);padding:6px 4px}
+.introv{position:fixed;inset:0;z-index:120;background:#000;display:flex;align-items:center;justify-content:center}.introv video{width:100%;height:100%;object-fit:contain;background:#000}
+.introv .ivx{position:absolute;top:calc(env(safe-area-inset-top,0px) + 12px);inset-inline-end:14px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:18px;backdrop-filter:blur(8px)}
 .g-slot{min-height:44px;display:flex;justify-content:center}
 .a-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:400px;height:44px;margin:10px auto 0;border-radius:999px;background:#fff;color:#000;font-size:15px;font-weight:700}
 .a-btn svg{width:18px;height:18px}
@@ -804,6 +809,7 @@ html.i18n-wait body{visibility:hidden}
         <div class="empty home" id="empty">
           <h2 class="hi" id="hello">هلا! وش أفزع لك اليوم؟</h2>
           <p class="hi-sub" id="hello-sub">اكتب بكلامك العادي، مثل ما تكلم صاحبك.</p>
+          <button type="button" class="introc" id="intro-c" hidden><span class="ip"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="it"><b>شوف وش يسوي فزعة</b><small>فيديو دقيقة، يوريك كل الخدمات</small></span><span class="ix" id="intro-x" role="button" aria-label="لاحقاً">لاحقاً</span></button>
           <div class="hcards" id="hcards"></div><div class="cpills" id="cpills"></div>
         </div>
       </div>
@@ -890,6 +896,7 @@ html.i18n-wait body{visibility:hidden}
       <div class="menu">
         <button data-sheet="s-limits" id="me-limits"><span class="mi" style="background:rgba(62,207,142,.13);color:#3ecf8e"><svg><use href="#i-gauge"/></svg></span><span class="lbl">حدودي<br><small id="lim-small">وين وصلت في استهلاكك هالشهر</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button type="button" id="me-intro"><span class="mi" style="background:rgba(230,57,70,.14);color:#ff6b7a"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="lbl">كيف يشتغل فزعة<br><small>فيديو دقيقة عن كل الخدمات</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-meds" id="me-meds"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5;font-size:17px">💊</span><span class="lbl">سجل أدويتي<br><small>وش أخذت ومتى بالضبط</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-care" id="me-care"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e;font-size:17px">🚑</span><span class="lbl">الطوارئ<br><small id="care-small">أقرب المراكز الصحية وجهة اتصال الطوارئ (اختياري)</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -1142,6 +1149,7 @@ html.i18n-wait body{visibility:hidden}
     <button class="newth btm" type="button" id="th-new"><svg><use href="#i-plus"/></svg><span id="th-new-t">محادثة جديدة</span></button>
   </div>
 </section>
+<div class="introv" id="intro-v" hidden role="dialog" aria-modal="true" aria-label="كيف يشتغل فزعة"><video id="intro-vid" playsinline controls preload="none" poster="/app/intro-poster.jpg"></video><button type="button" class="ivx" id="intro-close" aria-label="إغلاق">✕</button></div>
 <section class="call" id="call" hidden role="dialog" aria-modal="true" aria-label="مكالمة فزعة">
   <span class="ct" id="c-time">0:00</span>
   <b class="cn" id="c-name">فزعة</b>
@@ -1345,6 +1353,20 @@ html.i18n-wait body{visibility:hidden}
   const typing = el => el && (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && !/^(checkbox|radio|button|submit|range|file)$/.test(el.type)));
   document.addEventListener("focusin", e => { if (typing(e.target)) { document.body.classList.add("kb"); if (e.target === inp) setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 250); } });
   document.addEventListener("focusout", () => setTimeout(() => { if (!typing(document.activeElement)) document.body.classList.remove("kb"); }, 60));
+  // فيديو «كيف يشتغل فزعة»: بطاقة مرة وحدة فوق المحادثة (يختار يفتحه، ما يشتغل لحاله) + سطر في «حسابي». عربي بس للحين
+  const INTRO_KEY = "fz-intro-seen", INTRO_SRC = "/app/intro-ar.mp4";
+  const introSeen = () => { try { return !!localStorage.getItem(INTRO_KEY); } catch { return true; } };
+  const markIntro = () => { try { localStorage.setItem(INTRO_KEY, "1"); } catch {} $("#intro-c").hidden = true; };
+  function openIntro() {
+    markIntro(); const v = $("#intro-vid"); if (!v.src) v.src = INTRO_SRC;
+    $("#intro-v").hidden = false; try { v.currentTime = 0; v.play().catch(() => {}); } catch {}
+  }
+  function closeIntro() { const v = $("#intro-vid"); try { v.pause(); } catch {} $("#intro-v").hidden = true; }
+  $("#intro-c").hidden = EN || introSeen();
+  $("#intro-c").addEventListener("click", e => { if (e.target.closest("#intro-x")) { markIntro(); return; } openIntro(); });
+  $("#intro-close").onclick = closeIntro;
+  $("#intro-vid").addEventListener("ended", closeIntro);
+  if ($("#me-intro")) { $("#me-intro").hidden = EN; $("#me-intro").onclick = openIntro; }
   const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
     : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي 10 يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
   const sugg = EN ? [["What do I have today?", "What do I have today?"], ["⏰ Remind me…", "Remind me "], ["✍️ Write a message", "Write me a message "], ["🎨 Make an image", "Make me an image of "], ["📄 My documents", "@papers"]]

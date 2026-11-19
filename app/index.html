@@ -313,6 +313,8 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .at span{font-size:13px;color:var(--muted)}
 .ag .ae{position:relative}
 .ag .ae.badge{background:#f3f3f1}
+.gbox.pulse{animation:gpulse 1.6s ease-out}
+@keyframes gpulse{0%{box-shadow:0 0 0 0 rgba(224,33,59,.7)}100%{box-shadow:0 0 0 14px rgba(224,33,59,0)}}
 .m a.tel{display:inline-block;margin-top:4px;padding:6px 12px;border-radius:999px;background:var(--red2);color:#fff;font-weight:800;text-decoration:none;direction:ltr}
 .medq{display:flex;gap:8px;margin-top:10px}.medq button{padding:9px 16px;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:800;font-size:14px}
 .medq .done{background:transparent;color:#6fe6a5;padding:6px 0}
@@ -476,7 +478,7 @@ html{touch-action:manipulation}
 .onb .step2[hidden],.onb .step1[hidden]{display:none}
 
 /* toast & confirm */
-.toast{position:fixed;left:50%;bottom:calc(var(--bot) + 88px);transform:translate(-50%,20px);opacity:0;z-index:80;padding:12px 18px;border-radius:999px;background:var(--ink);color:#111;font-weight:700;font-size:14px;transition:opacity .25s,transform .25s var(--ease);pointer-events:none;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(var(--bot) + 88px);transform:translate(-50%,20px);opacity:0;z-index:80;padding:12px 18px;border-radius:999px;background:var(--ink);color:#111;font-weight:700;font-size:14px;transition:opacity .25s,transform .25s var(--ease);pointer-events:none;white-space:normal;width:max-content;max-width:calc(100vw - 32px);text-align:center;line-height:1.5}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .confirm{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
 .confirm[hidden]{display:none}
@@ -1050,7 +1052,20 @@ html.i18n-wait body{visibility:hidden}
 
   // ---------- tabs ----------
   const titles = EN ? { chat: "Fazaa", crew: "Your crew", today: "Your day", tasks: "Schedule", me: "Account" } : { chat: "فزعة", crew: "طاقم عملك", today: "يومك", tasks: "المجدول", me: "حسابي" };
-  const go = v => {
+  // ---------- الضيف: المحادثة بس. باقي الميزات والشراء تحتاج دخول بقوقل أو أبل ----------
+  const signedIn = () => !!S.email;
+  const GATED_VIEWS = new Set(["crew", "today", "tasks"]);
+  const GATED_SHEETS = new Set(["s-connect", "s-family", "s-papers", "s-meds", "s-care", "s-invite", "s-threads"]);
+  function needSignin(why) {
+    if (signedIn()) return false;
+    closeSheetsSafe(); go("me", true);
+    setTimeout(() => { const g = $("#g-in"); if (!g) return; g.scrollIntoView({ behavior: "smooth", block: "center" }); g.classList.add("pulse"); setTimeout(() => g.classList.remove("pulse"), 1800); }, 250);
+    toast(why || L("سجّل دخولك بقوقل أو أبل عشان تستخدم هذي الميزة 🔐", "Sign in with Google or Apple to use this 🔐"));
+    return true;
+  }
+  const closeSheetsSafe = () => $$(".sheet.on").forEach(x => x.classList.remove("on"));
+  const go = (v, force) => {
+    if (!force && GATED_VIEWS.has(v) && needSignin()) return;
     $$(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
     $$(".tab").forEach(t => { if (t.dataset.v === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
     $("#bar-title").textContent = titles[v];
@@ -1063,7 +1078,7 @@ html.i18n-wait body{visibility:hidden}
   $$(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.v)));
 
   // ---------- sheets ----------
-  const openSheet = id => { $("#" + id).classList.add("on"); history.pushState({ sheet: id }, ""); };
+  const openSheet = id => { if (GATED_SHEETS.has(id) && needSignin()) return; $("#" + id).classList.add("on"); history.pushState({ sheet: id }, ""); };
   const closeSheets = () => $$(".sheet.on").forEach(s => s.classList.remove("on"));
   $$("[data-sheet]").forEach(b => b.addEventListener("click", () => openSheet(b.dataset.sheet)));
   $$("[data-close]").forEach(b => b.addEventListener("click", () => history.back()));
@@ -1092,7 +1107,9 @@ html.i18n-wait body{visibility:hidden}
   const PLAT = NATIVE && CAP.getPlatform ? CAP.getPlatform() : "web";       // ios | android | web
   // «شارك لفزعة»: إضافة المشاركة في الآيفون تحتاج مفتاح الجلسة، فنحفظه في سلسلة المفاتيح المشتركة (Keychain) عن طريق التطبيق
   let nativeTok = "";
-  window.__fzSync = () => { const P = NP.FazaaShared; if (!P || !P.setSession || !S.token || nativeTok === S.token) return; nativeTok = S.token;
+  window.__fzSync = () => { const P = NP.FazaaShared; if (!P || !P.setSession) return;
+    if (!S.email) { if (nativeTok !== "-") { nativeTok = "-"; P.clearSession && P.clearSession().catch(() => {}); } return; }
+    if (!S.token || nativeTok === S.token) return; nativeTok = S.token;
     P.setSession({ token: S.token, api: API, name: S.name || "", lang: EN ? "en" : "ar" }).catch(() => { nativeTok = ""; }); };
   if (NATIVE) document.documentElement.classList.add("native");
   async function api(path, opt = {}) {
@@ -1552,7 +1569,7 @@ html.i18n-wait body{visibility:hidden}
     RI = radarItems();
     const b = $("#radar-btn"), n = $("#radar-n"), unseen = RI.filter(x => !seen().includes(x.key));
     b.hidden = false; n.hidden = !unseen.length; n.textContent = AR(unseen.length);
-    if (auto && unseen.length && S.onb && $("#onb").hidden && $("#v-chat").classList.contains("on") && !$(".sheet.on")) openRadar(RI.indexOf(unseen[0]));
+    if (auto && unseen.length && signedIn() && S.onb && $("#onb").hidden && $("#v-chat").classList.contains("on") && !$(".sheet.on")) openRadar(RI.indexOf(unseen[0]));
   }
   function showRadar(i) {
     ri = Math.max(0, Math.min(i, RI.length - 1)); const d = RI[ri]; if (!d) return closeRadar();
@@ -1569,7 +1586,7 @@ html.i18n-wait body{visibility:hidden}
     clearTimeout(rtimer); const r = $("#radar"); if (r.hidden) return;
     r.classList.add("out"); setTimeout(() => { r.hidden = true; r.classList.remove("out"); syncRadar(); }, 190);
   }
-  $("#radar-btn").onclick = () => { RI = radarItems(); if (!RI.length) { toast(AG.some(a => a.active) ? L("الرادار هادي، وطاقم عملك يدوّر لك 🛰️", "All quiet, your crew is on the lookout 🛰️") : L("الرادار هادي، ما فيه شي يحتاجك الحين", "All quiet, nothing needs you right now")); return; } openRadar(0); };
+  $("#radar-btn").onclick = () => { if (needSignin()) return; RI = radarItems(); if (!RI.length) { toast(AG.some(a => a.active) ? L("الرادار هادي، وطاقم عملك يدوّر لك 🛰️", "All quiet, your crew is on the lookout 🛰️") : L("الرادار هادي، ما فيه شي يحتاجك الحين", "All quiet, nothing needs you right now")); return; } openRadar(0); };
   const syncBusy = () => { const b = $("#radar-btn"); if (b) b.classList.toggle("busy", AG.some(a => a.active)); };
   $("#r-x").onclick = closeRadar;
   $("#r-next").onclick = () => ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar();
@@ -2274,6 +2291,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة Prime", "A 
     } catch (e) { toast(e.message === "offline" ? errText(e) : L("ما تم الاشتراك، جرب مرة ثانية", "The subscription didn't go through, please try again")); }
   }
   $("#buy").onclick = () => {
+    if (needSignin(L("سجّل دخول بقوقل أو أبل أول عشان تشترك 🔐", "Sign in with Google or Apple first to subscribe 🔐"))) return;
     if (NATIVE) {
       if (!$("#s-plans").classList.contains("on")) { openSheet("s-plans"); return; }
       if (IAP) iapBuy(); else toast(L("الاشتراك من داخل التطبيق قريباً", "Subscribing in the app is coming soon"));

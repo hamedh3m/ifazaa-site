@@ -4,7 +4,7 @@
 
 ## Plans
 - Free forever, no card: 100 messages and 10 reminders a month, 3 AI images, 70 voice-call replies, document expiry tracking and a medicine log.
-- Prime: SAR 199 a year (launch price, then 290). 300 messages a month, unlimited reminders, 20 AI images a month (creation and editing, with correct Arabic text), 4 crew members, a designed website for your business, saved places, emergency tools (nearest hospital and a contact), and Gmail reading.
+- Prime: SAR 199 a year (launch price, then 290). 300 messages a month, unlimited reminders, 20 AI images a month (creation and editing, with correct Arabic text), 3 crew members, a designed website for your business, saved places, emergency tools (nearest hospital and a contact), and Gmail reading.
 - Elite: SAR 299 a year (launch price, then 399). Everything in Prime, plus 600 messages a month shared with one family member on the same plan, 40 AI images a month, 10 crew members (helpers that work in the background), and 3 websites.
 
 ## Privacy

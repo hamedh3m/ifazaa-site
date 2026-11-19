@@ -898,7 +898,7 @@ html.i18n-wait body{visibility:hidden}
       <li>تقدرون تحفظون مستندات بعض وتوصلكم تذكيراتها</li>
       <li>تفك الربط متى ما بغيت</li>
     </ul>
-    <div class="gbox" id="fam-prime" hidden><b>هذي من ميزات إيليت</b><p>اشترك في إيليت وأضف معك شخص من أهلك بنفس الاشتراك.</p><button class="btn btn-red" type="button" id="fam-buy">ترقّى لإيليت</button></div>
+    <div class="gbox" id="fam-prime" hidden><b>هذي من ميزات إيليت</b><p>اشترك في إيليت وأضف معك شخص من أهلك بنفس الاشتراك.</p><button class="btn btn-red" type="button" id="fam-buy">اشترك في إيليت</button></div>
     <div id="fam-new" hidden>
       <p class="sec-t">وش يقرب لك؟</p>
       <div class="plat fam-rel" role="group" aria-label="القرابة"><button type="button" data-rel="spouse">زوج/زوجة</button><button type="button" data-rel="child">ابن/بنت</button><button type="button" data-rel="parent">أب/أم</button><button type="button" data-rel="sibling">أخ/أخت</button></div>
@@ -2214,7 +2214,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   const crewLimitMsg = () => myTier === "free"
     ? L("ميزة طاقم العمل ما هي متوفرة بالباقة المجانية. تقدر تستفيد منها عند ترقية حسابك: 3 موظفين في باقة برايم، أو 10 موظفين في باقة إيليت. ادخل «حسابي» ثم «الباقات» واختر الباقة المناسبة.",
-        "The crew feature isn't available on the free plan. Upgrade your account to get 3 crew members with Prime or 10 with Elite: go to Account, then Plans, and pick the plan that suits you.")
+        "The crew feature isn't available on the free plan. Subscribe to get 3 crew members with Prime or 10 with Elite: go to Account, then Plans, and pick the plan that suits you.")
     : myTier === "prime"
       ? L("طاقم العمل لديك مكتمل، قم بحذف إحدى المهام لتوظيف مهمة جديدة. أو انتقل لإيليت (10 موظفين) من «حسابي» ثم «الباقات».", "Your crew is full. Remove a task to hire a new one, or switch to Elite (10 crew members) from Account, then Plans.")
       : L("طاقم العمل لديك مكتمل، قم بحذف إحدى المهام لتوظيف مهمة جديدة.", "Your crew is full. Remove a task to hire a new one.");
@@ -2344,6 +2344,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       if (myTier === "prime" && planPick === "prime") planPick = "elite";
       const tName = myTier === "elite" || myTier === "family" ? L("إيليت", "Elite") : paid ? L("برايم", "Prime") : L("مجاني", "Free");
       $("#plan-chip").textContent = tName;
+      $("#fam-buy").textContent = myTier === "prime" ? L("انتقل لإيليت", "Switch to Elite") : L("اشترك في إيليت", "Get Elite");
       drawPlans(); syncBuy();
       $("#me-plan").textContent = paid ? (tName + (m.plan_until ? L(" · إلى ", " · until ") + "\u2066" + AR(m.plan_until.slice(0, 10)) + "\u2069" : "") + (m.msgs_limit ? ` · ${AR(m.msgs)} ${L("من", "of")} ${AR(m.msgs_limit)} ${L("رسالة", "messages")}` : ""))
         : EN ? `Free · ${m.msgs} of ${m.msgs_limit} messages · ${m.reminders_month} of ${m.reminders_limit} reminders this month`

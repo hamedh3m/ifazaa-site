@@ -1832,7 +1832,7 @@ html.i18n-wait body{visibility:hidden}
     cStatus(L("فزعة يفكر…", "Fazaa is thinking…")); $("#c-orb").classList.add("think");
     let reply = "";
     try {
-      const r = await api("/voice", { method: "POST", body: JSON.stringify({ audio: await toB64(blob), name: S.name || "", client: PLAT, thread: S.thread }) });
+      const r = await api("/voice", { method: "POST", body: JSON.stringify({ audio: await toB64(blob), name: S.name || "", client: PLAT, thread: S.thread, call: true }) });
       reply = r.reply || ""; lastId = Math.max(lastId, 0); loadHistory();
     } catch (e) { if (!CALL.on) return; cStatus(errText(e)); setTimeout(listen, 1500); return; }
     if (!CALL.on) return;
@@ -1842,16 +1842,35 @@ html.i18n-wait body{visibility:hidden}
       if (!r.ok) throw new Error(r.status === 429 ? "rate" : r.status === 402 ? "speak-limit" : "server");
       const buf = await CALL.ctx.decodeAudioData(await r.arrayBuffer());
       if (!CALL.on) return;
-      cStatus(L("فزعة يتكلم…", "Fazaa is speaking…")); $("#c-orb").classList.remove("think");
+      cStatus(L("فزعة يتكلم… تكلم أو اضغط الدائرة عشان تقاطعه", "Fazaa is speaking… talk or tap the circle to interrupt")); $("#c-orb").classList.remove("think");
       const node = CALL.ctx.createBufferSource(); node.buffer = buf; node.connect(CALL.ctx.destination);
       CALL.play = node; node.onended = () => { if (CALL.play === node) { CALL.play = null; listen(); } };
-      node.start();
+      node.start(); bargeWatch(node);
     } catch (e) {
       if (!CALL.on) return;
       if (e.message === "speak-limit") { cStatus(L("خلصت ردود المكالمة المجانية لهالشهر (70). الرد مكتوب تحت، ومع برايم المكالمة مفتوحة.", "You've used this month's 70 free call replies. The reply is written below, and Prime opens up calls.")); return; }
       cStatus(e.message === "rate" ? errText(e) : L("ما قدرت أتكلم، اقرا الرد تحت", "Couldn't speak, read the reply below")); setTimeout(listen, 2500);
     }
   }
+  // تقاطعه وهو يتكلم: لو تكلمت (صوتك أعلى من صدى السماعة) أو ضغطت الدائرة، يسكت ويسمعك على طول
+  function interrupt(node) {
+    if (!CALL.on || CALL.play !== node) return;
+    CALL.play = null; node.onended = null; try { node.stop(); } catch {}
+    listen();
+  }
+  function bargeWatch(node) {
+    const t0 = Date.now(); let echo = 0, n = 0, loud = 0;
+    const tick = () => {
+      if (!CALL.on || CALL.play !== node) return;
+      const lv = CALL.muted ? 0 : level();
+      if (Date.now() - t0 < 600) { echo = (echo * n + lv) / (++n); requestAnimationFrame(tick); return; }   // نقيس صدى صوته أول
+      const thr = Math.max(0.05, echo * 2.4);
+      if (lv > thr) { if (++loud > 9) { interrupt(node); return; } } else loud = Math.max(0, loud - 2);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  $("#c-orb").addEventListener("click", () => { if (CALL.play) interrupt(CALL.play); });
   function endCall() {
     CALL.on = false; clearInterval(CALL.timer);
     if (CALL.rec && CALL.rec.state === "recording") { CALL.rec._cancel = true; try { CALL.rec.stop(); } catch {} }

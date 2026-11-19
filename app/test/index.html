@@ -517,6 +517,7 @@ html{touch-action:manipulation}
 .pv{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}.pv li{background:var(--s1,rgba(255,255,255,.04));border:1px solid var(--line,rgba(255,255,255,.08));border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.7;color:var(--muted)}.pv li b{color:var(--ink);display:block;font-size:14px;margin-bottom:2px}
 .how{margin:8px 0 0;font-size:13px;line-height:1.7;color:var(--muted)}.how span{display:block}.how .pl{display:inline-block;margin-top:6px;font-style:normal;font-size:12px;font-weight:700;color:var(--ink);background:var(--s2);border-radius:999px;padding:3px 10px}
 .mdn{margin:22px 0 8px;padding:12px 14px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.08));font-size:12.5px;line-height:1.75;color:var(--muted)}
+.ag .alive{margin:8px 2px 0;font-size:12px;color:#6fe6a0;opacity:.85}
 .g-slot{min-height:44px;display:flex;justify-content:center}
 .a-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:400px;height:44px;margin:10px auto 0;border-radius:999px;background:#fff;color:#000;font-size:15px;font-weight:700}
 .a-btn svg{width:18px;height:18px}
@@ -1713,6 +1714,7 @@ html.i18n-wait body{visibility:hidden}
     for (let i = 1; i < up.length; i++) if (up[i].t - up[i - 1].t < 3600e3) out.push([up[i - 1], up[i]]);
     return out;
   }
+  const arDays = n => n === 1 ? "يوم" : n === 2 ? "يومين" : n >= 3 && n <= 10 ? `${AR(n)} أيام` : `${AR(n)} يوم`;
   function cardData() {
     const now = Date.now(), C = [];
     conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`),
@@ -1726,11 +1728,14 @@ html.i18n-wait body{visibility:hidden}
         say: L(`عطني تفاصيل أكثر عن آخر ${a.title}`, `Give me more on the latest ${a.title}`),
         p: [[L("التفاصيل", "Details"), L(`عطني تفاصيل أكثر عن آخر ${a.title}`, `Give me more on the latest ${a.title}`)], [L("افتح طاقمك", "Open your crew"), "@crew"]] });
     });
-    reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now).sort((a, b) => a.t - b.t).slice(0, 3)
+    // تذكيرات المستندات (30 و7 أيام ويوم الانتهاء) ما تطلع بطاقات منفصلة: بطاقة «مستنداتك» تغطيها. وأي تذكيرين بنفس الاسم يطلع أقربهم بس
+    const seenT = new Set(), baseT = t => String(t || "").replace(/\s*(تنتهي|ينتهي|expires).*$/i, "").replace(/[0-9٠-٩]+/g, "").trim();
+    reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && !x.paper && !/(تنتهي|expires)/i.test(x.title)).sort((a, b) => a.t - b.t)
+      .filter(x => { const k = baseT(x.title); if (seenT.has(k)) return false; seenT.add(k); return true; }).slice(0, 3)
       .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks",
         p: [[L("أجّله ساعة", "Push it an hour"), L(`أجّل «${x.title}» ساعة`, `Push “${x.title}” back an hour`)], [L("ذكّرني قبله بساعة", "Remind me an hour before"), L(`ذكّرني قبل «${x.title}» بساعة`, `Remind me an hour before “${x.title}”`)]] }));
     papers.filter(p => p.days <= 60).sort((a, b) => a.days - b.days).slice(0, 2)
-      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers",
+      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${arDays(p.days)}`, p.days === 1 ? `${p.label} expires tomorrow` : `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers",
         p: [[L("كيف أجددها؟", "How do I renew it?"), L(`كيف أجدد ${p.label}؟`, `How do I renew my ${p.label}?`)], [L("ذكّرني بكرة", "Remind me tomorrow"), L(`ذكّرني بكرة الصبح أجدد ${p.label}`, `Remind me tomorrow morning to renew my ${p.label}`)]] }));
     if (C.length < 2) {   // يوم فاضي: أفكار تبدأ فيها
       C.push({ t: "t-red", ic: "i-sun", k: L("موجز يومك", "Daily briefing"), h: L("مواعيد يومك توصلك كل صبح", "Your day's plan every morning"), s: L("اضغط وأشغّله لك", "Tap and I'll turn it on"), say: L("شغّل لي موجز يومك الساعة 7 الصبح", "Turn on my daily briefing at 7 am"),
@@ -1877,7 +1882,7 @@ html.i18n-wait body{visibility:hidden}
     if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عندك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
       list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t))]), act: L("افتح المجدول", "Open schedule"), go: "tasks" });
     papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("مستنداتك", "Your documents"),
-      h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : p.days === 0 ? L(`${p.label} تنتهي اليوم`, `${p.label} expires today`) : L(`${p.label} تنتهي بعد ${AR(p.days)} يوم`, `${p.label} expires in ${p.days} days`),
+      h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : p.days === 0 ? L(`${p.label} تنتهي اليوم`, `${p.label} expires today`) : L(`${p.label} تنتهي بعد ${arDays(p.days)}`, p.days === 1 ? `${p.label} expires tomorrow` : `${p.label} expires in ${p.days} days`),
       p: L("جدّدها من أبشر قبل لا تنتهي، وأنا أذكرك.", "Renew it before it expires, and I'll keep reminding you."), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
     const tm = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => startOf(x.t) === startOf(now) + DAY).sort((a, b) => a.t - b.t);
     if (tm.length && new Date().getHours() >= 17) R.push({ key: "m" + tm[0].id, t: "t-green", k: L("بكرة", "Tomorrow"), h: L(`أول شي بكرة: ${tm[0].title}`, `First thing tomorrow: ${tm[0].title}`), p: L(`الساعة ${fmtTime(new Date(tm[0].t))}. نم بدري 😴`, `At ${fmtTime(new Date(tm[0].t))}. Get some sleep 😴`), act: L("وش عندي بكرة؟", "What's on tomorrow?"), say: L("وش عندي بكرة؟", "What do I have tomorrow?") });
@@ -2120,7 +2125,7 @@ html.i18n-wait body{visibility:hidden}
     morning: [["city", L("مدينتك", "Your city"), L("الرياض", "Riyadh")], ["topics", L("أخبار عن (اختياري)", "News about (optional)"), L("الاقتصاد، الهلال", "Economy, football")]],
     price: [["query", L("المنتج", "Product"), L("آيفون 17 برو 256", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
     travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("إسطنبول", "Istanbul"), 1],
-      ["trip", L("نوع الرحلة", "Trip type"), "", 0, [["oneway", L("ذهاب فقط", "One way")], ["round", L("ذهاب وعودة", "Round trip")]]],
+      ["trip", L("نوع الرحلة", "Trip type"), "", 0, [["oneway", L("ذهاب بس", "One way")], ["round", L("ذهاب وعودة", "Round trip")]]],
       ["date", L("تاريخ الذهاب (اختياري)", "Departure date (optional)"), L("أول أسبوع في يناير", "First week of January")],
       ["back", L("تاريخ العودة (للذهاب والعودة)", "Return date (round trip)"), L("بعد أسبوعين", "Two weeks later")],
       ["adults", L("البالغين", "Adults"), "", 0, [1, 2, 3, 4, 5, 6, 7, 8].map(n => [String(n), String(n)])],
@@ -2350,8 +2355,23 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     ? L("ميزة طاقم العمل ما هي متوفرة بالباقة المجانية. تقدر تستفيد منها عند ترقية حسابك: 3 موظفين في باقة برايم، أو 10 موظفين في باقة إيليت. ادخل «حسابي» ثم «الباقات» واختر الباقة المناسبة.",
         "The crew feature isn't available on the free plan. Subscribe to get 3 crew members with Prime or 10 with Elite: go to Account, then Plans, and pick the plan that suits you.")
     : myTier === "prime"
-      ? L("طاقم العمل لديك مكتمل، قم بحذف إحدى المهام لتوظيف مهمة جديدة. أو انتقل لإيليت (10 موظفين) من «حسابي» ثم «الباقات».", "Your crew is full. Remove a task to hire a new one, or switch to Elite (10 crew members) from Account, then Plans.")
-      : L("طاقم العمل لديك مكتمل، قم بحذف إحدى المهام لتوظيف مهمة جديدة.", "Your crew is full. Remove a task to hire a new one.");
+      ? L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد. أو انتقل لإيليت (10 موظفين) من «حسابي» ثم «الباقات».", "Your crew is full. Remove a task to hire a new one, or switch to Elite (10 crew members) from Account, then Plans.")
+      : L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد.", "Your crew is full. Remove a task to hire a new one.");
+  // يبين إنه شغال لحاله: آخر فحص والفحص الجاي (ما يحتاج يضغط شي)
+  function agoTxt(ms) {
+    const m = Math.max(1, Math.round(ms / 60000));
+    if (m < 60) return EN ? `${m} min ago` : `قبل ${AR(m)} دقيقة`;
+    const h = Math.round(m / 60);
+    if (h < 24) return EN ? `${h} h ago` : h === 1 ? "قبل ساعة" : h === 2 ? "قبل ساعتين" : `قبل ${AR(h)} ساعات`;
+    return fmtWhen(new Date(Date.now() - ms));
+  }
+  function aliveTxt(a) {
+    const last = Date.parse(a.last_at || ""), next = Date.parse(a.next_at || "");
+    const parts = [L("✓ يشتغل لحاله", "✓ Runs on its own")];
+    if (last) parts.push(L("آخر فحص ", "last check ") + agoTxt(Date.now() - last));
+    if (next && next > Date.now()) parts.push(L("الجاي ", "next ") + fmtWhen(new Date(next)));
+    return esc(parts.join(" · "));
+  }
   function drawAgents() {
     if (myTier === "free" && !AG.length) {
       $("#ag-list").innerHTML = primeBox(L("طاقم عملك يشتغلون عنك بالخلفية: موجز الصباح، ومتابعة الأسعار والطيران، وفريقك المفضل، والأخبار. مع برايم يصير عندك 3، ومع إيليت 10.",
@@ -2362,8 +2382,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     }
     $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="grip" aria-label="${L("اسحب عشان ترتّب", "Drag to reorder")}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcRich(a.last_text); return `<div class="al">${sp.html}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
+      + (a.active ? `<p class="alive">${aliveTxt(a)}</p>` : "")
       + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("اضغط للتفاصيل", "Tap for details")}</button>`
-      + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button>${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
+      + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("افحص الحين", "Check now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button>${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
     wireReorder();
     $$("[data-aglog]").forEach(b => b.onclick = () => openAgLog(+b.dataset.aglog));
@@ -2886,7 +2907,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       $("#fam-who").textContent = (f.partner || L("الشخص اللي معك", "Your family member")) + L(" معك في إيليت ✅", " is with you on Elite ✅");
       $("#fam-how").textContent = f.role === "owner"
         ? L("قل لفزعة مثلاً «ذكّر ", "Tell Fazaa, for example, “Remind ") + (f.partner || L("أمي", "Mom")) + L(" بالدواء الساعة 9» ويوصله التذكير.", " to take the medicine at 9” and they'll get the reminder.")
-        : L("أنت منضم لاشتراك إيليت عند ", "You're on the Elite plan of ") + (f.partner || "") + L(". تقدر تقول لفزعة «ذكّره بـ…» ويوصله التذكير.", ". You can tell Fazaa “remind them…” and they'll get it.");
+        : L("انت معنا في اشتراك إيليت عند ", "You're on the Elite plan of ") + (f.partner || "") + L(". تقدر تقول لفزعة «ذكّره بـ…» ويوصله التذكير.", ". You can tell Fazaa “remind them…” and they'll get it.");
     }
     const sm = $("#fam-small"); if (sm) sm.textContent = f.role ? (f.partner || "") + L(" معك ✅", " is with you ✅") : L("معك بنفس اشتراك إيليت", "On the same Elite plan");
   }

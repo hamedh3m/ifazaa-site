@@ -1345,11 +1345,14 @@ html.i18n-wait body{visibility:hidden}
   document.addEventListener("focusout", () => setTimeout(() => { if (!typing(document.activeElement)) document.body.classList.remove("kb"); }, 60));
   const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
     : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي 10 يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
-  const sugg = EN ? [["What do I have today?", "What do I have today?"], ["⏰ Remind me…", "Remind me "], ["✍️ Write a message", "Write a congratulations message for Khalid on his new baby"], ["🎨 Make an image", "Make me an image of "], ["📄 My documents", "My car registration expires on January 10, remind me before"]]
-    : [["وش عندي اليوم؟", "وش عندي اليوم؟"], ["⏰ ذكّرني…", "ذكرني "], ["✍️ اكتب لي رسالة", "اكتب لي تهنئة لخالد بالمولود"], ["🎨 سوّ لي صورة", "سوّ لي صورة "], ["📄 مستنداتي", "استمارتي تنتهي 10 يناير، ذكرني قبلها"]];
+  const sugg = EN ? [["What do I have today?", "What do I have today?"], ["⏰ Remind me…", "Remind me "], ["✍️ Write a message", "Write me a message "], ["🎨 Make an image", "Make me an image of "], ["📄 My documents", "@papers"]]
+    : [["وش عندي اليوم؟", "وش عندي اليوم؟"], ["⏰ ذكّرني…", "ذكرني "], ["✍️ اكتب لي رسالة", "اكتب لي رسالة "], ["🎨 سوّ لي صورة", "سوّ لي صورة "], ["📄 مستنداتي", "@papers"]];
   $("#chips").innerHTML = sugg.map(([a, b]) => `<button type="button" data-say="${esc(b)}">${esc(a)}</button>`).join("");
   $$("#chips button").forEach(c => c.addEventListener("click", () => {
-    const t = c.dataset.say; if (/ $/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
+    // الأزرار تكتب بداية الطلب ويكمله المستخدم بنفسه (ما ترسل شي باسمه)، إلا «وش عندي اليوم؟» سؤال كامل
+    const t = c.dataset.say;
+    if (t === "@papers") { go("papers"); return; }
+    if (/ $/.test(t)) { inp.value = t; grow(); syncSend(); inp.focus(); } else submit(t);
   }));
   const STALE = 6 * 3600e3;   // بعد 6 ساعات من آخر رسالة نرجع نعرض التحية والبطاقات
   const fresh = () => !S.msgs.length || Date.now() - S.msgs[S.msgs.length - 1].ts > STALE;

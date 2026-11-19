@@ -1257,10 +1257,38 @@ html.i18n-wait body{visibility:hidden}
   // ---------- عجلة التاريخ والوقت (زي أبل) ----------
   const MON = EN ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     : ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  // نقرة خفيفة مع كل رقم يمر، زي عجلة أبل: هزة (أندرويد، والآيفون iOS 18 وفوق) وصوت تك هادي يحترم الصامت وما يوقف الموسيقى
+  const tick = (() => {
+    let lb = null, ac = null, last = 0;
+    const prep = () => {
+      try { if (navigator.audioSession) navigator.audioSession.type = "ambient"; } catch {}
+      try { if (!ac) { const A = window.AudioContext || window.webkitAudioContext; if (A) ac = new A(); } if (ac && ac.state === "suspended") ac.resume(); } catch {}
+      if (!lb && !navigator.vibrate) {
+        const i = document.createElement("input"); i.type = "checkbox"; i.setAttribute("switch", ""); i.id = "hap-sw"; i.tabIndex = -1; i.setAttribute("aria-hidden", "true");
+        lb = document.createElement("label"); lb.htmlFor = "hap-sw"; lb.setAttribute("aria-hidden", "true");
+        lb.style.cssText = "position:fixed;left:-200px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none";
+        lb.append(i); document.body.append(lb);
+      }
+    };
+    const fire = () => {
+      const t = performance.now(); if (t - last < 35) return; last = t;
+      try { if (navigator.vibrate) navigator.vibrate(5); else if (lb) lb.click(); } catch {}
+      try {
+        if (ac && ac.state === "running") {
+          const o = ac.createOscillator(), g = ac.createGain(), n = ac.currentTime;
+          o.type = "square"; o.frequency.value = 1800; g.gain.setValueAtTime(0.025, n); g.gain.exponentialRampToValueAtTime(0.0001, n + 0.015);
+          o.connect(g).connect(ac.destination); o.start(n); o.stop(n + 0.02);
+        }
+      } catch {}
+    };
+    return { prep, fire };
+  })();
   function wheel(values, idx) {
     const c = document.createElement("div"); c.className = "wcol";
+    let cur = -1;
+    c.addEventListener("scroll", () => { const i = c._get(); if (cur >= 0 && i !== cur) tick.fire(); cur = i; }, { passive: true });
     c.innerHTML = '<div class="pad"></div><div class="pad"></div>' + values.map(v => `<div>${esc(String(v))}</div>`).join("") + '<div class="pad"></div><div class="pad"></div>';
-    c._set = i => { c.scrollTop = Math.max(0, Math.min(values.length - 1, i)) * 40; };
+    c._set = i => { cur = Math.max(0, Math.min(values.length - 1, i)); c.scrollTop = cur * 40; };
     c._get = () => Math.max(0, Math.min(values.length - 1, Math.round(c.scrollTop / 40)));
     c._init = idx;
     return c;
@@ -1268,6 +1296,8 @@ html.i18n-wait body{visibility:hidden}
   function wheelPick(kind, init, step) {
     return new Promise(res => {
       const now = init || new Date(), Y = new Date().getFullYear(), W = $("#wp-w"); W.innerHTML = "";
+      tick.prep();
+      W.style.direction = kind === "date" ? "" : "ltr";   // الوقت: الساعة ثم الدقايق ثم ص/م، زي «9:00 ص»
       const cols = {};
       if (kind === "date") {
         const years = Array.from({ length: 116 }, (_, i) => Y - 100 + i);

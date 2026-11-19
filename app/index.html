@@ -96,6 +96,9 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .m.bot{align-self:flex-end;background:var(--s2);border:1px solid var(--line);border-end-end-radius:6px}
 .m.bot b{color:#fff}
 .m time{display:block;font-size:11px;opacity:.55;margin-top:4px}
+.m .mf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}.m .mf time{margin-top:0}
+.m .cp{display:inline-flex;align-items:center;gap:5px;border:0;background:none;color:inherit;opacity:.6;font-size:12px;padding:4px 2px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.m .cp:active{opacity:1;transform:scale(.96)}.m .cp svg{width:15px;height:15px}.m .cp.ok{opacity:1;color:var(--green)}
 .card-in{margin-top:8px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);display:flex;gap:10px;align-items:center;font-size:14px}
 .card-in i{flex:none;width:30px;height:30px;border-radius:9px;background:var(--red);display:grid;place-items:center;font-style:normal}
 .typing{align-self:flex-end;display:flex;gap:4px;padding:14px 16px;border-radius:20px;background:var(--s2)}
@@ -1169,12 +1172,26 @@ html.i18n-wait body{visibility:hidden}
     const pics = m.me ? [] : imgsOf(m.text);
     const rest = pics.length ? m.text.replace(IMG_RE, "").replace(/\n{3,}/g, "\n\n").trim() : m.text;
     el.innerHTML = pics.map(u => `<button type="button" class="gimg" data-img="${esc(u)}"><img src="${esc(u)}" alt="${esc(L("صورة من فزعة", "Image from Fazaa"))}" loading="lazy"></button>`).join("")
-      + (rest ? linkify(rest) : "") + `<time>${fmtTime(new Date(m.ts))}</time>`;
+      + (rest ? linkify(rest) : "") + (!m.me && rest
+        ? `<div class="mf"><time>${fmtTime(new Date(m.ts))}</time><button type="button" class="cp" aria-label="${L("انسخ الرد", "Copy reply")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>${L("نسخ", "Copy")}</span></button></div>`
+        : `<time>${fmtTime(new Date(m.ts))}</time>`);
     if (pics.length && !rest) el.classList.add("imgonly");
     el.querySelectorAll(".gimg").forEach(b => b.onclick = () => openImg(b.dataset.img));
+    const cp = el.querySelector(".cp");
+    if (cp) cp.onclick = () => copyText(rest, cp);
     if (!m.me) medButton(el, m);
     msgs.appendChild(el);
     return el;
+  }
+  async function copyText(t, btn) {
+    let ok = false;
+    try { await navigator.clipboard.writeText(t); ok = true; } catch {
+      try { const ta = document.createElement("textarea"); ta.value = t; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;opacity:0;top:0";
+        document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length); ok = document.execCommand("copy"); ta.remove(); } catch {}
+    }
+    if (!ok) { toast(L("ما قدرت أنسخ، اضغط على الرد مطولاً وانسخه", "Couldn't copy, long-press the reply to copy it")); return; }
+    toast(L("تم النسخ ✅", "Copied ✅"));
+    if (btn) { const sp = btn.querySelector("span"); btn.classList.add("ok"); if (sp) sp.textContent = L("تم", "Copied"); setTimeout(() => { btn.classList.remove("ok"); if (sp) sp.textContent = L("نسخ", "Copy"); }, 1600); }
   }
   let imgvUrl = "";
   function openImg(u) { imgvUrl = u; $("#imgv-img").src = u; $("#imgv").hidden = false; }

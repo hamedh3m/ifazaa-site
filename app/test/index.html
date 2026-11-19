@@ -1250,7 +1250,7 @@ html.i18n-wait body{visibility:hidden}
     c._init = idx;
     return c;
   }
-  function wheelPick(kind, init) {
+  function wheelPick(kind, init, step) {
     return new Promise(res => {
       const now = init || new Date(), Y = new Date().getFullYear(), W = $("#wp-w"); W.innerHTML = "";
       const cols = {};
@@ -1261,8 +1261,9 @@ html.i18n-wait body{visibility:hidden}
         cols.y = wheel(years, years.indexOf(now.getFullYear()));
         W.append(cols.d, cols.m, cols.y);
       } else {
-        const mins = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
-        const h = now.getHours(), mi = Math.round(now.getMinutes() / 5) % 12;
+        const st = step || 5, cnt = 60 / st;
+        const mins = Array.from({ length: cnt }, (_, i) => String(i * st).padStart(2, "0"));
+        const h = now.getHours(), mi = Math.round(now.getMinutes() / st) % cnt;
         cols.h = wheel(Array.from({ length: 12 }, (_, i) => i + 1), (h % 12 || 12) - 1);
         cols.mi = wheel(mins, mi);
         cols.p = wheel([L("ص", "AM"), L("م", "PM")], h < 12 ? 0 : 1);
@@ -1280,7 +1281,7 @@ html.i18n-wait body{visibility:hidden}
           done(new Date(y, m, Math.min(cols.d._get() + 1, last), 12, 0));
         } else {
           const d = new Date(now); let h = cols.h._get() + 1; h = h % 12 + (cols.p._get() ? 12 : 0);
-          d.setHours(h, cols.mi._get() * 5, 0, 0); done(d);
+          d.setHours(h, cols.mi._get() * (step || 5), 0, 0); done(d);
         }
       };
     });
@@ -1295,7 +1296,7 @@ html.i18n-wait body{visibility:hidden}
   const syncAt = () => { const [h, m] = ($("#agf-at").value || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0); $("#agf-at-b").textContent = fmtTime(d); };
   $("#agf-at-b").onclick = async () => {
     const [h, m] = ($("#agf-at").value || "09:00").split(":").map(Number); const d0 = new Date(); d0.setHours(h, m, 0, 0);
-    const d = await wheelPick("time", d0); if (!d) return;
+    const d = await wheelPick("time", d0, 15); if (!d) return;      // الطاقم: كل ربع ساعة (00، 15، 30، 45)
     $("#agf-at").value = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); syncAt();
   };
   $("#plan-chip").onclick = () => { const b = document.querySelector('[data-sheet="s-plans"]'); if (b) b.click(); else openSheet("s-plans"); };

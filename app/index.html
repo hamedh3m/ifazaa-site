@@ -70,8 +70,8 @@ svg{display:block}
 
 /* tab bar */
 body.kb .tabs,body.kb .demo-note{display:none}
-.tabs{flex:none;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px calc(var(--bot) + 6px);border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(5,1fr);padding:4px 4px max(10px, calc(var(--bot) * .55));border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0 2px;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap}
 .tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--ink)}
 .tab[aria-current="page"] .tab-dot{background:var(--red2)}
@@ -218,6 +218,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 /* الرادار: تنبيهات فزعة بشكل الستوري */
 .bar-r{display:flex;align-items:center;gap:8px}
 .radar-btn{position:relative;width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--line);display:grid;place-items:center;transition:transform 140ms var(--ease)}
+#today-btn svg{color:#f5b14c}#today-btn.on{background:rgba(245,177,76,.16);border-color:rgba(245,177,76,.5)}
 .radar-btn:active{transform:scale(.92)}
 .radar-btn[hidden]{display:none}
 #radar-btn{overflow:hidden}
@@ -778,7 +779,7 @@ html.i18n-wait body{visibility:hidden}
 <div class="app">
   <header class="bar">
     <div class="brand"><button class="icon-btn" id="th-btn" type="button" aria-label="المحادثات"><svg><use href="#i-menu"/></svg></button><svg><use href="#logo"/></svg><span id="bar-title">فزعة</span></div>
-    <div class="bar-r"><button class="radar-btn" id="call-btn" type="button" aria-label="كلّم فزعة"><svg><use href="#i-phone"/></svg></button><button class="radar-btn" id="bell-btn" type="button" aria-label="التنبيهات"><svg><use href="#i-bell"/></svg><b id="bell-n" hidden></b></button><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار"><i class="sweep"></i><i class="ring"></i><i class="dot"></i><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><button type="button" class="plan-chip" id="plan-chip" aria-label="الباقات">مجاني</button></div>
+    <div class="bar-r"><button class="radar-btn" id="call-btn" type="button" aria-label="كلّم فزعة"><svg><use href="#i-phone"/></svg></button><button class="radar-btn" id="today-btn" type="button" aria-label="يومك"><svg><use href="#i-sun"/></svg></button><button class="radar-btn" id="bell-btn" type="button" aria-label="التنبيهات"><svg><use href="#i-bell"/></svg><b id="bell-n" hidden></b></button><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار"><i class="sweep"></i><i class="ring"></i><i class="dot"></i><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><button type="button" class="plan-chip" id="plan-chip" aria-label="الباقات">مجاني</button></div>
   </header>
 
   <main class="views">
@@ -804,6 +805,29 @@ html.i18n-wait body{visibility:hidden}
     </section>
 
     <!-- today -->
+    <section class="view" id="v-papers" aria-label="مستنداتي">
+    <h2 class="h2">إدارة مستنداتك وبطايقك</h2>
+    <p class="sub">صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي 15 مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.</p>
+    <ul class="safe">
+      <li>نحفظ نوع المستند وتاريخ انتهائه بس</li>
+      <li>ما نحفظ رقمه ولا صورته</li>
+    </ul>
+    <div class="gbox" id="pap-prime" hidden style="display:none!important"><b>هذي من ميزات برايم</b><p>اشترك في برايم وخلّ فزعة يتابع مستنداتك ومستندات اللي معك.</p><button class="btn btn-red" type="button" id="pap-buy">اشترك في برايم</button></div>
+    <div id="pap-on" hidden>
+      <div id="pap-list"></div>
+      <button class="btn btn-primary" type="button" id="pap-add" style="margin-top:16px">أضف مستند</button>
+      <form id="pap-form" class="pap-form" hidden>
+        <label class="field"><span>نوع المستند</span><select id="pap-kind"></select></label>
+        <label class="field"><span id="pap-label-t">اسم يميّزه (اختياري)</span><input id="pap-label" maxlength="60" placeholder="مثلاً: استمارة الكامري" autocomplete="off"></label>
+        <label class="field"><span>تاريخ الانتهاء (ميلادي)</span><input id="pap-exp" type="date" required></label>
+        <p class="note" id="pap-err" hidden></p>
+        <button class="btn btn-primary" type="submit" id="pap-save" style="margin-top:16px">احفظ</button>
+        <button class="btn btn-ghost" type="button" id="pap-photo" style="margin-top:8px">📷 أو صوّره وأرسله لفزعة</button>
+        <button class="btn btn-ghost" type="button" id="pap-cancel" style="margin-top:8px">إلغاء</button>
+      </form>
+    </div>
+    </section>
+
     <section class="view" id="v-today" aria-label="يومك">
       <div class="stories" id="stories"></div>
       <div class="story" id="story"></div>
@@ -848,7 +872,6 @@ html.i18n-wait body{visibility:hidden}
       <div class="menu">
         <button data-sheet="s-limits" id="me-limits"><span class="mi" style="background:rgba(62,207,142,.13);color:#3ecf8e"><svg><use href="#i-gauge"/></svg></span><span class="lbl">حدودي<br><small id="lim-small">وين وصلت في استهلاكك هالشهر</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">مستنداتي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-meds" id="me-meds"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5;font-size:17px">💊</span><span class="lbl">سجل أدويتي<br><small>وش أخذت ومتى بالضبط</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-care" id="me-care"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e;font-size:17px">🚑</span><span class="lbl">الطوارئ<br><small id="care-small">أقرب المراكز الصحية وجهة اتصال الطوارئ (اختياري)</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -866,7 +889,7 @@ html.i18n-wait body{visibility:hidden}
   <nav class="tabs" aria-label="التنقل">
     <button class="tab" data-v="chat" aria-current="page"><svg><use href="#i-chat"/></svg>فزعة<i class="tab-dot"></i></button>
     <button class="tab" data-v="crew"><svg><use href="#i-radar"/></svg><span id="tab-crew">طاقم عملك</span><i class="tab-dot"></i></button>
-    <button class="tab" data-v="today"><svg><use href="#i-sun"/></svg>يومك<i class="tab-dot"></i></button>
+    <button class="tab" data-v="papers"><svg><use href="#i-doc"/></svg><span id="tab-pap">مستنداتي</span><i class="tab-dot"></i></button>
     <button class="tab" data-v="tasks"><svg><use href="#i-clock"/></svg>المجدول<i class="tab-dot"></i></button>
     <button class="tab" data-v="me"><svg><use href="#i-user"/></svg>حسابي<i class="tab-dot"></i></button>
   </nav>
@@ -966,31 +989,6 @@ html.i18n-wait body{visibility:hidden}
   <div class="body"><p class="sub" id="agl-sub">كل اللي جابه لك هالموظف، أحدث شي أول.</p><div id="agl-list"></div></div>
 </section>
 
-<section class="sheet" id="s-papers" aria-label="مستنداتي">
-  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>مستنداتي</h1><span style="width:42px"></span></header>
-  <div class="body">
-    <h2 class="h2">إدارة مستنداتك وبطايقك</h2>
-    <p class="sub">صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي 15 مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.</p>
-    <ul class="safe">
-      <li>نحفظ نوع المستند وتاريخ انتهائه بس</li>
-      <li>ما نحفظ رقمه ولا صورته</li>
-    </ul>
-    <div class="gbox" id="pap-prime" hidden style="display:none!important"><b>هذي من ميزات برايم</b><p>اشترك في برايم وخلّ فزعة يتابع مستنداتك ومستندات اللي معك.</p><button class="btn btn-red" type="button" id="pap-buy">اشترك في برايم</button></div>
-    <div id="pap-on" hidden>
-      <div id="pap-list"></div>
-      <button class="btn btn-primary" type="button" id="pap-add" style="margin-top:16px">أضف مستند</button>
-      <form id="pap-form" class="pap-form" hidden>
-        <label class="field"><span>نوع المستند</span><select id="pap-kind"></select></label>
-        <label class="field"><span id="pap-label-t">اسم يميّزه (اختياري)</span><input id="pap-label" maxlength="60" placeholder="مثلاً: استمارة الكامري" autocomplete="off"></label>
-        <label class="field"><span>تاريخ الانتهاء (ميلادي)</span><input id="pap-exp" type="date" required></label>
-        <p class="note" id="pap-err" hidden></p>
-        <button class="btn btn-primary" type="submit" id="pap-save" style="margin-top:16px">احفظ</button>
-        <button class="btn btn-ghost" type="button" id="pap-photo" style="margin-top:8px">📷 أو صوّره وأرسله لفزعة</button>
-        <button class="btn btn-ghost" type="button" id="pap-cancel" style="margin-top:8px">إلغاء</button>
-      </form>
-    </div>
-  </div>
-</section>
 
 <section class="sheet" id="s-invite" aria-label="ادعُ صاحبك">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>ادعُ صاحبك</h1><span style="width:42px"></span></header>
@@ -1190,10 +1188,10 @@ html.i18n-wait body{visibility:hidden}
   });
 
   // ---------- tabs ----------
-  const titles = EN ? { chat: "Fazaa", crew: "Your crew", today: "Your day", tasks: "Schedule", me: "Account" } : { chat: "فزعة", crew: "طاقم عملك", today: "يومك", tasks: "المجدول", me: "حسابي" };
+  const titles = EN ? { chat: "Fazaa", crew: "Your crew", today: "Your day", papers: "My documents", tasks: "Schedule", me: "Account" } : { chat: "فزعة", crew: "طاقم عملك", today: "يومك", papers: "مستنداتي", tasks: "المجدول", me: "حسابي" };
   // ---------- الضيف: المحادثة بس. باقي الميزات والشراء تحتاج دخول بقوقل أو أبل ----------
   const signedIn = () => !!S.email;
-  const GATED_VIEWS = new Set(["crew", "today", "tasks"]);
+  const GATED_VIEWS = new Set(["crew", "today", "tasks", "papers"]);
   const GATED_SHEETS = new Set(["s-connect", "s-family", "s-papers", "s-meds", "s-care", "s-invite", "s-threads"]);
   function needSignin(why) {
     if (signedIn()) return false;
@@ -1210,14 +1208,18 @@ html.i18n-wait body{visibility:hidden}
     $("#bar-title").textContent = titles[v];
     syncHead(v);
     if (v === "today") startStories();
+    if (v === "papers") loadPapers();
+    $("#today-btn").classList.toggle("on", v === "today");
     if (v === "tasks") renderTasks();
     if (v === "me") { renderMe(); loadLimits(); }
     if (v === "crew") { agBack(); loadAgents(); }
   };
   $$(".tab").forEach(t => t.addEventListener("click", () => go(t.dataset.v)));
+  $("#today-btn").onclick = () => go($("#v-today").classList.contains("on") ? "chat" : "today");
 
   // ---------- sheets ----------
-  const openSheet = id => { if (GATED_SHEETS.has(id) && needSignin()) return; $("#" + id).classList.add("on"); history.pushState({ sheet: id }, ""); };
+  const openSheet = id => { if (id === "s-papers") { go("papers"); return; }      // مستنداتي صارت تبويب تحت
+    if (GATED_SHEETS.has(id) && needSignin()) return; $("#" + id).classList.add("on"); history.pushState({ sheet: id }, ""); };
   const closeSheets = () => $$(".sheet.on").forEach(s => s.classList.remove("on"));
   $$("[data-sheet]").forEach(b => b.addEventListener("click", () => openSheet(b.dataset.sheet)));
   $$("[data-close]").forEach(b => b.addEventListener("click", () => history.back()));
@@ -2382,7 +2384,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {
-    [["#tab-crew", "Crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add to your crew"],
+    [["#tab-crew", "Crew"], ["#tab-pap", "Documents"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-add-t", "Add to your crew"],
      ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
   }
 
@@ -2869,7 +2871,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#pap-add").onclick = () => papForm(true);
   $("#pap-cancel").onclick = () => papForm(false);
   $("#pap-photo").onclick = () => {
-    history.back(); setTimeout(() => { go("chat"); const i = $("#inp"); i.value = L("هذا مستند، احفظ لي تاريخ انتهائه: ", "This is a document, save its expiry date: "); i.dispatchEvent(new Event("input")); const f = $("#file") || document.querySelector('input[type=file]'); if (f) f.click(); }, 60);
+    setTimeout(() => { go("chat"); const i = $("#inp"); i.value = L("هذا مستند، احفظ لي تاريخ انتهائه: ", "This is a document, save its expiry date: "); i.dispatchEvent(new Event("input")); const f = $("#file") || document.querySelector('input[type=file]'); if (f) f.click(); }, 60);
   };
   $("#pap-form").onsubmit = async e => {
     e.preventDefault();

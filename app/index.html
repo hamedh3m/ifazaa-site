@@ -368,6 +368,7 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .aa button{flex:1;height:38px;border-radius:999px;font-size:13.5px;font-weight:700;background:var(--s2);border:1px solid var(--line);transition:transform 140ms var(--ease)}
 .ag .aa button:active{transform:scale(.97)}
 .ag .aa .del{flex:none;width:38px;display:grid;place-items:center;color:var(--muted)}
+.ag .aa .ed{flex:none;width:38px;display:grid;place-items:center;color:var(--ink)}.ag .aa .ed svg{width:17px;height:17px}
 .ag .aa .del svg{width:16px;height:16px}
 .agt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .agt button{min-height:104px;border-radius:20px;padding:14px;text-align:start;display:flex;flex-direction:column;gap:4px;border:1px solid rgba(255,255,255,.08);transition:transform 140ms var(--ease)}
@@ -2238,11 +2239,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="grip" aria-label="${L("اسحب عشان ترتّب", "Drag to reorder")}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcSplit(a.last_text); return `<div class="al">${esc(sp.body)}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
       + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("كل اللي جابه لك", "Everything it found")}</button>`
-      + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button><button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
+      + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button>${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
     wireReorder();
     $$("[data-aglog]").forEach(b => b.onclick = () => openAgLog(+b.dataset.aglog));
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
+    $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); if (a) openAgForm(a.kind, a); });
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
     $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تشيله من الطاقم؟", "Remove from your crew?"), L("بيوقف ويختفي.", "It will stop and disappear."), L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
     syncTpl();
@@ -2277,18 +2279,23 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
   $("#agf-day").innerHTML = WDAY.map((d, i) => `<option value="${i}">${d}</option>`).join("");
   $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة", "At"); syncAt(); };
-  $$("[data-agk]").forEach(b => b.onclick = () => {
-    agKind = b.dataset.agk; const v = AGK[agKind];
-    $("#agf-title").textContent = v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
+  let agEdit = null;     // رقم الموظف لو يعدّل، وإلا null (إضافة جديدة)
+  $$("[data-agk]").forEach(b => b.onclick = () => openAgForm(b.dataset.agk, null));
+  function openAgForm(kind, ag) {
+    agKind = kind; agEdit = ag ? ag.id : null; const v = AGK[agKind];
+    $("#agf-title").textContent = ag ? L("تعديل: ", "Edit: ") + agTitle(ag) : v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
+    $("#agf-go").textContent = ag ? L("احفظ التعديل", "Save changes") : L("ضيفه للطاقم", "Add to crew");
     $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph, , opts]) => opts
       ? `<label class="field${["adults", "kids", "infants", "cabin"].includes(k) ? " half" : ""}"><span>${t}</span><select data-agf="${k}">${opts.map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join("")}</select></label>`
       : `<label class="field"${k === "back" ? ' data-backw hidden' : ""}><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="120"></label>`).join("");
     const trip = $('[data-agf="trip"]'); if (trip) trip.onchange = () => { const w = $("[data-backw]"); if (w) w.hidden = trip.value !== "round"; };
-    $("#agf-every").value = v[4]; $("#agf-at").value = v[5]; $("#agf-day").value = "3"; $("#agf-every").onchange();
+    $("#agf-every").value = ag ? ag.every : v[4]; $("#agf-at").value = ag ? ag.at : v[5]; $("#agf-day").value = ag ? String(ag.day) : "3";
+    if (ag) { const c = ag.config || {}; $$("[data-agf]").forEach(el => { if (c[el.dataset.agf] != null) el.value = c[el.dataset.agf]; }); if (trip) trip.onchange(); }
+    $("#agf-every").onchange();
     $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#v-crew").scrollTop = 0;
-    const f = $("#agf-fields input"); if (f) setTimeout(() => f.focus(), 120);
-  });
-  const agBack = () => { $("#ag-form").hidden = true; $("#ag-main").hidden = false; };
+    const f = $("#agf-fields input"); if (f && !ag) setTimeout(() => f.focus(), 120);
+  }
+  const agBack = () => { agEdit = null; $("#ag-form").hidden = true; $("#ag-main").hidden = false; };
   $("#agf-back").onclick = agBack;
   $("#agf-go").onclick = async () => {
     const cfg = {}; let missing = false;
@@ -2297,8 +2304,14 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (missing) { toast(L("عبّ الخانة المطلوبة", "Fill in the required field")); return; }
     const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? routeTitle(cfg.from, cfg.to) : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "team" ? cfg.team : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
     try {
-      const r = await api("/agents", { method: "POST", body: JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" }) });
-      AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
+      const body = JSON.stringify({ kind: agKind, title, config: cfg, every: $("#agf-every").value, at: $("#agf-at").value, day: +$("#agf-day").value, name: S.name || "" });
+      if (agEdit) {
+        const r = await api(`/agents/${agEdit}/edit`, { method: "POST", body });
+        AG = AG.map(a => a.id === r.agent.id ? r.agent : a); agEdit = null; drawAgents(); agBack(); toast(L("انحفظ التعديل ✅", "Changes saved ✅"));
+      } else {
+        const r = await api("/agents", { method: "POST", body });
+        AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
+      }
     } catch (e) { toast(e.message === "prime" || e.message === "limit" ? crewLimitMsg() : e.message === "kind_full" ? kindFullMsg() : errText(e)); }
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
@@ -2355,9 +2368,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       $("#plan-chip").textContent = tName;
       $("#fam-buy").textContent = myTier === "prime" ? L("انتقل لإيليت", "Switch to Elite") : L("اشترك في إيليت", "Get Elite");
       drawPlans(); syncBuy();
-      $("#me-plan").textContent = paid ? (tName + (m.plan_until ? L(" · إلى ", " · until ") + "\u2066" + AR(m.plan_until.slice(0, 10)) + "\u2069" : "") + (m.msgs_limit ? ` · ${AR(m.msgs)} ${L("من", "of")} ${AR(m.msgs_limit)} ${L("رسالة", "messages")}` : ""))
-        : EN ? `Free · ${m.msgs} of ${m.msgs_limit} messages · ${m.reminders_month} of ${m.reminders_limit} reminders this month`
-        : `المجانية · ${AR(m.msgs)} من ${AR(m.msgs_limit)} رسالة · ${AR(m.reminders_month)} من ${AR(m.reminders_limit)} تذكير هالشهر`;
+      $("#me-plan").textContent = paid ? (tName + (m.plan_until ? L(" · إلى ", " · until ") + "\u2066" + AR(m.plan_until.slice(0, 10)) + "\u2069" : ""))
+        : L("الباقة المجانية", "Free plan");      // الاستهلاك صار في «حدودي»
       const n = m.refs || 0, of3 = AR(n % 3) + L(" من 3", " of 3"); $("#ref-n").textContent = of3; $("#ref-small").textContent = of3;
       $$(".bars i").forEach((b, k) => b.classList.toggle("on", k < Math.floor(n / 3)));
       invite = m.invite || "";

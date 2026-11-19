@@ -1175,7 +1175,7 @@ html.i18n-wait body{visibility:hidden}
     const i = t.search(/\n\s*(المصادر|Sources)\s*:/);
     const links = [...new Set((t.match(/https?:\/\/[^\s<>()]+/g) || []).map(u => u.replace(/[.,،)]+$/, "")))].slice(0, 6);
     let body = i >= 0 ? t.slice(0, i) : t;
-    body = body.replace(/https?:\/\/[^\s<>()]+/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+    body = body.replace(/\*\*|__|^#+\s*/gm, "").replace(/https?:\/\/[^\s<>()]+/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
     return { body, links };
   }
   const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="text-decoration:underline">$1</a>')
@@ -2091,7 +2091,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
       if (action === "run") { toast(r.sent ? L("وصلك الرد في المحادثة ✅", "Its result is in your chat ✅") : L("ما لقى شي جديد للحين", "Nothing new yet")); if (r.sent) { lastId = 0; loadHistory(); } }
-    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" ? crewLimitMsg() : errText(e)); }
+    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
   }
   const AG_SOON = new Set(["finance"]);   // المالية: قريباً (لين تجهز صلاحية رسائل البنك)
   $("#ag-tpl").innerHTML = Object.entries(AGK).map(([k, v]) => AG_SOON.has(k)

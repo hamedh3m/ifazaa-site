@@ -2329,7 +2329,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     }
     $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="grip" aria-label="${L("اسحب عشان ترتّب", "Drag to reorder")}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcSplit(a.last_text); return `<div class="al">${esc(sp.body)}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
-      + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("كل اللي جابه لك", "Everything it found")}</button>`
+      + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("اضغط للتفاصيل", "Tap for details")}</button>`
       + `<div class="aa"><button type="button" data-agrun="${a.id}">${L("شغّله الحين", "Run now")}</button><button type="button" data-agtog="${a.id}">${a.active ? L("وقّفه", "Pause") : L("شغّله", "Resume")}</button>${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
     wireReorder();
@@ -2350,7 +2350,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       if (action === "delete") AG = AG.filter(a => String(a.id) !== String(id));
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
-      if (action === "run") toast(r.sent ? L("انضاف في «كل اللي جابه لك» 📜", "Added to “Everything it found” 📜") : L("ما لقى شي جديد للحين", "Nothing new yet"));
+      if (action === "run") toast(r.sent ? L("جاب لك شي جديد، اضغط للتفاصيل 📜", "Found something new, tap for details 📜") : L("ما لقى شي جديد للحين", "Nothing new yet"));
     } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
   }
   const AG_PER_KIND = 2, AG_UNCAPPED = new Set(["custom"]);   // كل نوع بحد أقصى 2، و«أي شي يتكرر» لين حد الباقة

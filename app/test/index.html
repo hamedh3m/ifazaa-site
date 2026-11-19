@@ -338,6 +338,24 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .medq{display:flex;gap:8px;margin-top:10px}.medq button{padding:9px 16px;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:800;font-size:14px}
 .medq .done{background:transparent;color:#6fe6a5;padding:6px 0}
 .medl{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}.medl:first-child{border-top:0}
+.mplan{padding:16px;border-radius:22px;background:var(--s1);border:1px solid var(--line);margin-top:10px}
+.mph{display:flex;align-items:center;gap:12px}.mpi{width:40px;height:40px;border-radius:14px;background:rgba(37,211,102,.12);display:grid;place-items:center;font-size:19px;flex:none}
+.mpt{flex:1;min-width:0}.mpt b{display:block;font-size:16px}.mpt small{color:var(--muted);font-size:13px}
+.mdel{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted);border:1px solid var(--line);flex:none}.mdel svg{width:16px;height:16px}
+.mdoses{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:14px}
+.mdose{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;border:1px solid var(--line);background:var(--s2);text-align:start;transition:transform .14s cubic-bezier(.23,1,.32,1),background .2s,border-color .2s}
+.mdose:active{transform:scale(.96)}.mdose i{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;flex:none;color:transparent;transition:background .2s,border-color .2s,color .2s}
+.mdose i svg{width:15px;height:15px}.mdose span b{display:block;font-size:15px}.mdose span small{display:block;font-size:12px;color:var(--muted)}
+.mdose.due{border-color:#f5b14c}.mdose.due i{border-color:#f5b14c}.mdose.miss i{border-color:#ff8a9b}
+.mdose.on{background:rgba(62,207,142,.12);border-color:rgba(62,207,142,.5)}.mdose.on i{background:#3ecf8e;border-color:#3ecf8e;color:#0b1a12;animation:mdPop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mdPop{from{transform:scale(.6)}}
+.mnow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}.mnow .btn{width:auto;padding:10px 18px}.mnow small{color:var(--muted)}
+.mform .mot{margin:16px 0 8px;font-weight:700;font-size:14px}.mform .mot small{color:var(--muted);font-weight:400}
+.mcnt{display:flex;gap:8px;flex-wrap:wrap}.mcnt button{min-width:52px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);font-weight:700;color:var(--muted)}
+.mcnt button[aria-pressed="true"]{background:var(--ink);color:#111;border-color:var(--ink)}
+.mtimes{display:flex;gap:8px;flex-wrap:wrap}.mtimes .tbtn{width:auto;padding:0 16px}
+.mhist{margin-top:22px}.mhist summary{cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;padding:6px 2px}
+@media (prefers-reduced-motion:reduce){.mdose.on i{animation:none}}
 .medl .mt{flex:1;min-width:0}.medl b{display:block;font-size:15px}.medl small{color:var(--muted);font-size:12px}
 .medl .btn{flex:none;width:auto;min-width:0;white-space:nowrap}
 .medl .st{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--s2)}.medl .st.ok{color:#6fe6a5}.medl .st.no{color:#ff8a9b}
@@ -830,10 +848,10 @@ html.i18n-wait body{visibility:hidden}
       <div class="menu">
         <button data-sheet="s-limits" id="me-limits"><span class="mi" style="background:rgba(62,207,142,.13);color:#3ecf8e"><svg><use href="#i-gauge"/></svg></span><span class="lbl">حدودي<br><small id="lim-small">وين وصلت في استهلاكك هالشهر</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-papers"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-doc"/></svg></span><span class="lbl">مستنداتي<br><small id="pap-small">هويتك وجوازك ورخصتك ما تنتهي عليك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-meds" id="me-meds"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5;font-size:17px">💊</span><span class="lbl">سجل أدويتي<br><small>وش أخذت ومتى بالضبط</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-care" id="me-care"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e;font-size:17px">🚑</span><span class="lbl">الطوارئ<br><small id="care-small">أقرب المراكز الصحية وجهة اتصال الطوارئ (اختياري)</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">شخص من أهلك<br><small id="fam-small">معك بنفس اشتراك إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">0 من 3</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>اشترك في برايم أو إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
@@ -2089,18 +2107,66 @@ html.i18n-wait body{visibility:hidden}
 const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم", "A Prime feature")}</h3><p>${t}</p><button type="button" class="btn btn-primary" data-goplans style="width:100%">${L("شوف برايم", "See Prime")}</button></div>`;
   const wirePlans = el => el.querySelectorAll("[data-goplans]").forEach(b => b.onclick = () => openSheet("s-plans"));
   async function loadMeds() { try { MEDS = await api("/meds"); } catch {} drawMeds(); drawHome(); }
+  // ---------- أدويتي: يكتب اسم الدواء، وبعدها (اختياري) كم مرة باليوم وأوقاتها، وصح لكل جرعة اليوم ----------
+  const MED_DEF = { 1: ["09:00"], 2: ["09:00", "21:00"], 3: ["08:00", "14:00", "20:00"], 4: ["08:00", "12:00", "16:00", "20:00"] };
+  let medNew = null;      // {name, times[]} وهو يضيف دواء
+  const hm = t => { const [h, m] = t.split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0); return d; };
   function drawMeds() {
     const b = $("#meds-body"); if (!b) return;
     const st = { taken: [L("أخذته", "Taken"), "ok"], pending: [L("ينتظر", "Waiting"), ""], skipped: [L("ما أخذته", "Skipped"), "no"], missed: [L("فاتك", "Missed"), "no"] };
     const day = d => d.toLocaleDateString(EN ? "en-GB" : "ar-SA-u-ca-gregory-nu-latn", { weekday: "short", day: "numeric", month: "short" });
-    const rows = (MEDS.log || []).map(x => { const due = new Date(x.due_at), tk = x.taken_at ? new Date(x.taken_at) : null, s_ = st[x.status] || [x.status, ""];
-      return `<div class="medl"><div class="mt"><b>${esc(x.title)}</b><small>${day(due)} · ${L("موعده", "Due")} ${fmtTime(due)}${tk ? ` · ${L("أخذته", "Taken")} ${day(tk)} ${fmtTime(tk)}` : ""}</small></div>${x.status === "pending" ? `<button type="button" class="btn btn-primary" data-med="${x.id}" style="padding:8px 14px">${L("أخذته", "Taken")}</button>` : `<span class="st ${s_[1]}">${s_[0]}</span>`}</div>`; }).join("");
-    b.innerHTML = `<h2 class="h2">${L("سجل أدويتك", "Your medicine log")}</h2>
-      <p class="sub">${L("لما يجي وقت دواك فزعة يسألك «أخذته؟». اضغط «أخذته» ونسجل التاريخ والوقت بالضبط.", "When it's time for your medicine, Fazaa asks if you took it. Tap «Taken» and we log the exact date and time.")}</p>
-      <div class="care-box"><h3>${L("أخذت دواء الحين؟", "Took a medicine just now?")}</h3><div class="care-row"><input id="med-now" class="inp-like" maxlength="60" placeholder="${L("مثلاً: حبة الضغط", "e.g. blood pressure pill")}" style="flex:2;min-width:150px;padding:12px;border-radius:14px;background:var(--s2);border:1px solid var(--line);color:var(--ink)"><button type="button" class="btn btn-primary" id="med-now-go">${L("سجّل", "Log it")}</button></div></div>
-      <div class="care-box">${rows || `<p class="note" style="margin:0">${L("ما فيه شي للحين. قل لفزعة «ذكرني بحبة الضغط كل يوم الساعة 9 الليل».", "Nothing yet. Tell Fazaa “Remind me to take my blood pressure pill every day at 9 pm”.")}</p>`}</div>`;
+    const plans = MEDS.plans || [];
+    const check = '<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const planH = plans.map(p => {
+      const doses = p.times.length ? `<div class="mdoses">${p.doses.map(d => { const on = d.status === "taken";
+          return `<button type="button" class="mdose ${on ? "on" : d.status === "due" || d.status === "pending" ? "due" : d.status === "missed" ? "miss" : ""}" data-dose="${p.id}" data-t="${d.time}" aria-pressed="${on}"><i>${check}</i><span><b>${fmtTime(hm(d.time))}</b><small>${on ? L("أخذتها ", "Taken ") + (d.taken_at ? fmtTime(new Date(d.taken_at)) : "") : d.status === "due" || d.status === "pending" ? L("حان وقتها", "Due now") : d.status === "missed" ? L("فاتتك", "Missed") : L("بعدين", "Later")}</small></span></button>`; }).join("")}</div>`
+        : `<div class="mnow"><button type="button" class="btn btn-ghost" data-dosenow="${p.id}">💊 ${L("أخذته الحين", "Taken now")}</button>${p.taken_today.length ? `<small>${L("اليوم: ", "Today: ")}${p.taken_today.map(x => fmtTime(new Date(x.taken_at))).join("، ")}</small>` : ""}</div>`;
+      const done = p.times.length && p.doses.every(d => d.status === "taken");
+      return `<div class="mplan"><div class="mph"><span class="mpi">💊</span><div class="mpt"><b>${esc(p.name)}</b><small>${p.times.length ? (EN ? `${p.times.length}× a day` : p.times.length === 1 ? "مرة باليوم" : p.times.length === 2 ? "مرتين باليوم" : `${AR(p.times.length)} مرات باليوم`) + (done ? L(" · خلّصت جرعات اليوم 👏", " · all done today 👏") : "") : L("بدون أوقات ثابتة", "No fixed times")}</small></div><button type="button" class="mdel" data-mdel="${p.id}" aria-label="${L("احذف الدواء", "Delete medicine")}"><svg><use href="#i-trash"/></svg></button></div>${doses}</div>`;
+    }).join("");
+    const form = medNew ? `<div class="care-box mform"><label class="field" style="margin-top:0"><span>${L("اسم الدواء", "Medicine name")} <b class="req">*</b></span><input id="mn-name" maxlength="60" value="${esc(medNew.name)}" placeholder="${L("مثلاً: حبة الضغط", "e.g. blood pressure pill")}" autocomplete="off"></label>
+        <div class="mopt"${medNew.name.trim() ? "" : " hidden"}><p class="mot">${L("كم مرة باليوم؟", "How many times a day?")} <small>${L("(اختياري)", "(optional)")}</small></p>
+        <div class="mcnt">${[0, 1, 2, 3, 4].map(n => `<button type="button" data-mcnt="${n}" aria-pressed="${medNew.times.length === n}">${n ? AR(n) : L("بدون", "None")}</button>`).join("")}</div>
+        ${medNew.times.length ? `<p class="mot">${L("أوقاتها", "Times")} <small>${L("اضغط على الوقت تغيّره", "Tap a time to change it")}</small></p><div class="mtimes">${medNew.times.map((t, k) => `<button type="button" class="tbtn" data-mt="${k}">${fmtTime(hm(t))}</button>`).join("")}</div><p class="note" style="margin-top:8px">${L("بذكرك كل يوم بكل وقت وأسألك «أخذته؟».", "I'll remind you daily at each time and ask if you took it.")}</p>` : ""}</div>
+        <div class="acts" style="margin-top:14px"><button type="button" class="btn btn-ghost" id="mn-x">${L("إلغاء", "Cancel")}</button><button type="button" class="btn btn-primary" id="mn-save">${L("احفظ الدواء", "Save medicine")}</button></div></div>`
+      : `<button type="button" class="btn btn-primary" id="mn-add" style="margin-top:14px"><svg><use href="#i-plus"/></svg>${L("أضف دواء", "Add a medicine")}</button>`;
+    const pend = (MEDS.pending || []).filter(x => !plans.some(p => p.doses.some(d => d.log_id === x.id)));
+    const pendH = pend.map(x => `<div class="medl"><div class="mt"><b>${esc(x.title)}</b><small>${L("موعده", "Due")} ${fmtTime(new Date(x.due_at))}</small></div><button type="button" class="btn btn-primary" data-med="${x.id}" style="padding:8px 14px">${L("أخذته", "Taken")}</button></div>`).join("");
+    const rows = (MEDS.log || []).slice(0, 40).map(x => { const due = new Date(x.due_at), tk = x.taken_at ? new Date(x.taken_at) : null, s_ = st[x.status] || [x.status, ""];
+      return `<div class="medl"><div class="mt"><b>${esc(String(x.title).replace(/^(دواء|Medicine): /, ""))}</b><small>${day(due)} · ${L("موعده", "Due")} ${fmtTime(due)}${tk ? ` · ${L("أخذته", "Taken")} ${fmtTime(tk)}` : ""}</small></div><span class="st ${s_[1]}">${s_[0]}</span></div>`; }).join("");
+    b.innerHTML = `<h2 class="h2">${L("أدويتك", "Your medicines")}</h2>
+      <p class="sub">${L("سجّل دواك، واختر أوقاته لو تبي فزعة يذكّرك. وكل ما أخذت جرعة علّم عليها صح.", "Add your medicine, and pick its times if you want reminders. Tick each dose when you take it.")}</p>
+      ${plans.length ? `<p class="sec-t">${L("اليوم", "Today")}</p>${planH}` : ""}
+      ${form}
+      ${pendH ? `<p class="sec-t" style="margin-top:22px">${L("ينتظر ردك", "Waiting for you")}</p><div class="care-box">${pendH}</div>` : ""}
+      ${rows ? `<details class="mhist"><summary>${L("السجل: وش أخذت ومتى بالضبط", "History: what you took and exactly when")}</summary><div class="care-box">${rows}</div></details>` : ""}`;
+    const after = r => { if (r && r.plans) MEDS.plans = r.plans; drawMeds(); drawHome(); };
+    b.querySelectorAll("[data-dose]").forEach(x => x.onclick = async () => {
+      const on = x.getAttribute("aria-pressed") !== "true"; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on);
+      try { tick.prep(); tick.fire(); } catch {}
+      try { after(await api(`/meds/plan/${x.dataset.dose}/dose`, { method: "POST", body: JSON.stringify({ time: x.dataset.t, on }) })); if (on) toast(L("تم ✅ انسجلت الجرعة", "Done ✅ dose logged")); } catch (e) { toast(errText(e)); loadMeds(); }
+    });
+    b.querySelectorAll("[data-dosenow]").forEach(x => x.onclick = async () => { try { after(await api(`/meds/plan/${x.dataset.dosenow}/dose`, { method: "POST", body: JSON.stringify({ on: true }) })); toast(L("تم التسجيل ✅", "Logged ✅")); } catch (e) { toast(errText(e)); } });
+    b.querySelectorAll("[data-mdel]").forEach(x => x.onclick = async () => {
+      const p = plans.find(q => String(q.id) === x.dataset.mdel);
+      if (!(await ask(L(`تحذف «${p ? p.name : ""}»؟`, `Delete “${p ? p.name : ""}”?`), L("تنحذف تذكيراته، والسجل اللي فات يبقى.", "Its reminders are removed; your past log stays."), L("احذف", "Delete")))) return;
+      try { after(await api(`/meds/plan/${x.dataset.mdel}/delete`, { method: "POST" })); toast(L("انحذف الدواء", "Medicine deleted")); } catch (e) { toast(errText(e)); }
+    });
     b.querySelectorAll("[data-med]").forEach(x => x.onclick = async () => { try { await medTake("", +x.dataset.med); toast(L("تم التسجيل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } });
-    const go_ = $("#med-now-go"); if (go_) go_.onclick = async () => { const t = $("#med-now").value.trim(); if (!t) { toast(L("اكتب اسم الدواء", "Type the medicine name")); return; } try { await medTake(t); toast(L("تم التسجيل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } };
+    const add = $("#mn-add"); if (add) add.onclick = () => { medNew = { name: "", times: [] }; drawMeds(); setTimeout(() => $("#mn-name").focus(), 60); };
+    const nm = $("#mn-name");
+    if (nm) {
+      nm.oninput = () => { medNew.name = nm.value; const o = b.querySelector(".mopt"); if (o) o.hidden = !nm.value.trim(); };
+      b.querySelectorAll("[data-mcnt]").forEach(x => x.onclick = () => { medNew.times = (MED_DEF[+x.dataset.mcnt] || []).slice(); drawMeds(); });
+      b.querySelectorAll("[data-mt]").forEach(x => x.onclick = async () => { const k = +x.dataset.mt; const d = await wheelPick("time", hm(medNew.times[k]), 5); if (!d) return;
+        medNew.times[k] = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); drawMeds(); });
+      $("#mn-x").onclick = () => { medNew = null; drawMeds(); };
+      $("#mn-save").onclick = async () => {
+        if (!medNew.name.trim()) { nm.closest(".field").classList.add("bad"); toast(L("اكتب اسم الدواء", "Type the medicine name")); nm.focus(); return; }
+        try { const r = await api("/meds/plan", { method: "POST", body: JSON.stringify({ name: medNew.name.trim(), times: medNew.times }) }); medNew = null; after(r); toast(L("انضاف الدواء ✅", "Medicine added ✅")); }
+        catch (e) { toast(e.message === "limit" ? L("وصلت حد الأدوية", "You've reached the medicines limit") : errText(e)); }
+      };
+    }
   }
   $("#me-meds").addEventListener("click", () => { drawMeds(); loadMeds(); });
   setTimeout(loadMeds, 1500);

@@ -438,7 +438,13 @@ html{touch-action:manipulation}
 .pf-pick{display:flex;flex-direction:column;gap:8px;align-items:flex-start}.pf-pick .btn{width:auto;padding:10px 18px}
 .pf-rm{font-size:14px;color:#ff6b7e;font-weight:700;padding:4px 2px}
 .pf-date{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;text-align:start;color:var(--ink)}.pf-date.empty{color:var(--muted)}
-.req{color:#ff6b7e;font-weight:700}.field.bad input,.field.bad .plat button{border-color:#ff6b7e}
+.req{color:#ff6b7e;font-weight:700}
+.pf-uh{font-size:17px;font-weight:800;margin:26px 0 4px}
+.pf-usage{display:grid;gap:10px;margin-top:10px}
+.pf-u{padding:12px 14px;border-radius:16px;background:var(--s1);border:1px solid var(--line)}
+.pf-u .r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:15px}.pf-u .r b{font-weight:700}.pf-u .r span{color:var(--muted);font-size:14px;white-space:nowrap}
+.pf-u .pf-bar{height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}.pf-u .pf-bar i{display:block;height:100%;border-radius:inherit;background:#3ecf8e}
+.pf-u.warn .pf-bar i{background:#f5b14c}.pf-u.full .pf-bar i{background:#ff6b7e}.field.bad input,.field.bad .plat button,.field.bad .pf-date{border-color:#ff6b7e}
 .me-card{display:flex;align-items:center;gap:14px;padding:18px;border-radius:24px;background:var(--s1);border:1px solid var(--line);margin-top:8px}
 .avatar{width:54px;height:54px;border-radius:18px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
 .dprof .dav{overflow:hidden}
@@ -971,11 +977,14 @@ html.i18n-wait body{visibility:hidden}
       <input type="file" id="pf-file" accept="image/*" hidden></div>
     <label class="field"><span id="pf-l-name">الاسم</span><input id="pf-name" autocomplete="given-name" maxlength="30"></label>
     <div class="field"><span id="pf-l-g">الجنس <b class="req">*</b></span><div class="plat" role="group" aria-labelledby="pf-l-g" style="margin-top:0"><button type="button" data-g="m" id="pf-gm">ذكر</button><button type="button" data-g="f" id="pf-gf">أنثى</button></div></div>
-    <label class="field"><span id="pf-l-ph">رقم الجوال (اختياري)</span><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="05xxxxxxxx" dir="ltr"></label>
-    <div class="field"><span id="pf-l-b">تاريخ الميلاد (اختياري)</span><button type="button" class="pf-date" id="pf-birth"></button></div>
+    <label class="field"><span id="pf-l-ph">رقم الجوال <b class="req">*</b></span><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="05xxxxxxxx" dir="ltr"></label>
+    <div class="field"><span id="pf-l-b">تاريخ الميلاد <b class="req">*</b></span><button type="button" class="pf-date" id="pf-birth"></button></div>
     <label class="field"><span id="pf-l-e">البريد الإلكتروني (اختياري)</span><input id="pf-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="name@example.com" dir="ltr"></label>
     <button class="btn btn-red" type="button" id="pf-save" style="margin-top:22px">احفظ</button>
     <p class="note" id="pf-note">فزعة يناديك باسمك ويخاطبك حسب جنسك. الجوال والميلاد والإيميل لك بس، ما نشاركها مع أحد، وتنحذف مع حسابك.</p>
+    <h2 class="pf-uh" id="pf-uh">حدود استهلاكك</h2>
+    <div class="pf-usage" id="pf-usage"></div>
+    <p class="note" id="pf-unote">اللي عليه «بالشهر» يتجدد أول كل شهر.</p>
   </div>
 </section>
 
@@ -2316,7 +2325,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       tgLinked = !!m.telegram; syncTg(); syncBrief(m.brief || "");
       if (m.has_avatar && !S.av) api("/profile").then(p => { if (p.avatar) { S.av = p.avatar; save(); drawAvatars(); } }).catch(() => {});
       else if (m.has_avatar === false && S.av) { S.av = ""; save(); drawAvatars(); }
-      $("#me-fill").hidden = !!m.gender; if (m.name && m.name !== S.name && !S.name) { S.name = m.name; save(); }
+      $("#me-fill").hidden = m.profile_done !== false; if (m.name && m.name !== S.name && !S.name) { S.name = m.name; save(); }
     }).catch(() => {});
     syncGoogleUI();
   }
@@ -2343,18 +2352,27 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       if ((p.avatar || "") !== (S.av || "")) { S.av = p.avatar || ""; save(); }
       pfBirthText(); pfGender(); drawAvatars();
     } catch {}
+    drawUsage();
   }
-  if (EN) [["#pf-h", "Your profile"], ["#pf-l-name", "Name"], ["#pf-gm", "Male"], ["#pf-gf", "Female"], ["#pf-l-ph", "Phone number (optional)"],
-    ["#pf-l-b", "Date of birth (optional)"], ["#pf-l-e", "Email (optional)"], ["#pf-save", "Save"], ["#pf-rm", "Remove photo"], ["#me-fill", "Complete your profile"],
+  async function drawUsage() {
+    const box = $("#pf-usage");
+    try {
+      const items = (await api("/usage")).items || [];
+      box.innerHTML = items.map(i => { const p = i.limit ? Math.min(100, Math.round(i.used * 100 / i.limit)) : 0;
+        return `<div class="pf-u${p >= 100 ? " full" : p >= 75 ? " warn" : ""}"><div class="r"><b>${esc(EN ? i.en : i.ar)}</b><span>${AR(i.used)} ${L("من", "of")} ${AR(i.limit)}${i.monthly ? L(" بالشهر", " a month") : ""}</span></div><div class="pf-bar"><i style="width:${p}%"></i></div></div>`; }).join("");
+    } catch { box.innerHTML = ""; }
+    $("#pf-uh").hidden = $("#pf-unote").hidden = !box.innerHTML;
+  }
+  if (EN) [["#pf-h", "Your profile"], ["#pf-l-name", "Name"], ["#pf-gm", "Male"], ["#pf-gf", "Female"], ["#pf-uh", "Your usage limits"], ["#pf-unote", "Anything marked “a month” resets on the 1st."],["#pf-l-e", "Email (optional)"], ["#pf-save", "Save"], ["#pf-rm", "Remove photo"], ["#me-fill", "Complete your profile"],
     ["#pf-note", "Fazaa calls you by your name and addresses you correctly. Your phone, birth date and email are only for you, never shared, and are deleted with your account."]].forEach(([q, t]) => { $(q).textContent = t; });
-  if (EN) { $("#pf-l-g").innerHTML = 'Gender <b class="req">*</b>'; $("#pf-phone").placeholder = "+9665xxxxxxxx"; $("#av").setAttribute("aria-label", "Your photo and profile"); $("#pf-av").setAttribute("aria-label", "Change photo"); }
+  if (EN) { $("#pf-l-g").innerHTML = 'Gender <b class="req">*</b>'; $("#pf-l-ph").innerHTML = 'Phone number <b class="req">*</b>'; $("#pf-l-b").innerHTML = 'Date of birth <b class="req">*</b>'; $("#pf-phone").placeholder = "+9665xxxxxxxx"; $("#av").setAttribute("aria-label", "Your photo and profile"); $("#pf-av").setAttribute("aria-label", "Change photo"); }
   ["#pf-name", "#pf-phone", "#pf-email"].forEach(q => $(q).addEventListener("input", () => $(q).closest(".field").classList.remove("bad")));
   $("#av").onclick = openProfile; $("#me-nm").onclick = openProfile; $("#me-fill").onclick = openProfile;
   $$("[data-g]").forEach(b => b.onclick = () => { PF.gender = b.dataset.g; pfGender(); b.closest(".field").classList.remove("bad"); });
   $("#pf-birth").onclick = async () => {
     const d = await wheelPick("date", PF.birth ? new Date(PF.birth + "T12:00:00") : new Date(new Date().getFullYear() - 25, 0, 1)); if (!d) return;
     if (d > new Date()) { toast(L("التاريخ لازم يكون قبل اليوم", "The date must be in the past")); return; }
-    PF.birth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; pfBirthText();
+    PF.birth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; pfBirthText(); $("#pf-birth").closest(".field").classList.remove("bad");
   };
   // الصورة تنقص في الجوال لـ 512 قبل الرفع، والسيرفر يحفظها 256×256 (حوالي 20 كيلوبايت)
   function shrinkImg(file) {
@@ -2385,6 +2403,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("#s-profile .field").forEach(f => f.classList.remove("bad"));
     if (!name) { bad("#pf-name"); toast(L("اكتب اسمك", "Enter your name")); return; }
     if (!PF.gender) { bad("#pf-gm"); toast(L("اختر الجنس: ذكر أو أنثى", "Choose your gender: male or female")); return; }
+    if (!$("#pf-phone").value.trim()) { bad("#pf-phone"); toast(L("اكتب رقم جوالك", "Enter your phone number")); return; }
+    if (!PF.birth) { bad("#pf-birth"); toast(L("اختر تاريخ ميلادك", "Pick your date of birth")); return; }
     const b = $("#pf-save"); b.disabled = true;
     try {
       const r = await api("/profile", { method: "POST", body: JSON.stringify({ name, gender: PF.gender, phone: $("#pf-phone").value.trim(), birth: PF.birth, email: $("#pf-email").value.trim() }) });

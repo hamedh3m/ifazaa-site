@@ -445,10 +445,23 @@ html{touch-action:manipulation}
 #s-profile.view .req{display:none}
 [dir="rtl"] #s-profile.view .field input[dir="ltr"]{text-align:right}
 #s-profile input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--s1) inset;-webkit-text-fill-color:var(--ink);caret-color:var(--ink)}
+.bday{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:bdIn .35s ease-out}
+.bday[hidden]{display:none}.bday canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.bday-card{position:relative;max-width:360px;width:100%;text-align:center;padding:30px 24px 22px;border-radius:30px;background:var(--s1);border:1px solid var(--line);animation:bdPop .55s cubic-bezier(.34,1.56,.64,1)}
+.bday-cake{font-size:64px;line-height:1;animation:bdBob 1.6s ease-in-out infinite}.bday-card h2{font-size:24px;font-weight:800;margin:14px 0 8px}
+.bday-card p{color:var(--muted);font-size:16px;line-height:1.7;margin:0}.bday-card small{display:block;margin-top:10px;color:var(--sand);font-weight:700}.bday-card .btn{margin-top:20px;width:100%}
+@keyframes bdIn{from{opacity:0}}@keyframes bdPop{from{opacity:0;transform:scale(.85) translateY(20px)}}@keyframes bdBob{50%{transform:translateY(-8px) rotate(-4deg)}}
+@media (prefers-reduced-motion:reduce){.bday,.bday-card,.bday-cake{animation:none}}
+.lang-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--s1);border:1px solid var(--line);margin-top:12px}
+.lang-row .mi{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:17px}.lang-row .lbl{font-weight:700;flex:1}
+.lang-row .plat{margin:0;flex:none;gap:6px}.lang-row .plat button{flex:none;padding:7px 14px;font-size:13px}
 .pf-uh{font-size:17px;font-weight:800;margin:26px 0 4px}
 .pf-usage{display:grid;gap:10px;margin-top:10px}
 .pf-u{display:block;width:100%;text-align:start;padding:14px 16px;border-radius:18px;background:var(--s1);border:1px solid var(--line);transition:transform .16s cubic-bezier(.23,1,.32,1)}
 .pf-u:active{transform:scale(.98)}
+.pf-u .hint{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:8px;font-size:12px;color:var(--muted);opacity:.8}
+.pf-u .hint svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.23,1,.32,1)}.pf-u.open .hint svg{transform:rotate(180deg)}
+.pf-u .hint .h2,.pf-u.open .hint .h1{display:none}.pf-u.open .hint .h2{display:inline}
 .pf-u .more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s cubic-bezier(.23,1,.32,1)}.pf-u .more>div{overflow:hidden}
 .pf-u.open .more{grid-template-rows:1fr}.pf-u .more p{margin:10px 0 0;font-size:14px;color:var(--muted);line-height:1.6}
 .pf-u .more .go{display:inline-block;margin-top:10px;padding:7px 14px;border-radius:999px;background:var(--ink);color:#111;font-size:13px;font-weight:700}
@@ -811,6 +824,7 @@ html.i18n-wait body{visibility:hidden}
     <!-- account -->
     <section class="view" id="v-me" aria-label="حسابي">
       <div class="me-card"><button type="button" class="avatar" id="av" aria-label="صورتك وملفك الشخصي">ف</button><div class="me-who"><button type="button" class="me-nm" id="me-nm"><b id="me-name">ضيف</b><svg class="chev"><use href="#i-chev"/></svg></button><span id="me-plan">الباقة المجانية · 10 تذكيرات بالشهر</span><button type="button" class="me-fill" id="me-fill" hidden>أكمل ملفك الشخصي</button></div></div>
+      <div class="lang-row"><span class="mi" style="background:var(--s2)">🌐</span><span class="lbl" id="lang-l">اللغة</span><div class="plat" role="group" aria-label="اللغة" ><button type="button" data-setlang="ar" lang="ar">عربي</button><button type="button" data-setlang="en" lang="en">English</button></div></div>
       <div class="gbox" id="g-in" hidden><b>احفظ حسابك</b><p>ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.</p><div class="g-slot" id="g-me"></div><button class="a-btn" type="button" data-apple hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.7-1-2.7-4.1ZM13.9 4.9c.7-.9 1.2-2 1-3.2-1 .1-2.2.7-3 1.6-.6.7-1.2 1.9-1 3.1 1.1.1 2.3-.6 3-1.5Z"/></svg>المتابعة باستخدام Apple</button><button class="a-btn" type="button" data-gnative hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.6 12.2c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2.1-1.9 3.3-4.8 3.3-8Z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.8 14.1a6.6 6.6 0 0 1 0-4.2V7.1H2.1a11 11 0 0 0 0 9.8l3.7-2.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.2-3.2A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4Z"/></svg>المتابعة باستخدام Google</button></div>
       <div class="menu">
         <button data-sheet="s-limits" id="me-limits"><span class="mi" style="background:rgba(62,207,142,.13);color:#3ecf8e"><svg><use href="#i-gauge"/></svg></span><span class="lbl">حدودي<br><small id="lim-small">وين وصلت في استهلاكك هالشهر</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -823,7 +837,6 @@ html.i18n-wait body{visibility:hidden}
         <button data-sheet="s-plans"><span class="mi" style="background:rgba(201,184,154,.15);color:var(--sand)"><svg><use href="#i-star"/></svg></span><span class="lbl">الباقات<br><small>اشترك في برايم أو إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
       <div class="menu">
-        <button data-sheet="s-settings"><span class="mi" style="background:var(--s2)"><svg><use href="#i-gear"/></svg></span><span class="lbl">الإعدادات</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-privacy"><span class="mi" style="background:var(--s2)"><svg><use href="#i-lock"/></svg></span><span class="lbl">الخصوصية وبياناتك</span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button id="help"><span class="mi" style="background:var(--s2)"><svg><use href="#i-help"/></svg></span><span class="lbl">تواصل معنا</span><svg class="chev"><use href="#i-chev"/></svg></button>
       </div>
@@ -949,7 +962,7 @@ html.i18n-wait body{visibility:hidden}
       <button class="btn btn-primary" type="button" id="pap-add" style="margin-top:16px">أضف مستند</button>
       <form id="pap-form" class="pap-form" hidden>
         <label class="field"><span>نوع المستند</span><select id="pap-kind"></select></label>
-        <label class="field"><span>اسم يميّزه (اختياري)</span><input id="pap-label" maxlength="60" placeholder="مثلاً: استمارة الكامري" autocomplete="off"></label>
+        <label class="field"><span id="pap-label-t">اسم يميّزه (اختياري)</span><input id="pap-label" maxlength="60" placeholder="مثلاً: استمارة الكامري" autocomplete="off"></label>
         <label class="field"><span>تاريخ الانتهاء (ميلادي)</span><input id="pap-exp" type="date" required></label>
         <p class="note" id="pap-err" hidden></p>
         <button class="btn btn-primary" type="submit" id="pap-save" style="margin-top:16px">احفظ</button>
@@ -1007,20 +1020,15 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
+<div class="bday" id="bday" hidden role="dialog" aria-modal="true" aria-labelledby="bday-t"><canvas id="bday-cv"></canvas><div class="bday-card"><div class="bday-cake">🎂</div><h2 id="bday-t"></h2><p id="bday-p"></p><small id="bday-s">— فريق فزعة</small><button class="btn btn-red" type="button" id="bday-ok">شكراً 🤍</button></div></div>
+
 <section class="sheet" id="s-limits" aria-label="حدودي">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="lim-h">حدودي</h1><span style="width:42px"></span></header>
   <div class="body">
     <div class="lim-top" id="lim-top"></div>
     <div class="pf-usage" id="pf-usage"></div>
     <p class="note" id="pf-unote">الحدود الشهرية ترجع من جديد تلقائياً أول كل شهر.</p>
-  </div>
-</section>
-
-<section class="sheet" id="s-settings" aria-label="الإعدادات">
-  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>الإعدادات</h1><span style="width:42px"></span></header>
-  <div class="body">
-    <label class="field"><span>اللغة</span></label>
-    <div class="plat" role="group" aria-label="اللغة" style="margin-top:0"><button type="button" data-setlang="ar" lang="ar">عربي</button><button type="button" data-setlang="en" lang="en">English</button></div>
+    <p class="sec-t" id="lim-nt" style="margin-top:26px">التنبيهات</p>
     <label class="field"><span>موجز يومك: رسالة كل صبح فيها مواعيد يومك</span><input id="set-brief" type="time" value="07:00"></label>
     <button class="btn btn-ghost" id="brief-btn" type="button" style="margin-top:10px">شغّل موجز يومك</button>
     <label class="field"><span>تنبيهات الجوال</span></label>
@@ -1028,6 +1036,7 @@ html.i18n-wait body{visibility:hidden}
     <p class="note" id="push-note">التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.</p>
   </div>
 </section>
+
 
 <section class="sheet" id="s-install" aria-label="ثبّت التطبيق">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>ثبّت فزعة</h1><span style="width:42px"></span></header>
@@ -1232,7 +1241,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -2356,7 +2365,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       tgLinked = !!m.telegram; syncTg(); syncBrief(m.brief || "");
       if (m.has_avatar && !S.av) api("/profile").then(p => { if (p.avatar) { S.av = p.avatar; save(); drawAvatars(); } }).catch(() => {});
       else if (m.has_avatar === false && S.av) { S.av = ""; save(); drawAvatars(); }
-      $("#me-fill").hidden = m.profile_done !== false; if (m.name && m.name !== S.name && !S.name) { S.name = m.name; save(); }
+      $("#me-fill").hidden = m.profile_done !== false;
+      if (m.birthday) celebrate(m.gender); if (m.name && m.name !== S.name && !S.name) { S.name = m.name; save(); }
     }).catch(() => {});
     syncGoogleUI();
   }
@@ -2394,6 +2404,30 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       pfMode(!!(p.gender && p.phone && p.birth));
     } catch {}
   }
+  // ---------- عيد الميلاد: شاشة احتفال مرة وحدة بالسنة ----------
+  function celebrate(g) {
+    const y = String(new Date().getFullYear()); if (S.bday === y || !$("#bday").hidden) return;
+    S.bday = y; save();
+    const n = (S.name || "").trim(), f = g === "f";
+    $("#bday-t").textContent = EN ? `Happy birthday${n ? ", " + n : ""}! 🎉` : `${f ? "كل عام وأنتِ بخير" : "كل عام وأنت بخير"}${n ? " يا " + n : ""} 🎉`;
+    $("#bday-p").textContent = EN ? "Wishing you a year full of joy, good health and everything you hope for." : f ? "عساكِ من عوّاده، وعسى سنتك الجديدة كلها فرح وصحة وتوفيق." : "عساك من عوّاده، وعسى سنتك الجديدة كلها فرح وصحة وتوفيق.";
+    $("#bday-s").textContent = L("— فريق فزعة", "— The Fazaa team"); $("#bday-ok").textContent = L("شكراً 🤍", "Thank you 🤍");
+    $("#bday").hidden = false;
+    try { tick.prep(); [0, 120, 260].forEach(t => setTimeout(tick.fire, t)); } catch {}
+    const cv = $("#bday-cv"), x = cv.getContext("2d"), dpr = Math.min(2, devicePixelRatio || 1);
+    const W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr;
+    const C = ["#e0213b", "#f5b14c", "#3ecf8e", "#5cc3f5", "#c9b89a", "#ff6b7e", "#ffffff"];
+    const P = matchMedia("(prefers-reduced-motion: reduce)").matches ? [] : Array.from({ length: 160 }, () => ({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .45, vx: (Math.random() - .5) * 26 * dpr, vy: (-Math.random() * 22 - 8) * dpr, r: (Math.random() * 5 + 3) * dpr, c: C[Math.random() * C.length | 0], a: Math.random() * 6, s: Math.random() < .5 }));
+    let raf = 0, t0 = performance.now();
+    const step = t => {
+      x.clearRect(0, 0, W, H);
+      P.forEach(p => { p.vy += .55 * dpr; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += .15; x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c;
+        if (p.s) x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); else { x.beginPath(); x.arc(0, 0, p.r * .7, 0, 7); x.fill(); } x.restore(); });
+      if (t - t0 < 4500 && !$("#bday").hidden) raf = requestAnimationFrame(step); else x.clearRect(0, 0, W, H);
+    };
+    raf = requestAnimationFrame(step);
+    $("#bday-ok").onclick = () => { cancelAnimationFrame(raf); $("#bday").hidden = true; };
+  }
   // ---------- حدودي: صفحة لحالها، كل حد ببطاقة تنفتح وتوضح الباقي ومتى يتجدد ----------
   let LIM = null;
   const daysToReset = () => { const n = new Date(), r = new Date(n.getFullYear(), n.getMonth() + 1, 1); return Math.max(1, Math.ceil((r - n) / 864e5)); };
@@ -2419,7 +2453,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       return `<p>${t}</p>${go}`;
     };
     box.innerHTML = items.map((i, k) => { const p = pctOf(i);
-      return `<button type="button" class="pf-u${p >= 100 ? " full" : p >= 75 ? " warn" : ""}" data-lim="${k}" aria-expanded="false"><div class="r"><b>${esc(EN ? i.en : i.ar)}</b><span>${AR(i.used)} ${L("من", "of")} ${AR(i.limit)}${i.monthly ? L(" بالشهر", " a month") : ""}</span></div><div class="pf-bar"><i style="width:0%" data-w="${p}"></i></div><div class="more"><div>${tip(i)}</div></div></button>`; }).join("");
+      return `<button type="button" class="pf-u${p >= 100 ? " full" : p >= 75 ? " warn" : ""}" data-lim="${k}" aria-expanded="false"><div class="r"><b>${esc(EN ? i.en : i.ar)}</b><span>${AR(i.used)} ${L("من", "of")} ${AR(i.limit)}${i.monthly ? L(" بالشهر", " a month") : ""}</span></div><div class="pf-bar"><i style="width:0%" data-w="${p}"></i></div><div class="more"><div>${tip(i)}</div></div><span class="hint"><span class="h1">${L("اضغط للتفاصيل", "Tap for details")}</span><span class="h2">${L("إخفاء", "Hide")}</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>`; }).join("");
     // الرأس: أعلى حد وصلت له، بدائرة
     const hi = items.reduce((a, i) => (pctOf(i) > (a ? pctOf(a) : -1) ? i : a), null);
     if (hi) {
@@ -2441,7 +2475,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     });
   }
   $("#me-limits").addEventListener("click", () => drawUsage());
-  if (EN) [["#pf-h", "Your profile"], ["#pf-l-name", "Name"], ["#pf-gm", "Male"], ["#pf-gf", "Female"], ["#lim-h", "My limits"], ["#pf-acc-t", "Account"], ["#pf-unote", "Monthly limits reset automatically on the 1st of every month."],["#pf-l-e", "Email (optional)"], ["#pf-save", "Save"], ["#pf-edit", "✏️ Edit"], ["#pf-rm", "Remove photo"], ["#me-fill", "Complete your profile"],
+  if (EN) [["#pf-h", "Your profile"], ["#pf-l-name", "Name"], ["#pf-gm", "Male"], ["#pf-gf", "Female"], ["#lim-h", "My limits"], ["#lang-l", "Language"], ["#lim-nt", "Notifications"], ["#pf-acc-t", "Account"], ["#pf-unote", "Monthly limits reset automatically on the 1st of every month."],["#pf-l-e", "Email (optional)"], ["#pf-save", "Save"], ["#pf-edit", "✏️ Edit"], ["#pf-rm", "Remove photo"], ["#me-fill", "Complete your profile"],
     ["#pf-note", "Fazaa calls you by your name and addresses you correctly. Your phone, birth date and email are only for you, never shared, and are deleted with your account."]].forEach(([q, t]) => { $(q).textContent = t; });
   if (EN) { $("#pf-l-g").innerHTML = 'Gender <b class="req">*</b>'; $("#pf-l-ph").innerHTML = 'Phone number <b class="req">*</b>'; $("#pf-l-b").innerHTML = 'Date of birth <b class="req">*</b>'; $("#pf-phone").placeholder = "+9665xxxxxxxx"; $("#av").setAttribute("aria-label", "Your photo and profile"); $("#pf-av").setAttribute("aria-label", "Change photo"); }
   ["#pf-name", "#pf-phone", "#pf-email"].forEach(q => $(q).addEventListener("input", () => $(q).closest(".field").classList.remove("bad")));
@@ -2731,7 +2765,11 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   // ---------- مستنداتي ----------
   const loadPapers = () => api("/papers").then(r => {
     $("#pap-prime").hidden = true; $("#pap-on").hidden = false;
-    if (r.kinds) $("#pap-kind").innerHTML = Object.entries(r.kinds).map(([k, v]) => `<option value="${esc(k)}">${esc(v)}</option>`).join("");
+    // أسماء الأنواع بلغة التطبيق نفسه، و«أخرى» آخر شي ويطلب اسم المستند أو البطاقة
+    const kinds = r.kinds_all || Object.fromEntries(Object.entries(r.kinds || {}).map(([k, v]) => [k, [v, v]]));
+    if (Object.keys(kinds).length) { const cur = $("#pap-kind").value;
+      $("#pap-kind").innerHTML = Object.entries(kinds).map(([k, v]) => `<option value="${esc(k)}">${esc(k === "other" ? L("أخرى", "Other") : EN ? v[1] : v[0])}</option>`).join("");
+      if (cur && kinds[cur]) $("#pap-kind").value = cur; papKind(); }
     $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L("تنتهي ", "Expires ")}${AR(p.expires)}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L("منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<p class="note">${L("ما فيه مستندات للحين. اضغط «أضف مستند» أو أرسل صورته لفزعة.", "No documents yet. Tap “Add a document” or send Fazaa a photo of it.")}</p>`;
     $$("[data-delpap]").forEach(b => b.onclick = async () => {
@@ -2741,6 +2779,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }).catch(() => {});
   $$('[data-sheet="s-papers"]').forEach(b => b.addEventListener("click", loadPapers));
   $("#pap-buy").onclick = () => $("#buy").click();
+  function papKind() {
+    const other = $("#pap-kind").value === "other", t = $("#pap-label-t"), i = $("#pap-label");
+    t.innerHTML = other ? L('اسم المستند أو البطاقة <b class="req">*</b>', 'Document or card name <b class="req">*</b>') : esc(L("اسم يميّزه (اختياري)", "A name for it (optional)"));
+    i.placeholder = other ? L("مثلاً: بطاقة العمل، رخصة البلدية", "e.g. Work card, municipal licence") : L("مثلاً: استمارة الكامري", "e.g. Camry registration");
+    if (other) setTimeout(() => i.focus(), 50);
+  }
+  $("#pap-kind").addEventListener("change", papKind);
   const papForm = on => { $("#pap-form").hidden = !on; $("#pap-add").hidden = on; $("#pap-err").hidden = true; if (on) { $("#pap-exp").min = new Date().toISOString().slice(0, 10); $("#pap-label").value = ""; $("#pap-exp").value = ""; } };
   $("#pap-add").onclick = () => papForm(true);
   $("#pap-cancel").onclick = () => papForm(false);
@@ -2750,12 +2795,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#pap-form").onsubmit = async e => {
     e.preventDefault();
     const exp = $("#pap-exp").value, err = $("#pap-err");
+    if ($("#pap-kind").value === "other" && !$("#pap-label").value.trim()) { err.textContent = L("اكتب اسم المستند أو البطاقة.", "Type the document or card name."); err.hidden = false; $("#pap-label").focus(); return; }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(exp)) { err.textContent = L("اختر تاريخ الانتهاء.", "Pick the expiry date."); err.hidden = false; return; }
     $("#pap-save").disabled = true;
     try {
       const r = await api("/papers/add", { method: "POST", body: JSON.stringify({ kind: $("#pap-kind").value, label: $("#pap-label").value.trim(), expires: exp }) });
       papForm(false); toast(L(`انحفظ ✅ وبذكرك قبله (${r.reminders} تذكيرات)`, `Saved ✅ I'll remind you before it expires (${r.reminders} reminders)`)); loadPapers();
-    } catch (x) { err.textContent = x.message === "limit" ? L("وصلت حد المستندات.", "You've reached the documents limit.") : errText(x); err.hidden = false; }
+    } catch (x) { err.textContent = x.message === "limit" ? L("وصلت حد المستندات.", "You've reached the documents limit.") : x.message === "label" ? L("اكتب اسم المستند أو البطاقة.", "Type the document or card name.") : errText(x); err.hidden = false; }
     finally { $("#pap-save").disabled = false; }
   };
   // ---------- ربط تيليجرام ----------
@@ -2899,7 +2945,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   function showOnb() { $("#onb").hidden = false; $("#step1").hidden = false; $("#step2").hidden = true; $("#onb-go").textContent = L("ابدأ", "Get started"); }
   $("#onb-go").onclick = () => {
     if (!$("#step1").hidden) { $("#step1").hidden = true; $("#step2").hidden = false; $("#onb-go").textContent = L("يلا", "Let's go"); gButton($("#g-onb")); setTimeout(() => $("#onb-name").focus(), 50); return; }
-    S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI(); joinFamily();
+    S.name = $("#onb-name").value.trim(); S.onb = true; save(); $("#onb").hidden = true; updateHello(); renderMe(); syncPushUI(); joinFamily(); setTimeout(askPushOnce, 800);
   };
   $("#onb-name").addEventListener("keydown", e => { if (e.key === "Enter") $("#onb-go").click(); });
 
@@ -3054,6 +3100,17 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#push-go").onclick = enablePush;
   $("#push-btn").onclick = enablePush;
   $("#push-x").onclick = () => { S.hidePush = true; save(); syncPushUI(); };
+  // أول ما يفتح التطبيق: يطلب صلاحية التنبيهات مرة وحدة (التطبيق على طول، والمتصفح مع أول لمسة لأنه يشترطها)
+  function askPushOnce() {
+    if (S.pushAsked || S.pushOn) return;
+    if (NATIVE) { S.pushAsked = true; save(); nativePush(false).catch(() => {}).finally(syncPushUI); return; }
+    if (!(pushOK && Notification.permission === "default" && (!ios || standalone))) return;
+    const go1 = () => { removeEventListener("pointerup", go1, true); S.pushAsked = true; save();
+      Notification.requestPermission().then(p => { if (p === "granted") return subscribePush(false); }).catch(() => {}).finally(syncPushUI); };
+    addEventListener("pointerup", go1, true);
+  }
+  setTimeout(() => { if (S.onb) askPushOnce(); }, 1200);
+  setTimeout(() => { if (S.onb) api("/me").then(m => { if (m.birthday) celebrate(m.gender); }).catch(() => {}); }, 1800);
 
   // ---------- install guide ----------
   const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;

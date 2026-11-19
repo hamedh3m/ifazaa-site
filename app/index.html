@@ -490,7 +490,7 @@ html{touch-action:manipulation}
 .pf-u:active{transform:scale(.98)}
 .pf-u .hint{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:8px;font-size:12px;color:var(--muted);opacity:.8}
 .pf-u .hint svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.23,1,.32,1)}.pf-u.open .hint svg{transform:rotate(180deg)}
-.pf-u .hint .h2,.pf-u.open .hint .h1{display:none}.pf-u.open .hint .h2{display:inline}
+.pf-u .hint .hh,.pf-u.open .hint .hs{display:none}.pf-u.open .hint .hh{display:inline}
 .pf-u .more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .25s cubic-bezier(.23,1,.32,1)}.pf-u .more>div{overflow:hidden}
 .pf-u.open .more{grid-template-rows:1fr}.pf-u .more p{margin:10px 0 0;font-size:14px;color:var(--muted);line-height:1.6}
 .pf-u .more .go{display:inline-block;margin-top:10px;padding:7px 14px;border-radius:999px;background:var(--ink);color:#111;font-size:13px;font-weight:700}
@@ -1066,12 +1066,14 @@ html.i18n-wait body{visibility:hidden}
     <div class="lim-top" id="lim-top"></div>
     <div class="pf-usage" id="pf-usage"></div>
     <p class="note" id="pf-unote">الحدود الشهرية ترجع من جديد تلقائياً أول كل شهر.</p>
+    <div hidden>
     <p class="sec-t" id="lim-nt" style="margin-top:26px">التنبيهات</p>
     <label class="field"><span>موجز يومك: رسالة كل صبح فيها مواعيد يومك</span><input id="set-brief" type="time" value="07:00"></label>
     <button class="btn btn-ghost" id="brief-btn" type="button" style="margin-top:10px">شغّل موجز يومك</button>
     <label class="field"><span>تنبيهات الجوال</span></label>
     <button class="btn btn-ghost" id="push-btn" type="button">🔔 فعّل التنبيهات</button>
     <p class="note" id="push-note">التذكيرات توصلك تنبيه على جوالك حتى والتطبيق مسكّر. على الآيفون لازم يكون التطبيق مثبّت على الشاشة الرئيسية أول.</p>
+    </div>
   </div>
 </section>
 
@@ -2577,7 +2579,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       return `<p>${t}</p>${go}`;
     };
     box.innerHTML = items.map((i, k) => { const p = pctOf(i);
-      return `<button type="button" class="pf-u${p >= 100 ? " full" : p >= 75 ? " warn" : ""}" data-lim="${k}" aria-expanded="false"><div class="r"><b>${esc(EN ? i.en : i.ar)}</b><span>${AR(i.used)} ${L("من", "of")} ${AR(i.limit)}${i.monthly ? L(" بالشهر", " a month") : ""}</span></div><div class="pf-bar"><i style="width:0%" data-w="${p}"></i></div><div class="more"><div>${tip(i)}</div></div><span class="hint"><span class="h1">${L("اضغط للتفاصيل", "Tap for details")}</span><span class="h2">${L("إخفاء", "Hide")}</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>`; }).join("");
+      return `<button type="button" class="pf-u${p >= 100 ? " full" : p >= 75 ? " warn" : ""}" data-lim="${k}" aria-expanded="false"><div class="r"><b>${esc(EN ? i.en : i.ar)}</b><span>${AR(i.used)} ${L("من", "of")} ${AR(i.limit)}${i.monthly ? L(" بالشهر", " a month") : ""}</span></div><div class="pf-bar"><i style="width:0%" data-w="${p}"></i></div><div class="more"><div>${tip(i)}</div></div><span class="hint"><span class="hs">${L("اضغط للتفاصيل", "Tap for details")}</span><span class="hh">${L("إخفاء", "Hide")}</span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>`; }).join("");
     // الرأس: أعلى حد وصلت له، بدائرة
     const hi = items.reduce((a, i) => (pctOf(i) > (a ? pctOf(a) : -1) ? i : a), null);
     if (hi) {

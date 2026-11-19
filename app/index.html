@@ -35,7 +35,7 @@ setTimeout(function(){d.classList.remove("i18n-wait")},2000)}})();
 :root{
   --bg:#09090a; --s1:#131315; --s2:#1c1c1f; --s3:#26262a; --ink:#f5f5f2; --muted:#9d9da4; --line:rgba(245,245,242,.09);
   --red:#c8102e; --red2:#e0213b; --green:#25d366; --sand:#c9b89a;
-  --top:env(safe-area-inset-top,0px); --bot:env(safe-area-inset-bottom,0px);
+  --top:env(safe-area-inset-top,0px); --bot:min(env(safe-area-inset-bottom,0px), 34px);   /* أعلى منطقة أمان تحت في أي آيفون 34. بعض الأجهزة داخل التطبيق ترجّع رقم أكبر بكثير فتطلع مساحة سوداء */
   --ease:cubic-bezier(.23,1,.32,1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -3191,6 +3191,10 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     addEventListener("pointerup", go1, true);
   }
   setTimeout(() => { if (S.onb) askPushOnce(); }, 1200);
+  if (/[?&]dbg=1/.test(location.search)) setTimeout(() => {      // فحص: كم يرجّع الجوال لمنطقة الأمان تحت
+    const pr = document.createElement("div"); pr.style.cssText = "position:fixed;bottom:0;height:env(safe-area-inset-bottom,0px);width:1px;visibility:hidden"; document.body.append(pr);
+    toast(`safe-bottom ${Math.round(pr.getBoundingClientRect().height)} · tabs ${Math.round($(".tabs").getBoundingClientRect().height)} · h ${innerHeight}/${screen.height}`); pr.remove();
+  }, 2500);
   setTimeout(() => { if (S.onb) api("/me").then(m => { if (m.birthday) celebrate(m.gender); }).catch(() => {}); }, 1800);
 
   // ---------- install guide ----------

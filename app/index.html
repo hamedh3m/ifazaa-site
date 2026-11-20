@@ -1236,13 +1236,13 @@ html.i18n-wait body{visibility:hidden}
 </section>
 <div class="introw" id="intro-c" hidden role="dialog" aria-modal="true" aria-labelledby="iw-h"><div class="iwbox">
   <button type="button" class="iwclose" id="intro-x" aria-label="إغلاق">✕</button>
-  <button type="button" class="iwthumb" id="intro-play" aria-label="افتح الفيديو"><img src="/app/intro-poster.jpg" alt=""><span class="iwp"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="iwd">1:00</span></button>
+  <button type="button" class="iwthumb" id="intro-play" aria-label="افتح الفيديو"><img src="/app/intro-poster-v5.jpg" alt=""><span class="iwp"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="iwd">1:00</span></button>
   <h3 id="iw-h">فيديو يشرح لك فزعة</h3><p>بدقيقة وحدة تعرف كل اللي يقدر يسويه لك، من التذكيرات والمستندات لين طاقم عملك. ننصحك تشوفه.</p>
   <button type="button" class="btn iwgo" id="intro-go">▶ افتح الفيديو</button>
   <label class="iwnever"><input type="checkbox" id="intro-never"> لا عاد تطلع لي هذا الفيديو</label>
   <button type="button" class="iwlater" id="intro-close2">إغلاق</button>
 </div></div>
-<div class="introv" id="intro-v" hidden role="dialog" aria-modal="true" aria-label="كيف يشتغل فزعة"><video id="intro-vid" playsinline controls preload="none" poster="/app/intro-poster.jpg"></video><button type="button" class="ivx" id="intro-close" aria-label="إغلاق">✕</button></div>
+<div class="introv" id="intro-v" hidden role="dialog" aria-modal="true" aria-label="كيف يشتغل فزعة"><video id="intro-vid" playsinline controls preload="none" poster="/app/intro-poster-v5.jpg"></video><button type="button" class="ivx" id="intro-close" aria-label="إغلاق">✕</button></div>
 <section class="call" id="call" hidden role="dialog" aria-modal="true" aria-label="مكالمة فزعة">
   <span class="ct" id="c-time">0:00</span>
   <b class="cn" id="c-name">فزعة</b>
@@ -1447,7 +1447,7 @@ html.i18n-wait body{visibility:hidden}
   document.addEventListener("focusin", e => { if (typing(e.target)) { document.body.classList.add("kb"); if (e.target === inp) setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 250); } });
   document.addEventListener("focusout", () => setTimeout(() => { if (!typing(document.activeElement)) document.body.classList.remove("kb"); }, 60));
   // فيديو «كيف يشتغل فزعة»: بطاقة مرة وحدة فوق المحادثة (يختار يفتحه، ما يشتغل لحاله) + سطر في «حسابي». عربي بس للحين
-  const INTRO_KEY = "fz-intro-never", INTRO_SRC = "/app/intro-ar.mp4";   // يطلع كل ما يفتح التطبيق، لين يختار «لا عاد تطلع لي»
+  const INTRO_KEY = "fz-intro-never", INTRO_SRC = "/app/intro-ar-v5.mp4";   // يطلع كل ما يفتح التطبيق، لين يختار «لا عاد تطلع لي»
   const introSeen = () => { try { return !!localStorage.getItem(INTRO_KEY); } catch { return true; } };
   const markIntro = () => { if ($("#intro-never").checked) { try { localStorage.setItem(INTRO_KEY, "1"); } catch {} } $("#intro-c").hidden = true; };
   let introShown = false;

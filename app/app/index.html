@@ -3120,25 +3120,31 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function drawTasks() {
     const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
-    // تذكيرات المستند الواحد (قبله بشهر وبأسبوع ويومه) تطلع كرت واحد عن المستند نفسه
-    const rows = [], seenP = {};
-    up.forEach(x => { if (!x.paper) { rows.push(x); return; }
-      if (seenP[x.paper]) { seenP[x.paper].ids.push(x.id); return; }
-      const ex = x.paper_expires ? new Date(x.paper_expires + "T12:00") : null, days = ex ? Math.round((startOf(ex.getTime()) - startOf(now)) / DAY) : null;
-      const g = { ...x, ids: [x.id], grp: true, head: ex ? papHead({ label: x.paper_label || x.title, kind: x.paper_kind, days }) : x.title, ex };
-      seenP[x.paper] = g; rows.push(g); });
+    // المواعيد والتذكيرات تحت «الجاي عندك»، والمستندات في قسمها «مستنداتك المحفوظة»
+    const rows = [];
+    const nextOf = {};      // التذكير الجاي لكل مستند (يطلع في قسم «مستنداتك»)
+    up.forEach(x => { if (x.paper) { if (!nextOf[x.paper]) nextOf[x.paper] = x.at; } else rows.push(x); });
     $("#task-list").innerHTML = rows.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + rows.map((x, i) => x.grp ? `
       <div class="row"><div><p>📄 ${esc(x.head)}</p><span class="tag">${x.ex ? L("آخر يوم ", "Expires ") + fmtDay(x.ex) : ""}</span><small class="rm-place">${L("التذكير الجاي ", "Next reminder ")}${fmtWhen(new Date(x.at))}</small></div>
       <div class="acts"><button class="del" data-pap="${x.paper}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button class="del" data-delg="${x.ids.join(",")}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>` : `
       <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${placeHtml(x.note)}</div>
       <div class="acts"><button class="del" data-ed="${x.id}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
-      : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`;
+      : (papers.length ? "" : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`);
+    // المستندات المحفوظة (لو عنده)، الأقرب انتهاء أول
+    if (papers.length) $("#task-list").insertAdjacentHTML("beforeend", `<p class="sec-t" style="margin-top:20px">${L("مستنداتك المحفوظة", "Your saved documents")}</p>` +
+      [...papers].sort((a, b) => a.days - b.days).map(p => `<div class="row"><div><p>📄 ${esc(papHead(p))}</p><span class="tag">${L("آخر يوم ", "Expires ")}${fmtDay(new Date(p.expires + "T12:00:00"))}</span>${nextOf[p.id] ? `<small class="rm-place">${L("التذكير الجاي ", "Next reminder ")}${fmtWhen(new Date(nextOf[p.id]))}</small>` : ""}${p.mine === false ? `<small class="rm-place">${L("حق اللي معك", "Your family member's")}</small>` : ""}</div>
+      <div class="acts"><button class="del" data-pap="${p.id}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button class="del" data-delpap2="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join(""));
     $$("#task-list [data-ed]").forEach(b => b.onclick = () => editRem(reminders.find(x => String(x.id) === b.dataset.ed)));
     $$("#task-list [data-pap]").forEach(b => b.onclick = () => { papPending = +b.dataset.pap; openSheet("s-papers"); });      // يفتح نموذج تعديل هالمستند نفسه
     $$("#task-list [data-del]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); drawHome(); syncRadar(); toast(L("انحذف", "Deleted")); }
       catch (e) { toast(errText(e)); }
+    });
+    $$("#task-list [data-delpap2]").forEach(b => b.onclick = async () => {
+      if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
+      try { await api("/papers/delete", { method: "POST", body: JSON.stringify({ id: +b.dataset.delpap2 }) }); papers = papers.filter(p => String(p.id) !== b.dataset.delpap2);
+        reminders = reminders.filter(x => String(x.paper) !== b.dataset.delpap2); drawTasks(); drawHome(); syncRadar(); toast(L("انحذف", "Deleted")); } catch (e) { toast(errText(e)); }
     });
     $$("#task-list [data-delg]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("أوقفها", "Stop them")))) return;
@@ -3154,7 +3160,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   async function renderTasks() {
     drawTasks();
-    try { reminders = (await api("/reminders")).reminders; drawTasks(); } catch (e) { toast(errText(e)); }
+    try { const [r, p] = await Promise.all([api("/reminders"), api("/papers").catch(() => null)]); reminders = r.reminders; if (p) papers = p.papers || []; drawTasks(); } catch (e) { toast(errText(e)); }
   }
 
   // ---------- account ----------

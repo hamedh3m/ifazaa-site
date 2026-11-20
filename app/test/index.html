@@ -2546,8 +2546,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     });
   }
   const crewLimitMsg = () => myTier === "free"
-    ? L("ميزة طاقم العمل ما هي متوفرة بالباقة المجانية. تقدر تستفيد منها عند ترقية حسابك: 3 موظفين في باقة برايم، أو 10 موظفين في باقة إيليت. ادخل «حسابي» ثم «الباقات» واختر الباقة المناسبة.",
-        "The crew feature isn't available on the free plan. Subscribe to get 3 crew members with Prime or 10 with Elite: go to Account, then Plans, and pick the plan that suits you.")
+    ? L("الباقة المجانية فيها موظف واحد في طاقم عملك. احذف الموظف الحالي أو أوقفه عشان تضيف غيره، أو رقّ حسابك: 3 موظفين في برايم، أو 10 في إيليت، من «حسابي» ثم «الباقات».",
+        "The free plan includes one crew member. Remove or pause the current one to add another, or upgrade: 3 crew members with Prime or 10 with Elite, from Account, then Plans.")
     : myTier === "prime"
       ? L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد. أو انتقل لإيليت (10 موظفين) من «حسابي» ثم «الباقات».", "Your crew is full. Remove a task to hire a new one, or switch to Elite (10 crew members) from Account, then Plans.")
       : L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد.", "Your crew is full. Remove a task to hire a new one.");
@@ -2568,13 +2568,6 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function drawAgents() {
     { const rb = $("#ag-runall"); if (rb) rb.hidden = !AG.some(a => a.active); }
-    if (myTier === "free" && !AG.length) {
-      $("#ag-list").innerHTML = primeBox(L("طاقم عملك يشتغلون عنك بالخلفية: موجز الصباح، ومتابعة الأسعار والطيران، وفريقك المفضل، والأخبار. مع برايم يصير عندك 3، ومع إيليت 10.",
-        "Your crew works for you in the background: morning brief, price and flight tracking, your favorite team and the news. Prime gives you 3, Elite 10."));
-      wirePlans($("#ag-list"));
-      if ($("#ag-small")) $("#ag-small").textContent = L("من ميزات برايم", "A Prime feature");
-      return;
-    }
     $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="grip" aria-label="${L("اسحب عشان ترتّب", "Drag to reorder")}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcRich(a.last_text); return `<div class="al">${sp.html}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
       + (a.active ? `<p class="alive">${aliveTxt(a)}</p>` : "")
@@ -3440,7 +3433,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("تذكيرات جديدة بالشهر", "New reminders a month"), TX("10"), TX(L("بلا حد", "Unlimited")), TX(L("بلا حد", "Unlimited")))}
       ${row(L("المكالمة الصوتية مع فزعة", "Voice calls with Fazaa"), TX("70", L("رد بالشهر", "replies a month")), CK, CK)}
       ${row(L("صناعة الصور وتعديلها", "Creating and editing images"), TX("3", L("بالشهر", "a month")), TX("20", L("بالشهر", "a month")), TX("40", L("بالشهر", "a month")))}
-      ${row(L("طاقم عملك (24/7)", "Your crew (24/7)"), NO, TX("3"), TX("10"))}
+      ${row(L("طاقم عملك (24/7)", "Your crew (24/7)"), TX("1"), TX("3"), TX("10"))}
       ${row(L("كتابة وبحث وسعرات", "Writing, search and calories"), CK, CK, CK)}
       ${row(L("موجز يومك كل صباح", "Daily morning brief"), CK, CK, CK)}
       ${row(L("ربط تقويمك وبرامجك", "Connect your calendar and apps"), CK, CK, CK)}

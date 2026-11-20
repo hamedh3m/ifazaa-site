@@ -1,5 +1,5 @@
 // فزعة: يخزن ملفات التطبيق عشان يفتح بسرعة وبدون نت
-const CACHE = "fazaa-app-v42";
+const CACHE = "fazaa-app-v43";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./manifest-en.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
@@ -11,7 +11,7 @@ self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
   if (url.origin === location.origin) {
     // الصفحة: من النت أول، ولو ما فيه نت من المخزن
-    e.respondWith(fetch(e.request).then(r => { const c = r.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); return r; })
+    e.respondWith(fetch(e.request, { cache: "no-cache" }).then(r => { const c = r.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); return r; })
       .catch(() => caches.match(e.request).then(r => r || caches.match("./"))));
   } else if (url.host.includes("fonts.g")) {
     e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).then(res => { const c = res.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); return res; })));

@@ -110,7 +110,10 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .wcol .pad{scroll-snap-align:none}
 .wp-acts{display:flex;gap:10px;margin-top:14px}.wp-acts .btn{flex:1}
 .tbtn{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink);text-align:start}
-.tbtn:disabled{opacity:.45}.tbtn.empty{color:var(--muted)}
+.tbtn:disabled{opacity:.45}
+.field.city{position:relative}.cty{position:absolute;inset-inline:0;top:100%;margin-top:6px;z-index:20;background:var(--s2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.cty button{display:flex;justify-content:space-between;align-items:center;width:100%;padding:12px 16px;font-size:16px;color:var(--ink);text-align:start;border-bottom:1px solid var(--line)}.cty button:last-child{border-bottom:0}.cty small{color:var(--muted);font-size:12.5px}
+.chk{display:flex;align-items:center;gap:10px;margin-top:12px;width:100%;flex:0 0 100%;grid-column:1/-1;font-size:15px;color:var(--ink)}.chk input{width:22px;height:22px;accent-color:var(--green);flex:none}.tbtn.empty{color:var(--muted)}
 .tbtn.sum{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
 .bp-list{display:flex;flex-direction:column;gap:6px;max-height:56vh;overflow:auto}
 .bp-row{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 14px;border-radius:14px;background:var(--s2);border:1px solid var(--line);color:var(--ink);font-size:16px;text-align:start;width:100%}
@@ -2012,7 +2015,7 @@ html.i18n-wait body{visibility:hidden}
     const el = card(`<div class="hd"><i>⏰</i>${L("تذكير", "Reminder")}<span class="st">${L("✓ انحفظ", "✓ Saved")}</span></div><h4>${esc(x.title)}</h4><p class="w">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</p><div class="acts"><button type="button" class="pri" data-a="open">${L("المجدول", "Schedule")}</button><button type="button" data-a="del">${L("احذف", "Delete")}</button></div>`);
     el.querySelector('[data-a="open"]').onclick = () => go("tasks");
     el.querySelector('[data-a="del"]').onclick = async () => {
-      if (!(await ask(L("تحذف التذكير؟", "Delete this reminder?"), "", L("احذف", "Delete")))) return;
+      if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { await api("/reminders/" + x.id, { method: "DELETE" }); reminders = reminders.filter(r => String(r.id) !== String(x.id)); el.classList.add("gone"); el.querySelector(".st").textContent = L("انحذف", "Deleted"); el.querySelector(".st").classList.add("off"); el.querySelector(".acts").remove(); drawHome(); }
       catch (e) { toast(errText(e)); }
     };
@@ -2381,9 +2384,10 @@ html.i18n-wait body{visibility:hidden}
   const AGF = {   // حقول كل مساعد: [المفتاح، العنوان، المثال، مطلوب؟]
     morning: [["city", L("مدينتك", "Your city"), L("الرياض", "Riyadh")], ["topics", L("أخبار عن (اختياري)", "News about (optional)"), L("الاقتصاد، الهلال", "Economy, football")]],
     price: [["query", L("المنتج", "Product"), L("آيفون 17 برو 256", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
-    travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("لندن", "London"), 1],
+    travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1, null, "city"], ["to", L("إلى", "To"), L("لندن", "London"), 1, null, "city"],
       ["trip", L("نوع الرحلة", "Trip type"), "", 0, [["oneway", L("ذهاب بس", "One way")], ["round", L("ذهاب وعودة", "Round trip")]]],
       ["date", L("تاريخ الذهاب", "Departure date"), "", 1, null, "date"],
+      ["flex", L("تواريخي مرنة: دوّر 3 أيام قبل وبعد", "My dates are flexible: search 3 days before and after"), "", 0, null, "check"],
       ["back", L("تاريخ العودة", "Return date"), "", 0, null, "date"],
       ["adults", L("البالغين", "Adults"), "", 0, [1, 2, 3, 4, 5, 6, 7, 8].map(n => [String(n), String(n)])],
       ["kids", L("الأطفال (2 إلى 11 سنة)", "Children (2–11)"), "", 0, [0, 1, 2, 3, 4, 5, 6].map(n => [String(n), String(n)])],
@@ -2469,7 +2473,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     b.querySelectorAll("[data-dosenow]").forEach(x => x.onclick = async () => { try { after(await api(`/meds/plan/${x.dataset.dosenow}/dose`, { method: "POST", body: JSON.stringify({ on: true }) })); toast(L("تم التسجيل ✅", "Logged ✅")); } catch (e) { toast(errText(e)); } });
     b.querySelectorAll("[data-mdel]").forEach(x => x.onclick = async () => {
       const p = plans.find(q => String(q.id) === x.dataset.mdel);
-      if (!(await ask(L(`تحذف «${p ? p.name : ""}»؟`, `Delete “${p ? p.name : ""}”?`), "", L("احذف", "Delete")))) return;
+      if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { after(await api(`/meds/plan/${x.dataset.mdel}/delete`, { method: "POST" })); toast(L("انحذف الدواء", "Medicine deleted")); } catch (e) { toast(errText(e)); }
     });
     b.querySelectorAll("[data-med]").forEach(x => x.onclick = async () => { try { await medTake("", +x.dataset.med); toast(L("تم التسجيل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } });
@@ -2628,7 +2632,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); if (a) openAgForm(a.kind, a); });
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
-    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("تشيله من الطاقم؟", "Remove from your crew?"), "", L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
+    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
     syncTpl();
     if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
@@ -2743,19 +2747,37 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       setTimeout(() => { k = (k + 1) % P.length; inp.placeholder = P[k]; inp.classList.remove("phx"); }, 300);
     }, 3200);
   })();
+  // اسم المدينة: قائمة تطلع وهو يكتب (حرف «ج» يطلع جدة وجازان…) بالإملاء الصحيح
+  function wireCity(inp) {
+    const box = inp.parentNode.querySelector(".cty"); let t = 0, seq = 0;
+    const hide = () => { box.hidden = true; };
+    inp.addEventListener("input", () => { clearTimeout(t); const q = inp.value.trim(); if (!q) { hide(); return; }
+      t = setTimeout(async () => { const my = ++seq;
+        try { const r = await api(`/airports/suggest?q=${encodeURIComponent(q)}&lang=${EN ? "en" : "ar"}`); if (my !== seq) return;
+          const list = r.cities || []; if (!list.length) { hide(); return; }
+          box.innerHTML = list.map(c => `<button type="button" data-cty="${esc(c.name)}">${esc(c.name)}<small>${esc(c.iata)}</small></button>`).join(""); box.hidden = false;
+          box.querySelectorAll("[data-cty]").forEach(b => b.onpointerdown = e => { e.preventDefault(); inp.value = b.dataset.cty; hide(); inp.closest(".field")?.classList.remove("bad"); });
+        } catch { hide(); } }, 120); });
+    inp.addEventListener("blur", () => setTimeout(hide, 150));
+  }
   function openAgForm(kind, ag) {
     agKind = kind; agEdit = ag ? ag.id : null; const v = AGK[agKind];
     $("#agf-title").textContent = ag ? L("تعديل: ", "Edit: ") + agTitle(ag) : v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
     $("#agf-go").textContent = ag ? L("احفظ التعديل", "Save changes") : L("ضيفه للطاقم", "Add to crew");
-    $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph, , opts, typ]) => typ === "date"
+    $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph, , opts, typ]) => typ === "check"
+      ? `<label class="chk"><input type="checkbox" data-agf="${k}"><span>${t}</span></label>`
+      : typ === "city"
+      ? `<label class="field city"><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="60" autocomplete="off"><div class="cty" hidden></div></label>`
+      : typ === "date"
       ? `<div class="field"${k === "back" ? ' data-backw hidden' : ""}><span>${t}</span><input type="hidden" data-agf="${k}"><button type="button" class="tbtn empty" data-dbtn="${k}"></button></div>`
       : opts
       ? `<label class="field${["adults", "kids", "infants", "cabin"].includes(k) ? " half" : ""}"><span>${t}</span><select data-agf="${k}">${opts.map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join("")}</select></label>`
       : `<label class="field"${k === "back" ? ' data-backw hidden' : ""}><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="120"></label>`).join("");
+    $$("#agf-fields .city input").forEach(wireCity);
     $$("[data-dbtn]").forEach(b => { const i = $(`[data-agf="${b.dataset.dbtn}"]`); i.min = ymd(new Date()); dateBtn(i, b); });
     const trip = $('[data-agf="trip"]'); if (trip) trip.onchange = () => { const w = $("[data-backw]"); if (w) w.hidden = trip.value !== "round"; };
     $("#agf-every").value = ag ? ag.every : v[4]; $("#agf-at").value = ag ? ag.at : v[5]; $("#agf-day").value = ag ? String(ag.day) : "3";
-    if (ag) { const c = ag.config || {}; $$("[data-agf]").forEach(el => { if (c[el.dataset.agf] != null) el.value = c[el.dataset.agf]; }); if (trip) trip.onchange(); }
+    if (ag) { const c = ag.config || {}; $$("[data-agf]").forEach(el => { if (el.type === "checkbox") el.checked = !!c[el.dataset.agf]; else if (c[el.dataset.agf] != null) el.value = c[el.dataset.agf]; }); if (trip) trip.onchange(); }
     $("#agf-every").onchange();
     $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#v-crew").scrollTop = 0;
     const f = $('#agf-fields input:not([type="hidden"])'); if (f && !ag) setTimeout(() => f.focus(), 120);
@@ -2764,7 +2786,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#agf-back").onclick = agBack;
   $("#agf-go").onclick = async () => {
     const cfg = {}; let missing = false;
-    AGF[agKind].forEach(([k, , , req]) => { const el = $(`[data-agf="${k}"]`); const v = el ? el.value.trim() : ""; if (v) cfg[k] = v; else if (req) missing = true; });
+    AGF[agKind].forEach(([k, , , req]) => { const el = $(`[data-agf="${k}"]`); const v = !el ? "" : el.type === "checkbox" ? (el.checked ? "3" : "") : el.value.trim(); if (v) cfg[k] = v; else if (req) missing = true; });
     if (cfg.trip !== "round") delete cfg.back;
     else if (!cfg.back) missing = true;                 // ذهاب وعودة: تاريخ العودة لازم
     if (cfg.back && cfg.date && cfg.back < cfg.date) { toast(L("تاريخ العودة لازم يكون بعد الذهاب", "The return date must be after departure")); return; }
@@ -3023,12 +3045,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("#task-list [data-ed]").forEach(b => b.onclick = () => editRem(reminders.find(x => String(x.id) === b.dataset.ed)));
     $$("#task-list [data-pap]").forEach(b => b.onclick = () => { papPending = +b.dataset.pap; openSheet("s-papers"); });      // يفتح نموذج تعديل هالمستند نفسه
     $$("#task-list [data-del]").forEach(b => b.onclick = async () => {
-      if (!(await ask(L("تحذف التذكير؟", "Delete this reminder?"), "", L("احذف", "Delete")))) return;
+      if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); drawHome(); syncRadar(); toast(L("انحذف", "Deleted")); }
       catch (e) { toast(errText(e)); }
     });
     $$("#task-list [data-delg]").forEach(b => b.onclick = async () => {
-      if (!(await ask(L("توقف تذكيراته؟", "Stop its reminders?"), "", L("أوقفها", "Stop them")))) return;
+      if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("أوقفها", "Stop them")))) return;
       const ids = b.dataset.delg.split(",");
       try { for (const id of ids) await api("/reminders/" + id, { method: "DELETE" }); reminders = reminders.filter(x => !ids.includes(String(x.id))); drawTasks(); drawHome(); syncRadar(); toast(L("انحذفت", "Deleted")); }
       catch (e) { toast(errText(e)); }
@@ -3210,7 +3232,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     } catch (x) { toast(x.message === "img" ? L("ما قدرت أقرا الصورة، جرب وحدة ثانية", "Couldn't read that image, try another") : errText(x)); }
   };
   $("#pf-rm").onclick = async () => {
-    if (!(await ask(L("تشيل صورتك؟", "Remove your photo?"), "", L("شيلها", "Remove")))) return;
+    if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("شيلها", "Remove")))) return;
     try { await api("/profile/avatar", { method: "POST", body: JSON.stringify({ remove: true }) }); S.av = ""; save(); drawAvatars(); } catch (x) { toast(errText(x)); }
   };
   $("#pf-save").onclick = async () => {
@@ -3481,7 +3503,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("[data-edpap]").forEach(b => b.onclick = () => papOpenEdit(+b.dataset.edpap));
     if (papPending) { const id = papPending; papPending = 0; papOpenEdit(id); }
     $$("[data-delpap]").forEach(b => b.onclick = async () => {
-      if (!(await ask(L("تحذف المستند؟", "Delete this document?"), "", L("احذف", "Delete")))) return;
+      if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { const r = await api("/papers/delete", { method: "POST", body: JSON.stringify({ id: +b.dataset.delpap }) });
         toast(r && r.ok === false ? L("ما قدرت أحذفه، جرّب مرة ثانية", "Couldn't delete it, try again") : L("انحذف", "Deleted"));
         loadPapers(); try { reminders = (await api("/reminders")).reminders || []; drawTasks(); syncRadar(); } catch {} } catch (e) { toast(errText(e)); }
@@ -3759,7 +3781,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     toast(r.returning ? L("هلا فيك من جديد 👋 رجعت لك بياناتك", "Welcome back 👋 your data is restored") : L("تم ✅ حسابك محفوظ", "Done ✅ your account is saved"));
   }
   $("#g-signout").onclick = async () => {
-    if (!(await ask(L("تسجّل خروج؟", "Sign out?"), "", L("تسجيل خروج", "Sign out")))) return;
+    if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("تسجيل خروج", "Sign out")))) return;
     try { await api("/auth/signout", { method: "POST" }); } catch (e) { toast(errText(e)); return; }
     try { google.accounts.id.disableAutoSelect(); } catch {}
     S.token = newToken(); S.email = ""; S.msgs = []; lastId = 0; reminders = []; save();

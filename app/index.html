@@ -110,7 +110,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .wcol .pad{scroll-snap-align:none}
 .wp-acts{display:flex;gap:10px;margin-top:14px}.wp-acts .btn{flex:1}
 .tbtn{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink);text-align:start}
-.tbtn:disabled{opacity:.45}
+.tbtn:disabled{opacity:.45}.tbtn.empty{color:var(--muted)}
 .tbtn.sum{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
 .bp-list{display:flex;flex-direction:column;gap:6px;max-height:56vh;overflow:auto}
 .bp-row{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 14px;border-radius:14px;background:var(--s2);border:1px solid var(--line);color:var(--ink);font-size:16px;text-align:start;width:100%}
@@ -925,7 +925,7 @@ html.i18n-wait body{visibility:hidden}
       <form id="pap-form" class="pap-form" hidden>
         <label class="field"><span>نوع المستند</span><select id="pap-kind"></select></label>
         <label class="field"><span id="pap-label-t">اسم يميّزه (اختياري)</span><input id="pap-label" maxlength="60" placeholder="مثلاً: استمارة الديفندر، تأمين السيارة، جواز سفري" autocomplete="off"></label>
-        <label class="field"><span>تاريخ الانتهاء (ميلادي)</span><input id="pap-exp" type="date" required></label>
+        <div class="field"><span>تاريخ الانتهاء (ميلادي)</span><input id="pap-exp" type="hidden"><button type="button" class="tbtn empty" id="pap-exp-b">اختر التاريخ</button></div>
         <p class="note" id="pap-err" hidden></p>
         <button class="btn btn-primary" type="submit" id="pap-save" style="margin-top:16px">احفظ</button>
         <button class="btn btn-ghost" type="button" id="pap-photo" style="margin-top:8px">📷 أو صوّره وأرسله لفزعة</button>
@@ -968,10 +968,10 @@ html.i18n-wait body{visibility:hidden}
       <p class="sub" id="agf-sub"></p>
       <div id="agf-fields"></div>
       <div class="row2">
-        <label class="field"><span id="agf-every-l">كل</span><select id="agf-every"></select></label>
-        <div class="field"><span id="agf-at-l">الساعة</span><input id="agf-at" type="hidden" value="09:00"><button type="button" class="tbtn" id="agf-at-b">9 ص</button></div>
+        <label class="field"><span id="agf-every-l">كم مرة يشيّك لك؟</span><select id="agf-every"></select></label>
+        <div class="field"><span id="agf-at-l">يبدأ الساعة</span><input id="agf-at" type="hidden" value="09:00"><button type="button" class="tbtn" id="agf-at-b">9 ص</button></div>
       </div>
-      <label class="field" id="agf-day-w" hidden><span id="agf-day-l">اليوم</span><select id="agf-day"></select></label>
+      <label class="field" id="agf-day-w" hidden><span id="agf-day-l">أي يوم؟</span><select id="agf-day"></select></label>
       <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">ضيفه للطاقم</button></div>
     </div>
     </section>
@@ -1015,7 +1015,7 @@ html.i18n-wait body{visibility:hidden}
     <label class="field" id="ap-place-w"><span id="ap-l-p">اسم المكان (اختياري)</span><input id="ap-place" maxlength="120" placeholder="مثلاً: عيادة الابتسامة" autocomplete="off"></label>
     <label class="field" id="ap-loc-w"><span id="ap-l-loc">اللوكيشن (اختياري)</span><input id="ap-loc" maxlength="400" inputmode="url" dir="ltr" placeholder="الصق رابط الموقع من قوقل ماب" autocomplete="off"></label>
     <div class="row2">
-      <label class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="date"></label>
+      <div class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="hidden"><button type="button" class="tbtn" id="ap-date-b"></button></div>
       <div class="field"><span id="ap-l-h">الساعة</span><input id="ap-time" type="hidden" value="09:00"><button type="button" class="tbtn" id="ap-time-b">9 ص</button></div>
     </div>
     <div class="ap-quick" id="ap-quick"></div>
@@ -1400,11 +1400,14 @@ html.i18n-wait body{visibility:hidden}
   // ---------- time helpers ----------
   const DAYS = EN ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"] : ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
   const fmtTime = d => { let h = d.getHours(), m = d.getMinutes(); const p = h < 12 ? L("ص", "AM") : L("م", "PM"); h = h % 12 || 12; return AR(h) + (m ? ":" + AR(String(m).padStart(2, "0")) : "") + " " + p; };
+  // التاريخ بنفس الشكل في كل التطبيق: «21 نوفمبر» (والسنة لو مو هالسنة)، والوقت «9:30 م»
+  const MONS = EN ? ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] : ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  const fmtDate = d => (EN ? `${d.getDate()} ${MONS[d.getMonth()]}` : `${AR(d.getDate())} ${MONS[d.getMonth()]}`) + (d.getFullYear() !== new Date().getFullYear() ? " " + AR(d.getFullYear()) : "");
   const fmtWhen = d => {
     const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - t0) / 864e5);
     const day = diff === 0 ? L("اليوم", "Today") : diff === 1 ? L("بكرة", "Tomorrow") : diff > 1 && diff < 7 ? DAYS[d.getDay()]
-      : EN ? d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : AR(d.getDate()) + "/" + AR(d.getMonth() + 1);
+      : fmtDate(d);
     return day + " " + fmtTime(d);
   };
   const toLatin = s => s.replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
@@ -2380,8 +2383,8 @@ html.i18n-wait body{visibility:hidden}
     price: [["query", L("المنتج", "Product"), L("آيفون 17 برو 256", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
     travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1], ["to", L("إلى", "To"), L("لندن", "London"), 1],
       ["trip", L("نوع الرحلة", "Trip type"), "", 0, [["oneway", L("ذهاب بس", "One way")], ["round", L("ذهاب وعودة", "Round trip")]]],
-      ["date", L("تاريخ الذهاب (اختياري)", "Departure date (optional)"), L("أول أسبوع في يناير", "First week of January")],
-      ["back", L("تاريخ العودة (للذهاب والعودة)", "Return date (round trip)"), L("بعد أسبوعين", "Two weeks later")],
+      ["date", L("تاريخ الذهاب", "Departure date"), "", 1, null, "date"],
+      ["back", L("تاريخ العودة", "Return date"), "", 0, null, "date"],
       ["adults", L("البالغين", "Adults"), "", 0, [1, 2, 3, 4, 5, 6, 7, 8].map(n => [String(n), String(n)])],
       ["kids", L("الأطفال (2 إلى 11 سنة)", "Children (2–11)"), "", 0, [0, 1, 2, 3, 4, 5, 6].map(n => [String(n), String(n)])],
       ["infants", L("الرضّع (أقل من سنتين)", "Infants (under 2)"), "", 0, [0, 1, 2, 3].map(n => [String(n), String(n)])],
@@ -2431,7 +2434,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   function drawMeds() {
     const b = $("#meds-body"); if (!b) return;
     const st = { taken: [L("أخذته", "Taken"), "ok"], pending: [L("ينتظر", "Waiting"), ""], skipped: [L("ما أخذته", "Skipped"), "no"], missed: [L("فاتك", "Missed"), "no"] };
-    const day = d => d.toLocaleDateString(EN ? "en-GB" : "ar-SA-u-ca-gregory-nu-latn", { weekday: "short", day: "numeric", month: "short" });
+    const day = d => DAYS[d.getDay()] + L("، ", ", ") + fmtDate(d);
     const plans = MEDS.plans || [];
     const check = '<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     const planH = plans.map(p => {
@@ -2658,7 +2661,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   syncTpl();
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
   $("#agf-day").innerHTML = WDAY.map((d, i) => `<option value="${i}">${d}</option>`).join("");
-  $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة", "At"); syncAt(); };
+  $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة كم؟", "At what time?"); syncAt(); };
   let agEdit = null;     // رقم الموظف لو يعدّل، وإلا null (إضافة جديدة)
   $$("[data-agk]").forEach(b => b.onclick = () => openAgForm(b.dataset.agk, null));
 
@@ -2744,15 +2747,18 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     agKind = kind; agEdit = ag ? ag.id : null; const v = AGK[agKind];
     $("#agf-title").textContent = ag ? L("تعديل: ", "Edit: ") + agTitle(ag) : v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
     $("#agf-go").textContent = ag ? L("احفظ التعديل", "Save changes") : L("ضيفه للطاقم", "Add to crew");
-    $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph, , opts]) => opts
+    $("#agf-fields").innerHTML = AGF[agKind].map(([k, t, ph, , opts, typ]) => typ === "date"
+      ? `<div class="field"${k === "back" ? ' data-backw hidden' : ""}><span>${t}</span><input type="hidden" data-agf="${k}"><button type="button" class="tbtn empty" data-dbtn="${k}"></button></div>`
+      : opts
       ? `<label class="field${["adults", "kids", "infants", "cabin"].includes(k) ? " half" : ""}"><span>${t}</span><select data-agf="${k}">${opts.map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join("")}</select></label>`
       : `<label class="field"${k === "back" ? ' data-backw hidden' : ""}><span>${t}</span><input data-agf="${k}" placeholder="${esc(ph)}" maxlength="120"></label>`).join("");
+    $$("[data-dbtn]").forEach(b => { const i = $(`[data-agf="${b.dataset.dbtn}"]`); i.min = ymd(new Date()); dateBtn(i, b); });
     const trip = $('[data-agf="trip"]'); if (trip) trip.onchange = () => { const w = $("[data-backw]"); if (w) w.hidden = trip.value !== "round"; };
     $("#agf-every").value = ag ? ag.every : v[4]; $("#agf-at").value = ag ? ag.at : v[5]; $("#agf-day").value = ag ? String(ag.day) : "3";
     if (ag) { const c = ag.config || {}; $$("[data-agf]").forEach(el => { if (c[el.dataset.agf] != null) el.value = c[el.dataset.agf]; }); if (trip) trip.onchange(); }
     $("#agf-every").onchange();
     $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#v-crew").scrollTop = 0;
-    const f = $("#agf-fields input"); if (f && !ag) setTimeout(() => f.focus(), 120);
+    const f = $('#agf-fields input:not([type="hidden"])'); if (f && !ag) setTimeout(() => f.focus(), 120);
   }
   const agBack = () => { agEdit = null; $("#ag-form").hidden = true; $("#ag-main").hidden = false; };
   $("#agf-back").onclick = agBack;
@@ -2760,6 +2766,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const cfg = {}; let missing = false;
     AGF[agKind].forEach(([k, , , req]) => { const el = $(`[data-agf="${k}"]`); const v = el ? el.value.trim() : ""; if (v) cfg[k] = v; else if (req) missing = true; });
     if (cfg.trip !== "round") delete cfg.back;
+    else if (!cfg.back) missing = true;                 // ذهاب وعودة: تاريخ العودة لازم
+    if (cfg.back && cfg.date && cfg.back < cfg.date) { toast(L("تاريخ العودة لازم يكون بعد الذهاب", "The return date must be after departure")); return; }
     if (missing) { toast(L("عبّ الخانة المطلوبة", "Fill in the required field")); return; }
     const title = agKind === "price" ? L("سعر ", "Price: ") + cfg.query : agKind === "travel" ? routeTitle(cfg.from, cfg.to) : agKind === "news" ? L("أخبار ", "News: ") + cfg.topics : agKind === "team" ? cfg.team : agKind === "custom" ? cfg.task.slice(0, 40) : AGK[agKind][1];
     try {
@@ -2776,13 +2784,28 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {
     [["#tab-crew", "Crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-ex", "For example: “Watch the iPhone 15 Pro price and tell me if it drops”, or “Tell me the Al Hilal score.”"], ["#ag-pl", "Prime: 3 crew members · Elite: 10"], ["#ag-add-t", "Add to your crew"],
-     ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
+     ["#agf-every-l", "How often should it check?"], ["#agf-at-l", "Starting at"], ["#agf-day-l", "Which day?"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
   }
 
 
   // ---------- تذكيراتي: موعد (نموذج بالتقويم) أو تذكير (خيارات) ----------
   const pad2 = n => String(n).padStart(2, "0");
   const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  // كل التواريخ في التطبيق بنفس الطريقة: زر يكتب التاريخ «21 نوفمبر 2026» ويفتح عجلة التاريخ، والقيمة (YYYY-MM-DD) في خانة مخفية
+  function dateBtn(inp, btn, ph) {
+    if (!inp || !btn || inp._dateBtn) return; inp._dateBtn = true;
+    const desc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    const iso = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+    const sync = () => { const v = desc.get.call(inp); btn.textContent = iso(v) ? fmtDay(new Date(v + "T12:00:00")) : (v || ph || L("اختر التاريخ", "Pick a date")); btn.classList.toggle("empty", !v); };
+    Object.defineProperty(inp, "value", { configurable: true, get() { return desc.get.call(inp); }, set(x) { desc.set.call(inp, x); sync(); } });
+    btn.onclick = async () => {
+      const v = inp.value, d = await wheelPick("date", iso(v) ? new Date(v + "T12:00:00") : new Date()); if (!d) return;
+      const s = ymd(d); if (inp.min && s < inp.min) { toast(L("اختر تاريخ من اليوم وطالع", "Pick today or a later date")); return; }
+      inp.value = s; inp.dispatchEvent(new Event("input")); btn.closest(".field")?.classList.remove("bad");
+    };
+    sync();
+  }
+  dateBtn($("#ap-date"), $("#ap-date-b"));
   // وحدات «مخصص»: [دقايق الوحدة، اسمها في العجلة، بالإنجليزي، صيغ العربي: مفرد، مثنى، 3-10، 11+]
   const BEF_UNITS = [[1, L("دقايق", "minutes"), "minute", ["دقيقة", "دقيقتين", "دقايق", "دقيقة"]], [60, L("ساعات", "hours"), "hour", ["ساعة", "ساعتين", "ساعات", "ساعة"]],
     [1440, L("أيام", "days"), "day", ["يوم", "يومين", "أيام", "يوم"]], [10080, L("أسابيع", "weeks"), "week", ["أسبوع", "أسبوعين", "أسابيع", "أسبوع"]]];
@@ -3444,7 +3467,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (Object.keys(kinds).length) { const cur = $("#pap-kind").value;
       $("#pap-kind").innerHTML = Object.entries(kinds).map(([k, v]) => `<option value="${esc(k)}">${esc(k === "other" ? L("أخرى", "Other") : EN ? v[1] : v[0])}</option>`).join("");
       if (cur && kinds[cur]) $("#pap-kind").value = cur; papKind(); }
-    $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L(!ABSHER.includes(p.kind) && p.kind !== "insurance" ? "آخر يوم " : papM(p) ? "ينتهي " : "تنتهي ", "Expires ")}${AR(p.expires)}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}${p.created ? L(" · انضاف ", " · added ") + AR(p.created) : ""}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L(papM(p) ? "منتهي" : !ABSHER.includes(p.kind) ? "انتهى" : "منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-edpap="${p.id}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
+    $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L(!ABSHER.includes(p.kind) && p.kind !== "insurance" ? "آخر يوم " : papM(p) ? "ينتهي " : "تنتهي ", "Expires ")}${fmtDay(new Date(p.expires + "T12:00:00"))}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}${p.created ? L(" · انضاف ", " · added ") + fmtDay(new Date(p.created + "T12:00:00")) : ""}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L(papM(p) ? "منتهي" : !ABSHER.includes(p.kind) ? "انتهى" : "منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-edpap="${p.id}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<p class="note">${L("ما فيه مستندات للحين. اضغط «أضف مستند» أو أرسل صورته لفزعة.", "No documents yet. Tap “Add a document” or send Fazaa a photo of it.")}</p>`;
     $$("[data-edpap]").forEach(b => b.onclick = () => papOpenEdit(+b.dataset.edpap));
     if (papPending) { const id = papPending; papPending = 0; papOpenEdit(id); }
@@ -3471,6 +3494,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       papKind(); $("#pap-label").value = p ? p.label || "" : ""; $("#pap-exp").value = p ? p.expires || "" : "";
       if (p) setTimeout(() => $("#pap-form").scrollIntoView({ behavior: "smooth", block: "center" }), 60); } };
   // ✏️ يفتح نموذج نفس المستند معبّى، مو صفحة ثانية
+  dateBtn($("#pap-exp"), $("#pap-exp-b"));
   const papOpenEdit = id => { const p = papList.find(x => x.id === id); if (p) papForm(true, p); };
   $("#pap-add").onclick = () => papForm(true);
   $("#pap-cancel").onclick = () => papForm(false);

@@ -329,6 +329,9 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .th .tt span{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .th .tdel{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--muted);flex:none}
 .th .tdel svg{width:16px;height:16px}
+.dhint{font-size:11.5px;color:var(--muted);margin:-4px 12px 6px;opacity:.8}
+.th{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}.th .tpin{flex:none;color:var(--sand);display:grid;place-items:center}.th .tpin svg{width:15px;height:15px}
+#thact{z-index:95}.ta-list{display:flex;flex-direction:column;gap:10px}.ta-list .ta-del{color:var(--red2,#ff5a6a)}
 /* المكالمة */
 .call{position:fixed;inset:0;z-index:65;background:radial-gradient(90% 60% at 50% 30%,#3a0a14,#0b0204 70%);display:flex;flex-direction:column;align-items:center;padding:calc(var(--top) + 24px) 24px calc(var(--bot) + 30px);animation:rin 280ms var(--ease)}
 .call[hidden]{display:none}
@@ -1262,7 +1265,7 @@ html.i18n-wait body{visibility:hidden}
       <button type="button" data-tsheet="s-connect"><span class="ti">🔌</span><b>ربط</b></button>
       <button type="button" id="th-radar"><span class="ti">📡</span><b>الرادار</b></button>
     </div>
-    <p class="dsec" id="th-sec">آخر المحادثات</p>
+    <p class="dsec" id="th-sec">آخر المحادثات</p><p class="dhint" id="th-hint">اضغط مطوّل على المحادثة عشان تثبّتها أو تحذفها</p>
     <div class="thl" id="th-list"></div>
     <button class="newth btm" type="button" id="th-new"><svg><use href="#i-plus"/></svg><span id="th-new-t">محادثة جديدة</span></button>
   </div>
@@ -1319,6 +1322,7 @@ html.i18n-wait body{visibility:hidden}
   <div class="box"><h3 id="cf-t"></h3><p id="cf-p"></p><button class="btn btn-red" id="cf-yes"></button><button class="btn btn-ghost" id="cf-no">إلغاء</button></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<div class="wp-bg" id="thact" hidden><div class="wp-sh" role="dialog" aria-modal="true" aria-labelledby="ta-t"><h3 id="ta-t"></h3><div class="ta-list"><button type="button" class="btn btn-ghost" id="ta-pin"></button><button type="button" class="btn btn-ghost ta-del" id="ta-del"></button><button type="button" class="btn btn-ghost" id="ta-x">إلغاء</button></div></div></div>
 <div class="wp-bg" id="bp" hidden><div class="wp-sh" role="dialog" aria-modal="true" aria-labelledby="bp-t"><h3 id="bp-t">ذكّرني</h3><p class="sub" id="bp-sub" style="text-align:center;margin:-6px 0 12px">تقدر تختار أكثر من وحدة</p><div class="bp-list" id="bp-l"></div>
 <div class="wp-acts"><button class="btn btn-ghost" type="button" id="bp-x">إلغاء</button><button class="btn btn-primary" type="button" id="bp-ok">تم</button></div></div></div>
 <div class="wp-bg" id="wp" hidden><div class="wp-sh" role="dialog" aria-modal="true" aria-labelledby="wp-t"><h3 id="wp-t"></h3><div class="wheels" id="wp-w"></div>
@@ -2226,11 +2230,20 @@ html.i18n-wait body{visibility:hidden}
     $("#th-btn").hidden = !chat; $("#call-btn").hidden = !chat;
     if (chat) $("#bar-title").textContent = S.thread ? thTitle(S.thread) : titles.chat;
   }
+  function thMenu(id) {
+    const t = TH.find(x => x.id === id) || { id, pinned: false }, m = $("#thact");
+    $("#ta-t").textContent = thTitle(id);
+    $("#ta-pin").textContent = t.pinned ? L("📌 شيل التثبيت", "📌 Unpin") : L("📌 ثبّتها فوق", "📌 Pin to top");
+    $("#ta-del").textContent = id === 0 ? L("🗑️ امسح رسائلها", "🗑️ Clear messages") : L("🗑️ احذف المحادثة", "🗑️ Delete chat");
+    m.hidden = false;
+    const done = () => { m.hidden = true; $("#ta-pin").onclick = $("#ta-del").onclick = $("#ta-x").onclick = m.onclick = null; };
+    $("#ta-x").onclick = done; m.onclick = e => { if (e.target === m) done(); };
+    $("#ta-pin").onclick = async () => { done(); try { await api(`/threads/${id}/${t.pinned ? "unpin" : "pin"}`, { method: "POST" }); await loadThreads(); toast(t.pinned ? L("شلت التثبيت", "Unpinned") : L("ثبّتها فوق 📌", "Pinned to top 📌")); } catch (e) { toast(errText(e)); } };
+    $("#ta-del").onclick = () => { done(); delThread(id); };
+  }
   async function delThread(id) {
     const main = id === 0;
-    if (!(await ask(main ? L("تمسح المحادثة الرئيسية؟", "Clear the main chat?") : L("تحذف المحادثة؟", "Delete this chat?"),
-      main ? L("تنمسح رسائلها نهائياً وتبقى فاضية. تذكيراتك ومستنداتك تبقى.", "Its messages are deleted for good and it stays empty. Your reminders and documents stay.")
-           : L("تنحذف رسائلها نهائياً. تذكيراتك ومستنداتك تبقى.", "Its messages are deleted for good. Your reminders and documents stay."), main ? L("امسح", "Clear") : L("احذف", "Delete")))) return;
+    if (!(await ask(L("متأكد؟", "Are you sure?"), "", main ? L("امسح", "Clear") : L("احذف", "Delete")))) return;
     try {
       await api(`/threads/${id}/delete`, { method: "POST" });
       if (id === S.thread) { if (main) { S.msgs = []; lastId = 0; save(); renderChat(); } else await switchThread(0, true); }
@@ -2241,10 +2254,14 @@ html.i18n-wait body{visibility:hidden}
   function drawThreads() {
     const list = TH.length ? TH : [{ id: 0, title: "", last: "", updated: "" }];
     const SQ = ["#e0213b", "#3d8bfd", "#22c58b", "#c9a45c", "#c2416b", "#7c5cff"];
-    $("#th-list").innerHTML = list.map(t => `<div class="th${t.id === S.thread ? " on" : ""}" role="button" tabindex="0" data-th="${t.id}"><span class="tsq" style="background:${SQ[Math.abs(t.id) % SQ.length]}"></span><div class="tt"><b>${esc(thTitle(t.id))}</b><span>${esc(String(t.last || "").replace(/^🎙️ /, "").slice(0, 70)) || L("ما فيه رسائل للحين", "No messages yet")}</span></div><button type="button" class="tdel" data-thdel="${t.id}" aria-label="${L("احذف المحادثة", "Delete chat")}"><svg><use href="#i-trash"/></svg></button></div>`).join("");
-    $$("#th-list [data-th]").forEach(el => el.onclick = e => { if (e.target.closest("[data-thdel]")) return; switchThread(+el.dataset.th); });
-    $$("#th-list [data-thdel]").forEach(b => b.onclick = async () => {
-      await delThread(+b.dataset.thdel);
+    $("#th-list").innerHTML = list.map(t => `<div class="th${t.id === S.thread ? " on" : ""}" role="button" tabindex="0" data-th="${t.id}"><span class="tsq" style="background:${SQ[Math.abs(t.id) % SQ.length]}"></span><div class="tt"><b>${esc(thTitle(t.id))}</b><span>${esc(String(t.last || "").replace(/^🎙️ /, "").slice(0, 70)) || L("ما فيه رسائل للحين", "No messages yet")}</span></div>${t.pinned ? `<span class="tpin" aria-label="${L("مثبّتة", "Pinned")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="currentColor"/></svg></span>` : ""}</div>`).join("");
+    // ضغطة = تفتح المحادثة. ضغط مطوّل = تثبيت أو حذف
+    $$("#th-list [data-th]").forEach(el => {
+      let t = 0, long = false;
+      el.addEventListener("pointerdown", () => { long = false; clearTimeout(t); t = setTimeout(() => { long = true; try { tick.prep(); tick.fire(); } catch {} thMenu(+el.dataset.th); }, 480); });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(ev => el.addEventListener(ev, () => clearTimeout(t)));
+      el.addEventListener("contextmenu", e => e.preventDefault());
+      el.onclick = () => { if (long) { long = false; return; } switchThread(+el.dataset.th); };
     });
   }
   const openThreads = () => {
@@ -2272,7 +2289,7 @@ html.i18n-wait body{visibility:hidden}
   $("#th-rem").onclick = () => { closeThreads(); go("tasks"); };
   if (EN) $("#th-rem-t").textContent = "Reminders";
   $$("[data-tsheet]").forEach(b => b.onclick = () => { closeThreads(); const sh = b.dataset.tsheet; openSheet(sh); if (sh === "s-papers") loadPapers(); if (sh === "s-connect") loadConn(); });
-  if (EN) { $("#th-sec").textContent = "Recent chats"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
+  if (EN) { $("#th-sec").textContent = "Recent chats"; $("#th-hint").textContent = "Press and hold a chat to pin or delete it"; $("#ta-x").textContent = "Cancel"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
   if (EN) { $("#th-h").textContent = "Menu"; $("#th-new-t").textContent = "New chat"; $("#th-btn").setAttribute("aria-label", "Chats"); $("#th-x").setAttribute("aria-label", "Close"); }
 
   // ---------- المكالمة: تكلم فزعة بصوتك ويرد عليك بصوت ----------

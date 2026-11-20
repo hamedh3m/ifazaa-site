@@ -248,7 +248,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar .rbg.t-sand{background:radial-gradient(90% 60% at 80% 8%,#8a7a5f,#2c261c 62%,#0f0d09)}
 .radar .rbg.t-green{background:radial-gradient(90% 60% at 80% 8%,#2a7a5a,#0d241a 62%,#060f0b)}
 .radar .rbg.t-blue{background:radial-gradient(90% 60% at 80% 8%,#2f5a96,#0f1b30 62%,#060a12)}
-.radar .stories{position:relative;margin:4px 0 10px}
+.radar .stories{position:relative;margin:4px 0 10px;direction:ltr}   /* البار يمشي من اليسار لليمين */
 .radar .stories i{background:rgba(255,255,255,.22)}
 .radar .stories i b{background:#fff}
 .radar .rtop{position:relative;display:flex;align-items:center;gap:10px;z-index:3}
@@ -278,7 +278,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar .rlock .rli{flex:none;width:76px;height:76px;border-radius:22px;background:#fff;display:grid;place-items:center;margin-bottom:4px}
 .radar .rlock .rli svg{width:42px;height:42px}
 .radar .rlock b{font-size:24px;font-weight:800}
-.radar .tapzone{top:70px;bottom:90px}
+.radar .tapzone{top:70px;bottom:90px}#radar .tapzone{direction:ltr}.radar #r-prev{grid-column:1;grid-row:1}.radar #r-next{grid-column:2;grid-row:1}   /* يمين الشاشة = اللي بعده */
 @media (prefers-reduced-motion:reduce){.radar .rin,.radar.out .rin,.ccard,.qr{animation:none}}
 
 /* المحادثات المتعددة */

@@ -3040,7 +3040,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       if (m.has_avatar && !S.av) api("/profile").then(p => { if (p.avatar) { S.av = p.avatar; save(); drawAvatars(); } }).catch(() => {});
       else if (m.has_avatar === false && S.av) { S.av = ""; save(); drawAvatars(); }
       $("#me-fill").hidden = m.profile_done !== false;
-      if (m.birthday) celebrate(m.gender); if (m.name && m.name !== S.name && !S.name) { S.name = m.name; save(); }
+      if (m.birthday) celebrate(m.gender); // الاسم من الحساب نفسه: لو عدّله من جهاز ثاني (داخل بأبل أو قوقل) يطلع هنا بعد
+      if (m.name && m.name !== S.name && (signedIn() || !S.name)) { S.name = m.name; save(); $("#me-name").textContent = S.name; drawAvatars(); updateHello(); }
     }).catch(() => {});
     syncGoogleUI();
   }
@@ -3722,6 +3723,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   document.addEventListener("visibilitychange", () => { if (!document.hidden) checkGoogleReturn(); });
   async function afterSignin(r) {
     S.email = r.email || ""; if (r.name && (r.returning || !S.name)) S.name = r.name;
+    else if (!r.returning && S.name && S.name !== r.name) api("/profile", { method: "POST", body: JSON.stringify({ name: S.name }) }).catch(() => {});   // حساب جديد: الاسم اللي كتبه يصير اسم الحساب
     if (!$("#onb").hidden) { if (!S.name) S.name = $("#onb-name").value.trim(); S.onb = true; $("#onb").hidden = true; joinFamily(); introMaybe(); }
     save(); lastId = 0; updateHello(); renderMe(); syncPushUI();
     await loadHistory();

@@ -259,6 +259,19 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar li small{color:rgba(255,255,255,.7);white-space:nowrap}
 .radar .ract{position:relative;z-index:3;margin-top:22px;height:52px;width:100%;border-radius:999px;background:#fff;color:#111;font-weight:800;font-size:16px;transition:transform 140ms var(--ease)}
 .radar .ract:active{transform:scale(.97)}
+.radar .ract{overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.radar .ract::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.14);transform:scaleX(0);transform-origin:right;pointer-events:none}
+[dir=ltr] .radar .ract::after{transform-origin:left}
+.radar .ract.holding::after{transform:scaleX(1);transition:transform .8s linear}
+.radar .rbody.ctr{margin:auto 0;text-align:center}
+.radar .rdone{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;margin:0 auto 20px;box-shadow:0 0 0 18px rgba(255,255,255,.05),0 0 80px 30px rgba(255,255,255,.08)}
+.radar .rdone svg{width:32px;height:32px}
+.radar .rblur{filter:blur(9px);opacity:.5;pointer-events:none;-webkit-user-select:none;user-select:none}
+.radar .rlock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:0 10px}
+.radar .rbody.lockb{min-height:340px;display:flex;flex-direction:column;justify-content:center}
+.radar .rlock .rli{flex:none;width:76px;height:76px;border-radius:22px;background:#fff;display:grid;place-items:center;margin-bottom:4px}
+.radar .rlock .rli svg{width:42px;height:42px}
+.radar .rlock b{font-size:24px;font-weight:800}
 .radar .tapzone{top:70px;bottom:90px}
 @media (prefers-reduced-motion:reduce){.radar .rin,.radar.out .rin,.ccard,.qr{animation:none}}
 
@@ -396,6 +409,25 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .agt button i{font-style:normal;font-size:22px}
 .agt button b{font-size:15px;font-weight:800}
 .agt button span{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.45}
+.ideas-btn{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0 6px;padding:14px 16px;border-radius:18px;background:var(--s1);border:1px solid var(--line);text-align:start;transition:transform 140ms var(--ease)}
+.ideas-btn:active{transform:scale(.98)}
+.ideas-btn i{font-style:normal;font-size:24px}
+.ideas-btn b{display:block;font-size:15.5px;font-weight:800}
+.ideas-btn small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.ideas-btn em{margin-inline-start:auto;font-style:normal;font-size:20px;color:var(--muted)}
+.idc{display:inline-flex;align-items:center;gap:7px;margin:22px 0 10px;padding:7px 13px;border-radius:12px;font-weight:800;font-size:15px;border:1px solid rgba(255,255,255,.1)}
+.idc:first-child{margin-top:8px}
+.idea{position:relative;display:block;width:100%;text-align:start;background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:13px 15px;padding-inline-end:58px;margin-bottom:9px;transition:transform 140ms var(--ease)}
+.idea:active{transform:scale(.98)}
+.idea small{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.idea b{display:block;font-size:15.5px;font-weight:700;line-height:1.45}
+.idea span{display:block;font-size:13px;color:var(--muted);line-height:1.55;margin-top:3px}
+.idea i{position:absolute;inset-inline-end:13px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:var(--s3);display:grid;place-items:center;font-style:normal;font-size:20px;line-height:1}
+.starters{margin-top:20px}.starters:empty{display:none}
+.st-h{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);margin-bottom:10px}
+.st-h::before,.st-h::after{content:"";flex:1;height:1px;background:var(--line)}
+#inp::placeholder{transition:opacity .3s}
+#inp.phx::placeholder{opacity:0}
 .agf[hidden]{display:none}
 .agf .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field select{width:100%;height:52px;padding:0 14px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink)}
@@ -819,7 +851,7 @@ html.i18n-wait body{visibility:hidden}
         <div class="empty home" id="empty">
           <h2 class="hi" id="hello">هلا! وش أفزع لك اليوم؟</h2>
           <p class="hi-sub" id="hello-sub">اكتب بكلامك العادي، مثل ما تكلم صاحبك.</p>
-          <div class="hcards" id="hcards"></div><div class="cpills" id="cpills"></div>
+          <div class="hcards" id="hcards"></div><div class="cpills" id="cpills"></div><div class="starters" id="starters"></div>
         </div>
       </div>
       <div class="sugg" id="chips"></div>
@@ -880,6 +912,7 @@ html.i18n-wait body{visibility:hidden}
       <h2 class="h2" id="ag-h2">يشتغلون عنك وأنت مرتاح</h2>
       <p class="sub" id="ag-sub">كل واحد في طاقمك يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
       <p class="how" id="ag-how"><span id="ag-ex">مثال: «تابع لي سعر آيفون 15 برو ونبهني إذا نزل»، أو «علّمني بنتيجة الهلال».</span><em class="pl" id="ag-pl">برايم: 3 بالطاقم · إيليت: 10</em></p>
+      <button type="button" class="ideas-btn" id="ideas-btn"><i>💡</i><span><b id="ideas-btn-t">أفكار جاهزة</b><small id="ideas-btn-s">لسيارتك وفلوسك وعائلتك وسفرك، بضغطة</small></span><em id="ideas-btn-a">‹</em></button>
       <div class="agl" id="ag-list"></div>
       <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف لطاقمك</p>
       <div class="agt" id="ag-tpl"></div>
@@ -930,6 +963,10 @@ html.i18n-wait body{visibility:hidden}
 </div>
 
 <!-- sheets -->
+<section class="sheet" id="s-ideas" aria-label="أفكار جاهزة">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ideas-h">أفكار جاهزة</h1><span style="width:42px"></span></header>
+  <div class="body"><p class="sub" id="ideas-sub">اضغط على أي فكرة ونكمّلها مع بعض. نضيف أفكار جديدة باستمرار.</p><div id="ideas"></div></div>
+</section>
 <section class="sheet" id="s-connect" aria-label="ربط التطبيقات">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1>ربط التطبيقات</h1><span style="width:42px"></span></header>
   <div class="body">
@@ -1845,7 +1882,7 @@ html.i18n-wait body{visibility:hidden}
     clearInterval(el._t); if (!RM && cards.length > 1) { timer = setInterval(next, 4500); el._t = timer; }
     requestAnimationFrame(paint);
   }
-  const drawHome = () => { drawCards($("#hcards")); const sc = $("#msgs .sess .hcards"); if (sc) drawCards(sc); };
+  const drawHome = () => { drawCards($("#hcards")); const sc = $("#msgs .sess .hcards"); if (sc) drawCards(sc); drawStarters(); };
   async function refreshDay() {
     try { reminders = (await api("/reminders")).reminders || []; } catch {}
     try { papers = (await api("/papers")).papers || []; } catch {}
@@ -1934,21 +1971,59 @@ html.i18n-wait body{visibility:hidden}
   let RI = [], ri = 0, rtimer;
   function syncRadar(auto) {
     RI = radarItems();
+    if (calLinked === null && signedIn()) { calLinked = false; api("/connections").then(r => { calLinked = !!r.calendar; }).catch(() => { calLinked = null; }); }
     const b = $("#radar-btn"), n = $("#radar-n"), unseen = RI.filter(x => !seen().includes(x.key));
     b.hidden = false; n.hidden = !unseen.length; n.textContent = AR(unseen.length);
     if (auto && unseen.length && signedIn() && S.onb && $("#onb").hidden && $("#intro-c").hidden && (EN || introSeen() || introShown) && $("#v-chat").classList.contains("on") && !$(".sheet.on")) openRadar(RI.indexOf(unseen[0]));
+  }
+  // بطاقة «اربط» المغبّشة: توريه تذكيره الجاي مغبّش وتعرض ربط تقويم الجوال، مرة كل 7 أيام بالكثير
+  var calLinked = null;
+  const LKEY = "fz-lk-cal";
+  function radarLink() {
+    if (calLinked !== false) return null;
+    try { if (Date.now() - (+localStorage.getItem(LKEY) || 0) < 7 * DAY) return null; } catch {}
+    const nx = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > Date.now()).sort((a, b) => a.t - b.t)[0];
+    if (!nx) return null;
+    return { key: "lk", t: "t-sand", lock: true, k: L("تقويم جوالك", "Phone calendar"), h: nx.title, p: fmtWhen(new Date(nx.t)),
+      lt: L("تقويم جوالك", "Phone calendar"), lp: L("اربط تقويم جوالك، وتطلع تذكيراتك فيه بدون ما تفتح التطبيق.", "Link your phone calendar and your reminders show up there without opening the app."),
+      act: L("اربط التقويم", "Link calendar"), run: () => openCal() };
+  }
+  const crewOn = () => AG.some(a => a.active);
+  const radarEnd = () => ({ key: "end", t: "t-green", end: true, h: L("ما فاتك شي", "You're all caught up"),
+    p: crewOn() ? L("وتبي أكثر؟ خلّ طاقمك يدوّر لك الحين.", "Want more? Get your crew searching now.") : L("أول ما يجي شي جديد، تلقاه هنا.", "New things will show up here."),
+    act: crewOn() ? L("اضغط مطوّل وخلّ طاقمك يدوّر", "Press and hold to get your crew searching") : L("تمام", "Got it"), hold: crewOn() });
+  function withExtras(list) {
+    if (list.some(x => x.end)) return list;
+    const out = list.slice(), lk = radarLink(); if (lk) out.push(lk);
+    out.push(radarEnd()); return out;
+  }
+  async function crewRunAll() {
+    const act = AG.filter(a => a.active); closeRadar(); if (!act.length) return;
+    toast(L("طاقمك يدوّر لك الحين… ⏳", "Your crew is searching now… ⏳"));
+    let sent = 0, rate = 0;
+    for (const a of act) {
+      try { const r = await api(`/agents/${a.id}/run`, { method: "POST" }); if (r.agent) AG = AG.map(x => x.id === r.agent.id ? r.agent : x); if (r.sent) sent++; }
+      catch (e) { if (e.message === "rate") rate++; }
+    }
+    drawAgents();
+    toast(sent ? L("طاقمك جاب لك شي جديد، شوفه في «طاقم عملك» 📜", "Your crew found something new, see “Your crew” 📜")
+      : rate === act.length ? L("طاقمك دوّر قبل شوي، جرب بعد ساعة", "Your crew searched recently, try again in an hour") : L("ما لقوا شي جديد للحين", "Nothing new yet"));
   }
   function showRadar(i) {
     ri = Math.max(0, Math.min(i, RI.length - 1)); const d = RI[ri]; if (!d) return closeRadar();
     $("#r-bg").className = "rbg " + d.t;
     $("#r-bars").innerHTML = RI.map((_, j) => `<i class="${j < ri ? "done" : j === ri ? "now" : ""}"><b></b></i>`).join("");
     $("#r-n").textContent = AR(ri + 1) + L(" من ", " of ") + AR(RI.length);
-    $("#r-body").innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b]) => `<li>${esc(a)}<small>${b}</small></li>`).join("")}</ul>` : "");
+    const rb = $("#r-body"); rb.classList.toggle("ctr", !!(d.end || d.lock)); rb.classList.toggle("lockb", !!d.lock);
+    if (d.end) rb.innerHTML = `<div class="rdone"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p>`;
+    else if (d.lock) { rb.innerHTML = `<div class="rblur" aria-hidden="true"><span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p></div><div class="rlock"><span class="rli"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.5" fill="#e0213b"/><rect x="3" y="4.5" width="18" height="5.5" rx="2.5" fill="#a8182f"/><rect x="7" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><rect x="15" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><text x="12" y="18.6" font-size="7.5" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">${new Date().getDate()}</text></svg></span><b>${esc(d.lt)}</b><p>${esc(d.lp)}</p></div>`;
+      try { localStorage.setItem(LKEY, String(Date.now())); } catch {} }
+    else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b]) => `<li>${esc(a)}<small>${b}</small></li>`).join("")}</ul>` : "");
     $("#r-act").textContent = d.act;
     markSeen([d.key]);
-    clearTimeout(rtimer); rtimer = setTimeout(() => { if (!$("#radar").hidden) ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); }, 6000);
+    clearTimeout(rtimer); if (!d.end) rtimer = setTimeout(() => { if (!$("#radar").hidden) ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); }, 6000);
   }
-  function openRadar(i = 0) { if (!RI.length) return; $("#radar").hidden = false; $("#radar").classList.remove("out"); showRadar(i); }
+  function openRadar(i = 0) { RI = withExtras(RI); $("#radar").hidden = false; $("#radar").classList.remove("out"); showRadar(i); }
   function closeRadar() {
     clearTimeout(rtimer); const r = $("#radar"); if (r.hidden) return;
     r.classList.add("out"); setTimeout(() => { r.hidden = true; r.classList.remove("out"); syncRadar(); }, 190);
@@ -1960,12 +2035,17 @@ html.i18n-wait body{visibility:hidden}
   $("#radar-btn").onclick = () => { if (needSignin()) return; RI = radarItems();
     let first = false; try { first = !localStorage.getItem(RINTRO); localStorage.setItem(RINTRO, "1"); } catch {}
     if (first) { RI.unshift(radarIntro()); openRadar(0); return; }
-    if (!RI.length) { toast(AG.some(a => a.active) ? L("الرادار هادي، وطاقم عملك يدوّر لك 🛰️", "All quiet, your crew is on the lookout 🛰️") : L("الرادار هادي، ما فيه شي يحتاجك الحين", "All quiet, nothing needs you right now")); return; } openRadar(0); };
+    openRadar(0); };
   const syncBusy = () => { const b = $("#radar-btn"); if (b) b.classList.toggle("busy", AG.some(a => a.active)); };
   $("#r-x").onclick = closeRadar;
   $("#r-next").onclick = () => ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar();
   $("#r-prev").onclick = () => showRadar(ri - 1);
-  $("#r-act").onclick = () => { const d = RI[ri]; if (d.next) { ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); return; } closeRadar(); if (d.go) go(d.go); else if (d.say) { go("chat"); submit(d.say); } };
+  let holdT = 0, held = false; const rAct = $("#r-act");
+  rAct.addEventListener("pointerdown", () => { const d = RI[ri]; if (!d || !d.hold) return; held = false; clearTimeout(rtimer); rAct.classList.add("holding");
+    holdT = setTimeout(() => { held = true; rAct.classList.remove("holding"); if (navigator.vibrate) navigator.vibrate(15); crewRunAll(); }, 800); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => rAct.addEventListener(ev, () => { clearTimeout(holdT); rAct.classList.remove("holding"); }));
+  rAct.addEventListener("contextmenu", e => e.preventDefault());
+  $("#r-act").onclick = () => { const d = RI[ri]; if (d.end) { if (held) { held = false; return; } closeRadar(); return; } if (d.run) { closeRadar(); d.run(); return; } if (d.next) { ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); return; } closeRadar(); if (d.go) go(d.go); else if (d.say) { go("chat"); submit(d.say); } };
   (() => { let y0 = null; const r = $("#radar");
     r.addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });
     r.addEventListener("touchend", e => { if (y0 !== null && e.changedTouches[0].clientY - y0 > 90) closeRadar(); y0 = null; }, { passive: true });
@@ -2438,7 +2518,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     syncTpl();
     if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
-  async function loadAgents() { try { AG = (await api("/agents")).agents || []; } catch {} drawAgents(); syncBusy(); }
+  let agLoaded = false;
+  async function loadAgents() { try { AG = (await api("/agents")).agents || []; agLoaded = true; } catch {} drawAgents(); syncBusy(); drawStarters(); }
   const redrawHomeCards = () => drawHome();
   async function agAct(id, action) {
     if (action === "run") toast(L("يدوّر لك الحين… ⏳", "Searching now… ⏳"));
@@ -2469,6 +2550,85 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة", "At"); syncAt(); };
   let agEdit = null;     // رقم الموظف لو يعدّل، وإلا null (إضافة جديدة)
   $$("[data-agk]").forEach(b => b.onclick = () => openAgForm(b.dataset.agk, null));
+
+  // ---------- أفكار جاهزة + اقتراحات البداية ----------
+  // كل فكرة: k = نوع موظف في طاقم عملك (يفتح نموذجه معبّى)، say = يكتبها في خانة المحادثة ويخليه يكمل، go = يفتح تبويب
+  const IDEAS = [
+    ["🚗", L("سيارتي", "My car"), "t-sand", [
+      [L("الاستمارة والتأمين", "Registration & insurance"), L("صوّرها أو سجّل تاريخها، وأذكّرك قبل لا تنتهي.", "Snap it or add the date, and I'll remind you before it expires."), { go: "papers" }],
+      [L("تغيير الزيت", "Oil change"), L("تذكير يتكرر كل 3 شهور، أو على كيفك.", "A reminder every 3 months, or whatever suits you."), { say: L("ذكّرني أغيّر زيت السيارة كل 3 شهور، وأول مرة ", "Remind me to change the car oil every 3 months, starting ") }],
+      [L("الفحص الدوري", "Car inspection"), L("أذكّرك قبل موعد الفحص بأسبوع.", "I'll remind you a week before the inspection."), { say: L("ذكّرني بالفحص الدوري للسيارة قبله بأسبوع، وموعده ", "Remind me about the car inspection a week before, it's on ") }],
+    ]],
+    ["💰", L("فلوسي", "My money"), "t-green", [
+      [L("متابعة سعر", "Price watch"), null, { k: "price" }],
+      [L("الفواتير الشهرية", "Monthly bills"), L("الكهرباء والجوال والإنترنت، تذكير قبل كل فاتورة.", "Electricity, phone and internet, a reminder before each bill."), { say: L("ذكّرني بفاتورة الكهرباء كل شهر يوم ", "Remind me about the electricity bill every month on the ") }],
+      [L("سجّل مصروف", "Log a purchase"), L("قل كم صرفت وعلى إيش، وأنا أرتبها لك.", "Say how much and on what, and I'll keep track."), { say: L("صرفت ", "I spent ") }],
+    ]],
+    ["👨‍👩‍👧", L("عائلتي", "My family"), "t-red", [
+      [L("قصة قبل النوم", "Bedtime story"), L("قصة قصيرة كل ليلة بطلها ولدك، وما تتكرر.", "A short story every night starring your child, never the same."), { k: "custom", at: "20:30", fill: { task: L("قصة قصيرة قبل النوم بطلها ولدي، واسمه ", "A short bedtime story starring my child, named ") } }],
+      [L("مواعيد الأدوية", "Medicine times"), L("تذكير بموعد كل دوا، لك أو لأهلك.", "A reminder for each medicine, for you or your family."), { say: L("ذكّرني بدوا ", "Remind me to take ") }],
+      [L("المناسبات", "Special days"), L("أعياد الميلاد والمناسبات، وأذكّرك قبلها.", "Birthdays and special days, with a heads-up before."), { say: L("سجّل عيد ميلاد ", "Save the birthday of ") }],
+    ]],
+    ["✈️", L("السفر", "Travel"), "t-blue", [
+      [L("أسعار الطيران", "Flight prices"), null, { k: "travel" }],
+      [L("موعد رحلتك", "Your flight"), L("أذكّرك قبل الرحلة بيوم، وقبل الإقلاع بثلاث ساعات.", "A reminder the day before and 3 hours before takeoff."), { say: L("عندي رحلة يوم ", "I have a flight on ") }],
+    ]],
+    ["☀️", L("يومك", "Your day"), "t-sand", [
+      [L("موجز الصباح", "Morning brief"), null, { k: "morning" }],
+      [L("أخبار تهمك", "News for you"), null, { k: "news" }],
+      [L("فريقك المفضل", "Your team"), null, { k: "team" }],
+      [L("التغذية", "Nutrition"), null, { k: "nutrition" }],
+    ]],
+  ];
+  function ideaCrew(o) {
+    const k = o.k;
+    if (!AG_UNCAPPED.has(k) && AG.filter(a => a.kind === k).length >= AG_PER_KIND) { toast(kindFullMsg()); return; }
+    go("crew"); openAgForm(k, null);
+    if (o.at) { $("#agf-at").value = o.at; $("#agf-every").onchange(); }
+    if (o.fill) Object.entries(o.fill).forEach(([f, v]) => { const el = $(`[data-agf="${f}"]`); if (el) { el.value = v; setTimeout(() => { el.focus(); el.setSelectionRange(v.length, v.length); }, 160); } });
+  }
+  function runIdea(o, fromSheet) {
+    const act = () => { if (o.k) ideaCrew(o); else if (o.go) go(o.go); else if (o.say) { go("chat"); cardSay(o.say); } };
+    if (fromSheet) { history.back(); setTimeout(act, 340); } else act();
+  }
+  const ideaRows = [];
+  $("#ideas").innerHTML = IDEAS.map(([ic, name, t, rows]) => `<div class="idc ${t}">${ic} ${esc(name)}</div>` + rows.map(([h, p, o]) => {
+    const i = ideaRows.push(o) - 1, desc = p || (AGK[o.k] ? AGK[o.k][2] : "");
+    return `<button type="button" class="idea" data-ix="${i}"><b>${esc(h)}</b><span>${esc(desc)}</span><i aria-hidden="true">+</i></button>`;
+  }).join("")).join("");
+  $$("#ideas [data-ix]").forEach(b => b.onclick = () => runIdea(ideaRows[+b.dataset.ix], true));
+  $("#ideas-btn").onclick = () => openSheet("s-ideas");
+  if (EN) {
+    $("#ideas-btn-t").textContent = "Ready-made ideas"; $("#ideas-btn-s").textContent = "For your car, money, family and travel, in one tap"; $("#ideas-btn-a").textContent = "›";
+    $("#ideas-h").textContent = "Ready-made ideas"; $("#ideas-sub").textContent = "Tap any idea and we'll finish it together. New ideas are added all the time.";
+    $("#s-ideas").setAttribute("aria-label", "Ready-made ideas"); $("#s-ideas [data-close]").setAttribute("aria-label", "Back");
+  }
+  // اقتراحات البداية في المحادثة: تطلع بس لين يضيف أول موظف في طاقمه
+  const STARTERS = [
+    [L("كل يوم · 7 الصبح", "Every day · 7 AM"), L("موجز الصباح: مواعيدي والطقس والأخبار", "Morning brief: my plans, the weather and the news"), { k: "morning" }],
+    [L("كل يوم · 8 الصبح", "Every day · 8 AM"), L("أهم الأخبار عن اللي أتابعه", "Top stories on what I follow"), { k: "news" }],
+    [L("كل يوم · 10 الصبح", "Every day · 10 AM"), L("تابع لي سعر منتج وعلّمني إذا نزل", "Watch a product's price and tell me when it drops"), { k: "price" }],
+  ];
+  let stTried = false;
+  function drawStarters() {
+    const el = $("#starters"); if (!el) return;
+    if (!agLoaded) { el.innerHTML = ""; if (!stTried && signedIn()) { stTried = true; loadAgents(); } return; }
+    if (AG.length) { el.innerHTML = ""; return; }
+    el.innerHTML = `<div class="st-h">${L("ابدأ بوحدة من هذي", "Start with one of these")}</div>` + STARTERS.map(([w, h], i) => `<button type="button" class="idea" data-st="${i}"><small>${esc(w)}</small><b>${esc(h)}</b><i aria-hidden="true">+</i></button>`).join("");
+    $$("#starters [data-st]").forEach(b => b.onclick = () => runIdea(STARTERS[+b.dataset.st][2], false));
+  }
+  // أمثلة تتبدّل في خانة الكتابة لين يبدأ يكتب
+  (() => {
+    const P = EN ? ["What can Fazaa do for you?", "Remind me about the dentist tomorrow at 5", "How much did I spend this month?", "When does my car registration expire?", "Watch the price of the iPhone 17 for me", "What do I have tomorrow?"]
+      : ["وش تبي فزعة يسوي لك؟", "ذكّرني بموعد الأسنان بكرة الساعة 5", "كم صرفت هالشهر؟", "متى تنتهي استمارتي؟", "تابع لي سعر آيفون 17", "وش عندي بكرة؟"];
+    let k = 0;
+    if (RM) return;
+    setInterval(() => {
+      if (document.hidden || inp.value || document.activeElement === inp || !$("#v-chat").classList.contains("on")) return;
+      inp.classList.add("phx");
+      setTimeout(() => { k = (k + 1) % P.length; inp.placeholder = P[k]; inp.classList.remove("phx"); }, 300);
+    }, 3200);
+  })();
   function openAgForm(kind, ag) {
     agKind = kind; agEdit = ag ? ag.id : null; const v = AGK[agKind];
     $("#agf-title").textContent = ag ? L("تعديل: ", "Edit: ") + agTitle(ag) : v[0] + " " + v[1]; $("#agf-sub").textContent = v[2];
@@ -2902,6 +3062,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     try { await api("/sms", { method: "POST", body: JSON.stringify({ off: true }) }); smsUrl = ""; history.back(); loadConn(); toast(L("انوقفت", "Turned off")); } catch (e) { toast(errText(e)); }
   };
   function syncConn(cal) {
+    calLinked = !!cal;
     const t = $('#apps .app-t[data-act="cal"] small'); if (t) t.textContent = cal ? L("مربوط", "Linked") : L("اربط", "Link");
   }
   // ---------- ربط البرامج (قوقل، Notion، أوت لوك) ----------

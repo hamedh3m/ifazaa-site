@@ -111,6 +111,13 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .wp-acts{display:flex;gap:10px;margin-top:14px}.wp-acts .btn{flex:1}
 .tbtn{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink);text-align:start}
 .tbtn:disabled{opacity:.45}
+#cp{z-index:96}.cp-sh{padding-top:14px}.cp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cp-title{font-size:18px;font-weight:800;color:var(--ink);padding:8px 12px;border-radius:12px}.cp-title::after{content:" ⌄";font-size:14px;color:var(--muted)}
+.cp-nav{width:44px;height:44px;border-radius:50%;font-size:28px;line-height:1;color:var(--ink);background:var(--s2);display:grid;place-items:center}
+.cp-wd,.cp-days{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}.cp-wd span{font-size:12px;color:var(--muted);padding:6px 0}
+.cp-days button{height:44px;margin:2px auto;width:44px;border-radius:50%;font-size:17px;color:var(--ink);font-variant-numeric:tabular-nums}
+.cp-days button.today{box-shadow:inset 0 0 0 1.5px var(--muted)}.cp-days button.on{background:var(--red);color:#fff;font-weight:800;box-shadow:none}
+.cp-days button:disabled{opacity:.25}
 .tbtn.wsel{position:relative;padding-inline-end:38px}.tbtn.wsel::after{content:"";position:absolute;inset-inline-end:16px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
 .field.city{position:relative}.cty{position:absolute;inset-inline:0;top:100%;margin-top:6px;z-index:20;background:var(--s2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45)}
 .cty button{display:flex;justify-content:space-between;align-items:center;width:100%;padding:12px 16px;font-size:16px;color:var(--ink);text-align:start;border-bottom:1px solid var(--line)}.cty button:last-child{border-bottom:0}.cty small{color:var(--muted);font-size:12.5px}
@@ -1322,6 +1329,10 @@ html.i18n-wait body{visibility:hidden}
   <div class="box"><h3 id="cf-t"></h3><p id="cf-p"></p><button class="btn btn-red" id="cf-yes"></button><button class="btn btn-ghost" id="cf-no">إلغاء</button></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<div class="wp-bg" id="cp" hidden><div class="wp-sh cp-sh" role="dialog" aria-modal="true" aria-labelledby="cp-t">
+<div class="cp-head"><button type="button" class="cp-nav" id="cp-prev" aria-label="الشهر اللي قبل">‹</button><button type="button" class="cp-title" id="cp-t"></button><button type="button" class="cp-nav" id="cp-next" aria-label="الشهر اللي بعد">›</button></div>
+<div class="cp-wd" id="cp-wd"></div><div class="cp-days" id="cp-days"></div>
+<div class="wp-acts"><button class="btn btn-ghost" type="button" id="cp-x">إلغاء</button><button class="btn btn-primary" type="button" id="cp-ok">تم</button></div></div></div>
 <div class="wp-bg" id="thact" hidden><div class="wp-sh" role="dialog" aria-modal="true" aria-labelledby="ta-t"><h3 id="ta-t"></h3><div class="ta-list"><button type="button" class="btn btn-ghost" id="ta-pin"></button><button type="button" class="btn btn-ghost ta-del" id="ta-del"></button><button type="button" class="btn btn-ghost" id="ta-x">إلغاء</button></div></div></div>
 <div class="wp-bg" id="bp" hidden><div class="wp-sh" role="dialog" aria-modal="true" aria-labelledby="bp-t"><h3 id="bp-t">ذكّرني</h3><p class="sub" id="bp-sub" style="text-align:center;margin:-6px 0 12px">تقدر تختار أكثر من وحدة</p><div class="bp-list" id="bp-l"></div>
 <div class="wp-acts"><button class="btn btn-ghost" type="button" id="bp-x">إلغاء</button><button class="btn btn-primary" type="button" id="bp-ok">تم</button></div></div></div>
@@ -1649,6 +1660,42 @@ html.i18n-wait body{visibility:hidden}
       };
     });
   }
+  // التقويم بالعربي (الشهور والأيام)، الأسبوع يبدأ الأحد زي السعودية. الضغط على اسم الشهر يفتح عجلة للقفز لأي سنة
+  const MONF = EN ? ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    : ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  const WDS = EN ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] : ["أحد", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"];
+  function calPick(init, min) {
+    return new Promise(res => {
+      tick.prep();
+      let sel = new Date(init || new Date()); sel.setHours(12, 0, 0, 0);
+      let view = new Date(sel.getFullYear(), sel.getMonth(), 1, 12);
+      const t0 = new Date(); t0.setHours(12, 0, 0, 0);
+      const minD = min ? new Date(min + "T12:00:00") : null;
+      const key = d => d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate();
+      $("#cp-wd").innerHTML = WDS.map(w => `<span>${w}</span>`).join("");
+      const draw = () => {
+        $("#cp-t").textContent = MONF[view.getMonth()] + " " + view.getFullYear();
+        const first = view.getDay(), n = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+        let h = ""; for (let i = 0; i < first; i++) h += "<span></span>";
+        for (let d = 1; d <= n; d++) {
+          const dt = new Date(view.getFullYear(), view.getMonth(), d, 12);
+          h += `<button type="button" data-cd="${d}" class="${key(dt) === key(sel) ? "on" : ""}${key(dt) === key(t0) ? " today" : ""}"${minD && dt < minD ? " disabled" : ""}>${d}</button>`;
+        }
+        $("#cp-days").innerHTML = h;
+        $$("#cp-days [data-cd]").forEach(b => b.onclick = () => { sel = new Date(view.getFullYear(), view.getMonth(), +b.dataset.cd, 12); try { tick.fire(); } catch {} draw(); });
+      };
+      const step = k => { view = new Date(view.getFullYear(), view.getMonth() + k, 1, 12); try { tick.fire(); } catch {} draw(); };
+      // العربي يمين لليسار: السهم اليمين = الشهر اللي قبل
+      $("#cp-prev").onclick = () => step(-1); $("#cp-next").onclick = () => step(1);
+      $("#cp-prev").textContent = EN ? "‹" : "›"; $("#cp-next").textContent = EN ? "›" : "‹";
+      $("#cp-t").onclick = async () => { $("#cp").hidden = true; const d = await wheelPick("date", sel); $("#cp").hidden = false; if (d) { sel = d; sel.setHours(12, 0, 0, 0); view = new Date(sel.getFullYear(), sel.getMonth(), 1, 12); draw(); } };
+      draw(); $("#cp").hidden = false;
+      const done = v => { $("#cp").hidden = true; $("#cp-ok").onclick = $("#cp-x").onclick = $("#cp").onclick = null; res(v); };
+      $("#cp-x").onclick = () => done(null);
+      $("#cp").onclick = e => { if (e.target.id === "cp") done(null); };
+      $("#cp-ok").onclick = () => { if (minD && sel < minD) { toast(L("اختر تاريخ من اليوم وطالع", "Pick today or a later date")); return; } done(new Date(sel)); };
+    });
+  }
   // كل قائمة منسدلة في التطبيق تفتح نفس العجلة اللي تدور زي الآيفون، مع صوت التك والهزة
   function wheelSelect(sel) {
     if (!sel || sel._ws) return; sel._ws = true;
@@ -1674,7 +1721,7 @@ html.i18n-wait body{visibility:hidden}
     .observe(document.body, { childList: true, subtree: true });
   const fmtDay = d => `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`;
   async function pickAndSend(kind) {
-    const d = await wheelPick(kind === "time" ? "time" : "date"); if (!d) return;
+    const d = kind === "time" ? await wheelPick("time") : await calPick(new Date()); if (!d) return;
     if (kind === "datetime") { const t0 = new Date(d); t0.setHours(new Date().getHours() + 1, 0, 0, 0); const t = await wheelPick("time", t0); if (!t) return; submit(fmtDay(t) + L(" الساعة ", " at ") + fmtTime(t)); return; }
     submit(kind === "time" ? fmtTime(d) : fmtDay(d));
   }
@@ -2289,7 +2336,7 @@ html.i18n-wait body{visibility:hidden}
   $("#th-rem").onclick = () => { closeThreads(); go("tasks"); };
   if (EN) $("#th-rem-t").textContent = "Reminders";
   $$("[data-tsheet]").forEach(b => b.onclick = () => { closeThreads(); const sh = b.dataset.tsheet; openSheet(sh); if (sh === "s-papers") loadPapers(); if (sh === "s-connect") loadConn(); });
-  if (EN) { $("#th-sec").textContent = "Recent chats"; $("#th-hint").textContent = "Press and hold a chat to pin or delete it"; $("#ta-x").textContent = "Cancel"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
+  if (EN) { $("#th-sec").textContent = "Recent chats"; $("#cp-x").textContent = "Cancel"; $("#cp-ok").textContent = "Done"; $("#th-hint").textContent = "Press and hold a chat to pin or delete it"; $("#ta-x").textContent = "Cancel"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
   if (EN) { $("#th-h").textContent = "Menu"; $("#th-new-t").textContent = "New chat"; $("#th-btn").setAttribute("aria-label", "Chats"); $("#th-x").setAttribute("aria-label", "Close"); }
 
   // ---------- المكالمة: تكلم فزعة بصوتك ويرد عليك بصوت ----------
@@ -2874,7 +2921,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const sync = () => { const v = desc.get.call(inp); btn.textContent = iso(v) ? fmtDay(new Date(v + "T12:00:00")) : (v || ph || L("اختر التاريخ", "Pick a date")); btn.classList.toggle("empty", !v); };
     Object.defineProperty(inp, "value", { configurable: true, get() { return desc.get.call(inp); }, set(x) { desc.set.call(inp, x); sync(); } });
     btn.onclick = async () => {
-      const v = inp.value, d = await wheelPick("date", iso(v) ? new Date(v + "T12:00:00") : new Date()); if (!d) return;
+      const v = inp.value, d = await calPick(iso(v) ? new Date(v + "T12:00:00") : new Date(), inp.min || ""); if (!d) return;
       const s = ymd(d); if (inp.min && s < inp.min) { toast(L("اختر تاريخ من اليوم وطالع", "Pick today or a later date")); return; }
       inp.value = s; inp.dispatchEvent(new Event("input")); btn.closest(".field")?.classList.remove("bad");
     };
@@ -3251,7 +3298,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#av").onclick = openProfile; $("#me-nm").onclick = openProfile; $("#me-fill").onclick = openProfile;
   $$("[data-g]").forEach(b => b.onclick = () => { PF.gender = b.dataset.g; pfGender(); b.closest(".field").classList.remove("bad"); });
   $("#pf-birth").onclick = async () => {
-    const d = await wheelPick("date", PF.birth ? new Date(PF.birth + "T12:00:00") : new Date(new Date().getFullYear() - 25, 0, 1)); if (!d) return;
+    const d = await calPick(PF.birth ? new Date(PF.birth + "T12:00:00") : new Date(new Date().getFullYear() - 25, 0, 1)); if (!d) return;
     if (d > new Date()) { toast(L("التاريخ لازم يكون قبل اليوم", "The date must be in the past")); return; }
     PF.birth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; pfBirthText(); $("#pf-birth").closest(".field").classList.remove("bad");
   };

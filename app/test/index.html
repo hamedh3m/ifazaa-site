@@ -511,6 +511,7 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .row .del{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
 .row .del svg{width:18px;height:18px}
 #cf-p[hidden]+#cf-yes{margin-top:18px}
+.pin{width:1.15em;height:1.15em;vertical-align:-.2em;flex:none;display:inline-block}
 .row .acts{display:flex;gap:2px;flex:none;align-self:center}
 .sec-t{font-size:15px;color:var(--muted);margin:22px 0 10px;font-weight:700}
 
@@ -846,6 +847,7 @@ html.i18n-wait body{visibility:hidden}
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 1.8a7.4 7.4 0 0 0-7.4 7.4c0 5.3 6.2 11.9 6.7 12.4a1 1 0 0 0 1.4 0c.5-.5 6.7-7.1 6.7-12.4A7.4 7.4 0 0 0 12 1.8z" fill="#EA4335"/><path d="M12 1.8a7.4 7.4 0 0 0-7.4 7.4c0 5.3 6.2 11.9 6.7 12.4.2.2.4.3.7.3V1.8z" fill="#C5221F" opacity=".35"/><circle cx="12" cy="9.2" r="2.7" fill="#fff"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M14.5 5.5l4 4M4.5 19.5l1-4.5L15.8 4.7a1.9 1.9 0 0 1 2.7 0l.8.8a1.9 1.9 0 0 1 0 2.7L9 18.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6.5 8h11v3a5.5 5.5 0 0 1-11 0ZM12 16.5V21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -1318,6 +1320,7 @@ html.i18n-wait body{visibility:hidden}
 (() => {
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
   const EN = window.FZ_LANG === "en", L = (ar, en) => EN ? en : ar;
+  const PIN = '<svg class="pin" aria-hidden="true"><use href="#i-pin"/></svg>';   // دبوس الخريطة الأحمر المعروف
   const AR = n => String(n);   // الأرقام دايم إنجليزي (0-9) والتاريخ ميلادي
   // ---------- English: translate the page once, before anything is wired up ----------
   if (EN) {
@@ -2124,7 +2127,7 @@ html.i18n-wait body{visibility:hidden}
     if (d.end) rb.innerHTML = `<div class="rdone"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p>`;
     else if (d.lock) { rb.innerHTML = `<div class="rblur" aria-hidden="true"><span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p></div><div class="rlock"><span class="rli"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.5" fill="#e0213b"/><rect x="3" y="4.5" width="18" height="5.5" rx="2.5" fill="#a8182f"/><rect x="7" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><rect x="15" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><text x="12" y="18.6" font-size="7.5" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">${new Date().getDate()}</text></svg></span><b>${esc(d.lt)}</b><p>${esc(d.lp)}</p></div>`;
       try { localStorage.setItem(LKEY, String(Date.now())); } catch {} }
-    else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b, u]) => `<li><span>${esc(a)}${u ? `<a class="rloc" href="${esc(u)}" target="_blank" rel="noopener">🗺️ ${L("الموقع", "Map")}</a>` : ""}</span><small>${b}</small></li>`).join("")}</ul>` : "");
+    else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b, u]) => `<li><span>${esc(a)}${u ? `<a class="rloc" href="${esc(u)}" target="_blank" rel="noopener">${PIN} ${L("الموقع", "Map")}</a>` : ""}</span><small>${b}</small></li>`).join("")}</ul>` : "");
     $("#r-act").textContent = d.act;
     markSeen([d.key]);
     clearTimeout(rtimer); rPaused = false; if (!d.end) armR(6000);
@@ -2487,14 +2490,14 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
          <button type="button" class="btn btn-primary" id="em-save" style="width:100%;margin-top:6px">${L("احفظ", "Save")}</button>`;
     const loc = S.locOk ? `<button type="button" class="btn btn-primary" id="care-find" style="width:100%">🏥 ${L("وريني أقرب المراكز الصحية", "Show the nearest health centers")}</button>
          <button type="button" class="btn btn-ghost" id="loc-off" style="width:100%;margin-top:8px">${L("وقّف استخدام موقعي", "Stop using my location")}</button>`
-      : `<button type="button" class="btn btn-primary" id="loc-on" style="width:100%">📍 ${L("اسمح بموقعي وقت الطوارئ", "Allow my location for emergencies")}</button>`;
+      : `<button type="button" class="btn btn-primary" id="loc-on" style="width:100%">${PIN} ${L("اسمح بموقعي وقت الطوارئ", "Allow my location for emergencies")}</button>`;
     const gUrl = p => p.src === "google" && p.url ? p.url : `https://www.google.com/maps/search/${encodeURIComponent(p.name)}/@${p.lat},${p.lng},17z`;
     const aUrl = p => `https://maps.apple.com/?q=${encodeURIComponent(p.name)}&ll=${p.lat},${p.lng}`;
     const accNote = carePlaces && careAcc > 1500 ? `<p class="note care-src" style="color:var(--sand)">${L(`⚠️ موقعك اللي وصلنا تقريبي (بفرق حوالي ${AR(Math.round(careAcc / 1000))} كم)، فالمسافات ممكن ما تكون دقيقة. الأدق تفتح فزعة من جوالك والـ GPS شغّال.`, `⚠️ Your location is approximate (about ${Math.round(careAcc / 1000)} km off), so distances may be off. It's most accurate from your phone with GPS on.`)}</p>` : "";
     const list = accNote + (carePlaces ? (carePlaces.length ? carePlaces.map(p => `<div class="care-pl"><div class="cn"><b>${esc(p.name)}</b><small>${p.type === "hospital" ? L("مستشفى", "Hospital") : L("مستوصف", "Clinic")} · ${EN ? p.km + " km" : AR(p.km) + " كم"}${p.address ? " · " + esc(p.address) : ""}</small></div>${telOk(p.phone) ? `<a href="tel:${esc(telOf(p.phone))}">${L("اتصل", "Call")}</a>` : ""}<a href="${esc(gUrl(p))}" target="_blank" rel="noopener">${L("قوقل ماب", "Google Maps")}</a><a href="${esc(aUrl(p))}" target="_blank" rel="noopener">${L("خرائط أبل", "Apple Maps")}</a></div>`).join("")
         + (carePlaces[0].src === "google" ? `<p class="note care-src">${L("المصدر: خرائط قوقل (Google Maps)، والمعلومات حسب تحديثهم. في الطوارئ اتصل بالإسعاف 997.", "Source: Google Maps, as updated by Google. In an emergency call 997.")}</p>` : `<p class="note care-src">${L("المصدر: خرائط OpenStreetMap المفتوحة، وتتحدث عندنا كل أسبوع حسب تحديثهم. اضغط «قوقل ماب» تشوف رقم المستشفى وساعات العمل. في الطوارئ اتصل بالإسعاف 997.", "Source: OpenStreetMap, refreshed weekly. Tap “Google Maps” for the phone number and opening hours. In an emergency call 997.")}<br><bdi dir="ltr">© OpenStreetMap contributors</bdi>${""}</p>`)
       : `<p class="note">${L("ما لقيت مركز صحي قريب على الخريطة. اتصل بالإسعاف 997.", "No health center found nearby on the map. Call 997.")}</p>`)
-        + (careHere ? `<a class="btn btn-ghost" style="display:block;text-align:center;text-decoration:none;margin-top:12px" href="${esc(mapSearch(careHere))}" target="_blank" rel="noopener">🗺️ ${L("دوّر على أقرب مستشفى في الخرائط", "Search the nearest hospital in Maps")}</a><p class="note care-src">${L("قائمتنا من خرائط مفتوحة وممكن ينقصها مستشفيات قريبة منك. الخرائط تدوّر من موقعك الحين وتعطيك الأقرب.", "Our list comes from open maps and may miss hospitals near you. Maps searches from where you are right now.")}</p>` : "") : (careMsg ? `<p class="note">${esc(careMsg)}</p>` : careFallback ? `<a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none" href="${esc(mapSearch(careFallback))}" target="_blank" rel="noopener">🗺️ ${L("افتح أقرب المراكز الصحية في الخرائط", "Open the nearest health centers in Maps")}</a>` : ""));
+        + (careHere ? `<a class="btn btn-ghost" style="display:block;text-align:center;text-decoration:none;margin-top:12px" href="${esc(mapSearch(careHere))}" target="_blank" rel="noopener">${PIN} ${L("دوّر على أقرب مستشفى في الخرائط", "Search the nearest hospital in Maps")}</a><p class="note care-src">${L("قائمتنا من خرائط مفتوحة وممكن ينقصها مستشفيات قريبة منك. الخرائط تدوّر من موقعك الحين وتعطيك الأقرب.", "Our list comes from open maps and may miss hospitals near you. Maps searches from where you are right now.")}</p>` : "") : (careMsg ? `<p class="note">${esc(careMsg)}</p>` : careFallback ? `<a class="btn btn-primary" style="display:block;text-align:center;text-decoration:none" href="${esc(mapSearch(careFallback))}" target="_blank" rel="noopener">🗺️ ${L("افتح أقرب المراكز الصحية في الخرائط", "Open the nearest health centers in Maps")}</a>` : ""));
     b.innerHTML = `<h2 class="h2">${L("وقت الطوارئ، فزعة معك", "In an emergency, Fazaa has your back")}</h2>
       <a class="care-sos" href="tel:997">🚑 ${L("اتصل بالإسعاف 997", "Call an ambulance 997")}</a>
       ${S.paid ? "" : primeBox(L("مع برايم: فزعة يلقى لك أقرب المراكز الصحية من موقعك وقتها، ويحفظ جهة اتصال الطوارئ تتصل عليها بضغطة.", "With Prime: Fazaa finds the nearest health centers from your location when you need it, and keeps an emergency contact one tap away."))}
@@ -2972,7 +2975,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     return { name: pl.replace(/https?:\/\/\S+/g, "").replace(/^[\s،,-]+|[\s،,-]+$/g, ""), url: m ? m[0] : "" }; };
   function placeHtml(note) {
     const { name, url } = splitPlace(note); if (!name && !url) return "";
-    return `<small class="rm-place">${name ? "📍 " + esc(name) : ""}${url ? `<a class="rm-map" href="${esc(url)}" target="_blank" rel="noopener">🗺️ ${L("افتح الموقع", "Open map")}</a>` : ""}</small>`;
+    return `<small class="rm-place">${name ? PIN + " " + esc(name) : ""}${url ? `<a class="rm-map" href="${esc(url)}" target="_blank" rel="noopener">${PIN} ${L("افتح الموقع", "Open map")}</a>` : ""}</small>`;
   }
   function drawTasks() {
     const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));

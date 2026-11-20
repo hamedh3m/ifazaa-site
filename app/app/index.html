@@ -3997,6 +3997,23 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   if (NATIVE) { freshCheck(); document.addEventListener("visibilitychange", () => { if (!document.hidden) freshCheck(); }); }
   if (!NATIVE && "serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  // نسخة جديدة نزلت؟ نشيّك كل ما رجع للتطبيق، ونحدّث الصفحة لحالها (لو مو في نص كتابة أو نافذة مفتوحة)
+  if (!NATIVE) {
+    const sig = t => { let h = 0; for (let i = 0; i < t.length; i += 7) h = (h * 31 + t.charCodeAt(i)) | 0; return t.length + ":" + h; };
+    let mine = "", lastChk = 0;
+    const page = () => fetch(location.pathname + "?v=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.text() : "").catch(() => "");
+    page().then(t => { if (t) mine = sig(t); });
+    const check = () => {
+      if (document.hidden || !mine || Date.now() - lastChk < 30000) return; lastChk = Date.now();
+      page().then(t => {
+        if (!t || sig(t) === mine) return;
+        const busy = (document.activeElement && /INPUT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement.value) || document.querySelector(".sheet.on, .wp-bg:not([hidden])");
+        if (busy) { mine = sig(t); toast(L("فيه تحديث جديد، بيطلع لك أول ما تفتح التطبيق مرة ثانية", "There's an update, it'll load next time you open the app")); return; }
+        location.reload();
+      });
+    };
+    document.addEventListener("visibilitychange", check); setInterval(check, 5 * 60000);
+  }
 })();
 </script>
 </body>

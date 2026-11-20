@@ -503,7 +503,7 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .sep{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;margin:22px 0 14px}
 .sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-radius:22px;background:var(--s1);border:1px solid var(--line);text-align:start;width:100%}
-.row+.row{margin-top:10px}
+.row+.row{margin-top:10px}.row.tap{cursor:pointer}
 .row p{font-size:16px;line-height:1.45}
 .row .tag{display:inline-block;margin-top:8px;font-size:13px;padding:4px 11px;border-radius:999px;background:var(--s3);color:#d8d8dc}
 .row .chev{flex:none;width:18px;height:18px;color:var(--muted);transform:scaleX(-1)}
@@ -1878,6 +1878,19 @@ html.i18n-wait body{visibility:hidden}
     return out;
   }
   const arDays = n => n === 1 ? "يوم" : n === 2 ? "يومين" : n >= 3 && n <= 10 ? `${AR(n)} أيام` : `${AR(n)} يوم`;
+  // المستند: الفعل يوافق جنسه (التأمين ينتهي، الهوية تنتهي)، والنوع غير المعروف بصيغة محايدة. وطريقة التجديد حسب نوعه.
+  const ABSHER = ["national_id", "iqama", "passport", "driving_license", "vehicle_registration"];
+  const papM = p => p.kind === "passport" || p.kind === "insurance";
+  const papHead = p => {
+    if (EN) return p.days < 0 ? `${p.label} has expired` : p.days === 0 ? `${p.label} expires today` : p.days === 1 ? `${p.label} expires tomorrow` : `${p.label} expires in ${p.days} days`;
+    if (!p.kind || p.kind === "other" || (!ABSHER.includes(p.kind) && p.kind !== "insurance"))
+      return p.days < 0 ? `انتهى ${p.label}` : p.days === 0 ? `${p.label}: اليوم آخر يوم` : `باقي ${arDays(p.days)} على انتهاء ${p.label}`;
+    const v = papM(p) ? "ينتهي" : "تنتهي";
+    return p.days < 0 ? `${p.label} ${papM(p) ? "منتهي" : "منتهية"}` : p.days === 0 ? `${p.label} ${v} اليوم` : `${p.label} ${v} بعد ${arDays(p.days)}`;
+  };
+  const papRenew = p => p.kind === "insurance" ? L("جدّده من شركة التأمين أو مواقع مقارنة التأمين قبل لا ينتهي، وأنا أذكرك.", "Renew it with your insurer or a comparison site before it expires, and I'll keep reminding you.")
+    : ABSHER.includes(p.kind) ? (papM(p) ? L("جدّده من أبشر قبل لا ينتهي، وأنا أذكرك.", "Renew it on Absher before it expires, and I'll keep reminding you.") : L("جدّدها من أبشر قبل لا تنتهي، وأنا أذكرك.", "Renew it on Absher before it expires, and I'll keep reminding you."))
+    : L("لا يفوتك التجديد، وأنا أذكرك.", "Don't miss the renewal, and I'll keep reminding you.");
   function cardData() {
     const now = Date.now(), C = [];
     conflicts().slice(0, 1).forEach(([a, b]) => C.push({ t: "t-red", ic: "i-radar", k: L("انتبه", "Heads up"), h: L("عندك موعدين بنفس الوقت", "Two things at the same time"), s: `${a.title} · ${b.title}`, say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`),
@@ -1898,8 +1911,8 @@ html.i18n-wait body{visibility:hidden}
       .forEach((x, i) => C.push({ t: tones[i % 3], ic: "i-clock", k: fmtWhen(new Date(x.t)), h: x.title, s: repTxt(x.repeat) || L("تذكير", "Reminder"), go: "tasks",
         p: [[L("أجّله ساعة", "Push it an hour"), L(`أجّل «${x.title}» ساعة`, `Push “${x.title}” back an hour`)], [L("ذكّرني قبله بساعة", "Remind me an hour before"), L(`ذكّرني قبل «${x.title}» بساعة`, `Remind me an hour before “${x.title}”`)]] }));
     papers.filter(p => p.days <= 60).sort((a, b) => a.days - b.days).slice(0, 2)
-      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : L(`${p.label} تنتهي بعد ${arDays(p.days)}`, p.days === 1 ? `${p.label} expires tomorrow` : `${p.label} expires in ${p.days} days`), s: L("جدّدها قبل لا تفوتك", "Renew it before it's too late"), sheet: "s-papers",
-        p: [[L("كيف أجددها؟", "How do I renew it?"), L(`كيف أجدد ${p.label}؟`, `How do I renew my ${p.label}?`)], [L("ذكّرني بكرة", "Remind me tomorrow"), L(`ذكّرني بكرة الصبح أجدد ${p.label}`, `Remind me tomorrow morning to renew my ${p.label}`)]] }));
+      .forEach(p => C.push({ t: "t-sand", ic: "i-doc", k: L("مستنداتك", "Your documents"), h: papHead(p), s: papM(p) ? L("جدّده قبل لا يفوتك", "Renew it before it's too late") : L("لا يفوتك التجديد", "Renew it before it's too late"), sheet: "s-papers",
+        p: [[papM(p) ? L("كيف أجدده؟", "How do I renew it?") : L("كيف أجددها؟", "How do I renew it?"), L(`كيف أجدد ${p.label}؟`, `How do I renew my ${p.label}?`)], [L("ذكّرني بكرة", "Remind me tomorrow"), L(`ذكّرني بكرة الصبح أجدد ${p.label}`, `Remind me tomorrow morning to renew my ${p.label}`)]] }));
     if (C.length < 2) {   // يوم فاضي: أفكار تبدأ فيها
       C.push({ t: "t-red", ic: "i-sun", k: L("موجز يومك", "Daily briefing"), h: L("مواعيد يومك توصلك كل صبح", "Your day's plan every morning"), s: L("اضغط وأشغّله لك", "Tap and I'll turn it on"), say: L("شغّل لي موجز يومك الساعة 7 الصبح", "Turn on my daily briefing at 7 am"),
         p: [[L("إيه شغّله", "Yes, turn it on"), L("شغّل لي موجز يومك الساعة 7 الصبح", "Turn on my daily briefing at 7 am")], [L("وش فيه؟", "What's in it?"), L("وش يكون في موجز يومي؟", "What's in the daily briefing?")], [L("مو الحين", "Not now"), ""]] });
@@ -2048,8 +2061,7 @@ html.i18n-wait body{visibility:hidden}
       if (nx.length) R.push({ key: "n" + nx.slice(0, 3).map(x => x.id).join("."), t: "t-blue", k: L("الجاي", "Coming up"), h: L("أقرب مواعيدك", "Your next appointments"),
         list: nx.slice(0, 3).map(x => [x.title, fmtWhen(new Date(x.t))]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" }); }
     papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("مستنداتك", "Your documents"),
-      h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : p.days === 0 ? L(`${p.label} تنتهي اليوم`, `${p.label} expires today`) : L(`${p.label} تنتهي بعد ${arDays(p.days)}`, p.days === 1 ? `${p.label} expires tomorrow` : `${p.label} expires in ${p.days} days`),
-      p: L("جدّدها من أبشر قبل لا تنتهي، وأنا أذكرك.", "Renew it before it expires, and I'll keep reminding you."), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
+      h: papHead(p), p: papRenew(p), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
     const tm = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => startOf(x.t) === startOf(now) + DAY).sort((a, b) => a.t - b.t);
     if (tm.length && new Date().getHours() >= 17) R.push({ key: "m" + tm[0].id, t: "t-green", k: L("بكرة", "Tomorrow"), h: L(`أول شي بكرة: ${tm[0].title}`, `First thing tomorrow: ${tm[0].title}`), p: L(`الساعة ${fmtTime(new Date(tm[0].t))}. نم بدري 😴`, `At ${fmtTime(new Date(tm[0].t))}. Get some sleep 😴`), act: L("وش عندي بكرة؟", "What's on tomorrow?"), say: L("وش عندي بكرة؟", "What do I have tomorrow?") });
     return R;
@@ -2796,7 +2808,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#bp-ok").onclick = () => done(true);
   };
   $("#ap-repeat").innerHTML = REPEAT.map(([v, n]) => `<option value="${v}">${n}</option>`).join("");
-  let apKind = "appt";
+  let apKind = "appt", apEdit = 0;
   const syncApTime = () => { const [h, m] = ($("#ap-time").value || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0); $("#ap-time-b").textContent = fmtTime(d); };
   $("#ap-time-b").onclick = async () => {
     const [h, m] = ($("#ap-time").value || "09:00").split(":").map(Number); const d0 = new Date(); d0.setHours(h, m, 0, 0);
@@ -2819,13 +2831,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function openAppt(kind, pre = {}) {
     if (needSignin()) return;
-    apKind = kind;
-    $("#ap-h").textContent = kind === "appt" ? L("موعد جديد", "New appointment") : L("تذكير جديد", "New reminder");
+    apKind = kind; apEdit = pre.id || 0;
+    $("#ap-h").textContent = apEdit ? (kind === "appt" ? L("عدّل الموعد", "Edit appointment") : L("عدّل التذكير", "Edit reminder")) : kind === "appt" ? L("موعد جديد", "New appointment") : L("تذكير جديد", "New reminder");
     $("#ap-l-t").textContent = kind === "appt" ? L("وش الموعد؟", "What's the appointment?") : L("وش أذكّرك فيه؟", "What should I remind you about?");
     $("#ap-title").placeholder = kind === "appt" ? L("مثلاً: موعد الأسنان", "e.g. Dentist appointment") : L("مثلاً: أدفع الإيجار", "e.g. Pay the rent");
-    $("#ap-go").textContent = kind === "appt" ? L("احفظ الموعد", "Save appointment") : L("احفظ التذكير", "Save reminder");
+    $("#ap-go").textContent = apEdit ? L("احفظ التعديل", "Save changes") : kind === "appt" ? L("احفظ الموعد", "Save appointment") : L("احفظ التذكير", "Save reminder");
     const t = new Date(); t.setDate(t.getDate() + (kind === "appt" ? 1 : 0));
-    $("#ap-title").value = pre.title || ""; $("#ap-place").value = pre.place || ""; $("#ap-place-w").hidden = kind !== "appt"; $("#ap-date").value = ymd(t); $("#ap-date").min = ymd(new Date());
+    $("#ap-title").value = pre.title || ""; $("#ap-place").value = pre.place || ""; $("#ap-place-w").hidden = kind !== "appt"; $("#ap-date").value = pre.date || ymd(t); $("#ap-date").min = ymd(new Date());
     $("#ap-time").value = pre.time || (kind === "appt" ? "09:00" : pad2(Math.min(23, new Date().getHours() + 1)) + ":00");
     befSel = pre.befores ? [...pre.befores] : [pre.before != null ? pre.before : kind === "appt" ? 60 : 0]; befExtra = befSel.filter(m => !BEFORE.some(([v]) => v === m)); syncBefore(); syncApTime();
     $("#ap-repeat").value = pre.repeat || "none";
@@ -2843,9 +2855,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (rep === "none" && when.getTime() < Date.now() - 60e3) { toast(L("هالوقت راح، اختر وقت جاي", "That time has passed, pick a later one")); return; }
     const b = $("#ap-go"); b.disabled = true;
     try {
-      await api("/reminders", { method: "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: Math.max(...befSel), befores: [...befSel].sort((x, y) => y - x), repeat: rep, place: apKind === "appt" ? $("#ap-place").value.trim() : "" }) });
+      await api(apEdit ? "/reminders/" + apEdit : "/reminders", { method: apEdit ? "PATCH" : "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: Math.max(...befSel), befores: [...befSel].sort((x, y) => y - x), repeat: rep, place: apKind === "appt" ? $("#ap-place").value.trim() : "" }) });
       const n = SHS.length; closeSheets(); if (n) history.go(-n);
-      toast(L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
+      toast(apEdit ? L(`انعدّل ✅ ${fmtWhen(when)}`, `Updated ✅ ${fmtWhen(when)}`) : L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
       try { reminders = (await api("/reminders")).reminders || []; } catch {}
       drawTasks(); drawHome(); syncRadar();
     } catch (e) { toast(e.message === "limit" ? L("وصلت حد التذكيرات الجديدة في الباقة المجانية هالشهر (10)", "You've reached this month's free limit of 10 new reminders") : errText(e)); }
@@ -2943,15 +2955,37 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function drawTasks() {
     const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
-    $("#task-list").innerHTML = up.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + up.map(x => `
-      <div class="row"><div><p>${x.paper ? "📄 " : ""}${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${placeHtml(x.note)}</div>
+    // تذكيرات المستند الواحد (قبله بشهر وبأسبوع ويومه) تطلع كرت واحد عن المستند نفسه
+    const rows = [], seenP = {};
+    up.forEach(x => { if (!x.paper) { rows.push(x); return; }
+      if (seenP[x.paper]) { seenP[x.paper].ids.push(x.id); return; }
+      const ex = x.paper_expires ? new Date(x.paper_expires + "T12:00") : null, days = ex ? Math.round((startOf(ex.getTime()) - startOf(now)) / DAY) : null;
+      const g = { ...x, ids: [x.id], grp: true, head: ex ? papHead({ label: x.paper_label || x.title, kind: x.paper_kind, days }) : x.title, ex };
+      seenP[x.paper] = g; rows.push(g); });
+    $("#task-list").innerHTML = rows.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + rows.map((x, i) => x.grp ? `
+      <div class="row tap" data-pap="1"><div><p>📄 ${esc(x.head)}</p><span class="tag">${x.ex ? L("آخر يوم ", "Expires ") + fmtDay(x.ex) + " · " : ""}${L("التذكير الجاي ", "Next reminder ")}${fmtWhen(new Date(x.at))}</span></div>
+      <button class="del" data-delg="${x.ids.join(",")}" data-lb="${esc(x.paper_label || "")}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>` : `
+      <div class="row tap" data-ed="${x.id}"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${placeHtml(x.note)}</div>
       <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`;
+    $$("#task-list [data-ed]").forEach(r => r.onclick = e => { if (e.target.closest("a,button")) return; editRem(reminders.find(x => String(x.id) === r.dataset.ed)); });
+    $$("#task-list [data-pap]").forEach(r => r.onclick = e => { if (e.target.closest("a,button")) return; openSheet("s-papers"); });
     $$("#task-list [data-del]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("تحذف هالتذكير؟", "Delete this reminder?"), L("بينحذف ولا يوصلك.", "It will be deleted and won't reach you."), L("احذف", "Delete")))) return;
       try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); drawHome(); syncRadar(); toast(L("انحذف", "Deleted")); }
       catch (e) { toast(errText(e)); }
     });
+    $$("#task-list [data-delg]").forEach(b => b.onclick = async () => {
+      if (!(await ask(L("توقف تذكيرات هالمستند؟", "Stop this document's reminders?"), L("ما يوصلك عنه تذكير، والمستند يبقى في مستنداتي.", "You won't get reminders about it, and the document stays in My documents."), L("أوقفها", "Stop them")))) return;
+      const ids = b.dataset.delg.split(",");
+      try { for (const id of ids) await api("/reminders/" + id, { method: "DELETE" }); reminders = reminders.filter(x => !ids.includes(String(x.id))); drawTasks(); drawHome(); syncRadar(); toast(L("انحذفت", "Deleted")); }
+      catch (e) { toast(errText(e)); }
+    });
+  }
+  function editRem(x) {
+    if (!x) return;
+    const d = new Date(x.at), bf = x.befores && x.befores.length ? x.befores : [0], m = /^📍 /.test(x.note || "") ? x.note.slice(2).trim() : "";
+    openAppt(m || Math.max(...bf) > 0 ? "appt" : "rem", { id: x.id, title: x.title, place: m, date: ymd(d), time: pad2(d.getHours()) + ":" + pad2(d.getMinutes()), befores: bf, repeat: x.repeat && x.repeat !== "none" ? x.repeat : "none" });
   }
   async function renderTasks() {
     drawTasks();
@@ -3388,7 +3422,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (Object.keys(kinds).length) { const cur = $("#pap-kind").value;
       $("#pap-kind").innerHTML = Object.entries(kinds).map(([k, v]) => `<option value="${esc(k)}">${esc(k === "other" ? L("أخرى", "Other") : EN ? v[1] : v[0])}</option>`).join("");
       if (cur && kinds[cur]) $("#pap-kind").value = cur; papKind(); }
-    $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L("تنتهي ", "Expires ")}${AR(p.expires)}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L("منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
+    $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L(!ABSHER.includes(p.kind) && p.kind !== "insurance" ? "آخر يوم " : papM(p) ? "ينتهي " : "تنتهي ", "Expires ")}${AR(p.expires)}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L(papM(p) ? "منتهي" : !ABSHER.includes(p.kind) ? "انتهى" : "منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<p class="note">${L("ما فيه مستندات للحين. اضغط «أضف مستند» أو أرسل صورته لفزعة.", "No documents yet. Tap “Add a document” or send Fazaa a photo of it.")}</p>`;
     $$("[data-delpap]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("تحذف الورقة؟", "Delete this document?"), L("بتنحذف تذكيراتها بعد.", "Its reminders will be deleted too."), L("احذف", "Delete")))) return;

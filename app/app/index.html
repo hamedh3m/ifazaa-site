@@ -111,6 +111,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .wp-acts{display:flex;gap:10px;margin-top:14px}.wp-acts .btn{flex:1}
 .tbtn{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink);text-align:start}
 .tbtn:disabled{opacity:.45}
+.tbtn.wsel{position:relative;padding-inline-end:38px}.tbtn.wsel::after{content:"";position:absolute;inset-inline-end:16px;top:50%;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg)}
 .field.city{position:relative}.cty{position:absolute;inset-inline:0;top:100%;margin-top:6px;z-index:20;background:var(--s2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.45)}
 .cty button{display:flex;justify-content:space-between;align-items:center;width:100%;padding:12px 16px;font-size:16px;color:var(--ink);text-align:start;border-bottom:1px solid var(--line)}.cty button:last-child{border-bottom:0}.cty small{color:var(--muted);font-size:12.5px}
 .chk{display:flex;align-items:center;gap:10px;margin-top:12px;width:100%;flex:0 0 100%;grid-column:1/-1;font-size:15px;color:var(--ink)}.chk input{width:22px;height:22px;accent-color:var(--green);flex:none}.tbtn.empty{color:var(--muted)}
@@ -1604,7 +1605,9 @@ html.i18n-wait body{visibility:hidden}
       tick.prep();
       W.style.direction = kind === "date" ? "" : "ltr";   // الوقت: الساعة ثم الدقايق ثم ص/م، زي «9:00 ص»
       const cols = {};
-      if (kind === "before") {
+      if (kind === "list") {
+        cols.v = wheel(init.items, init.idx || 0); W.style.direction = EN ? "ltr" : "rtl"; W.append(cols.v);
+      } else if (kind === "before") {
         cols.n = wheel(Array.from({ length: 60 }, (_, i) => i + 1), Math.max(0, (init && init.n || 15) - 1));
         cols.u = wheel(BEF_UNITS.map(u => u[1]), init && init.u || 0);
         W.style.direction = EN ? "ltr" : "rtl"; W.append(cols.n, cols.u);
@@ -1623,13 +1626,14 @@ html.i18n-wait body{visibility:hidden}
         cols.p = wheel([L("ص", "AM"), L("م", "PM")], h < 12 ? 0 : 1);
         W.append(cols.h, cols.mi, cols.p);
       }
-      $("#wp-t").textContent = kind === "before" ? L("ذكّرني قبله بـ", "Remind me before by") : kind === "date" ? L("اختر التاريخ", "Pick a date") : L("اختر الوقت", "Pick a time");
+      $("#wp-t").textContent = kind === "list" ? (init.title || "") : kind === "before" ? L("ذكّرني قبله بـ", "Remind me before by") : kind === "date" ? L("اختر التاريخ", "Pick a date") : L("اختر الوقت", "Pick a time");
       $("#wp").hidden = false;
       requestAnimationFrame(() => Object.values(cols).forEach(c => c._set(c._init)));
       const done = v => { $("#wp").hidden = true; $("#wp-ok").onclick = $("#wp-x").onclick = $("#wp").onclick = null; res(v); };
       $("#wp-x").onclick = () => done(null);
       $("#wp").onclick = e => { if (e.target.id === "wp") done(null); };
       $("#wp-ok").onclick = () => {
+        if (kind === "list") { done(cols.v._get()); return; }
         if (kind === "before") { done({ n: cols.n._get() + 1, u: cols.u._get() }); return; }
         if (kind === "date") {
           const y = new Date().getFullYear() - 100 + cols.y._get(), m = cols.m._get(), last = new Date(y, m + 1, 0).getDate();
@@ -1641,6 +1645,29 @@ html.i18n-wait body{visibility:hidden}
       };
     });
   }
+  // كل قائمة منسدلة في التطبيق تفتح نفس العجلة اللي تدور زي الآيفون، مع صوت التك والهزة
+  function wheelSelect(sel) {
+    if (!sel || sel._ws) return; sel._ws = true;
+    const btn = document.createElement("button"); btn.type = "button"; btn.className = "tbtn wsel";
+    sel.hidden = true; sel.after(btn);
+    const desc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, "value");
+    const sync = () => { const o = sel.options[sel.selectedIndex]; btn.textContent = o ? o.text : ""; btn.disabled = sel.disabled; };
+    Object.defineProperty(sel, "value", { configurable: true, get() { return desc.get.call(sel); }, set(x) { desc.set.call(sel, x); sync(); } });
+    new MutationObserver(sync).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ["disabled"] });
+    sel.addEventListener("change", sync);
+    btn.onclick = async () => {
+      const opts = [...sel.options]; if (!opts.length) return;
+      const lab = sel.closest(".field")?.querySelector("span")?.textContent || "";
+      const i = await wheelPick("list", { items: opts.map(o => o.text), idx: Math.max(0, sel.selectedIndex), title: lab });
+      if (i == null || i === sel.selectedIndex) return;
+      sel.value = opts[i].value; sel.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+    sync();
+  }
+  const upgradeSelects = root => (root.querySelectorAll ? root.querySelectorAll("select") : []).forEach(wheelSelect);
+  upgradeSelects(document);
+  new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType !== 1) return; if (n.tagName === "SELECT") wheelSelect(n); else upgradeSelects(n); })))
+    .observe(document.body, { childList: true, subtree: true });
   const fmtDay = d => `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`;
   async function pickAndSend(kind) {
     const d = await wheelPick(kind === "time" ? "time" : "date"); if (!d) return;

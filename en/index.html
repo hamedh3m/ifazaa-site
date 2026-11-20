@@ -84,6 +84,7 @@ button{font:inherit;color:inherit}
 .pill:active{transform:scale(.97)}
 .pill--light{background:var(--ink);color:#111}
 .pill--light:hover{background:#fff}
+.pill--soon{background:transparent;color:var(--muted,#9a9aa2);border:1px solid currentColor;cursor:default;pointer-events:none}
 .pill--ghost{border:1px solid rgba(245,245,242,.25)}
 .pill--ghost:hover{background:rgba(255,255,255,.06)}
 .pill svg{width:20px;height:20px;color:currentColor}
@@ -488,10 +489,10 @@ footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--muted);f
           <span class="pill pill--ghost" aria-disabled="true" style="opacity:.55;cursor:default;pointer-events:none">Coming soon</span></article>
         <article class="tier tier--prime rv"><span class="tag">For you</span><h3>Prime</h3><div class="price"><b>199</b> SAR a year<small>Launch price, then 290</small></div>
           <ul><li>Everything in Free</li><li>300 messages a month</li><li>Unlimited reminders, occasions and repeating tasks</li><li>20 images a month and 3 crew members</li><li>A website for your business (20 images a month)</li><li>Saved places and emergency tools</li><li>Your spending from bank texts, and Gmail reading</li></ul>
-          <a class="pill pill--light" data-wa="Hi, I&#x27;d like Fazaa Prime" href="#">Get Prime</a></article>
+          <span class="pill pill--soon" aria-disabled="true">Coming soon</span></article>
         <article class="tier tier--elite rv"><span class="tag">For you and family</span><h3>Elite</h3><div class="price"><b>299</b> SAR a year<small>Launch price, then 399</small></div>
           <ul><li>Everything in Prime</li><li>600 messages a month for you and a family member</li><li>40 images a month</li><li>A family member on the same plan, and reminders for them</li><li>10 crew members</li><li>3 websites (40 images a month)</li></ul>
-          <a class="pill pill--light" data-wa="Hi, I&#x27;d like Fazaa Elite" href="#">Get Elite</a></article>
+          <span class="pill pill--soon" aria-disabled="true">Coming soon</span></article>
         <aside class="ref-card rv" id="invite">
           <h3>Or get Prime free</h3>
           <p>For every 3 friends who start using Fazaa, you get a month of Prime. The more friends, the more months.</p>

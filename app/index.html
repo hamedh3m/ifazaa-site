@@ -269,6 +269,9 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar .ract::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.14);transform:scaleX(0);transform-origin:right;pointer-events:none}
 [dir=ltr] .radar .ract::after{transform-origin:left}
 .radar .ract.holding::after{transform:scaleX(1);transition:transform .8s linear}
+.radar .ract.holding{animation:hbuzz .8s linear}
+@keyframes hbuzz{0%,100%{transform:translateX(0) scale(.98)}10%{transform:translateX(-1px) scale(.98)}20%{transform:translateX(1px) scale(.98)}30%{transform:translateX(-1.5px) scale(.975)}40%{transform:translateX(1.5px) scale(.975)}50%{transform:translateX(-2px) scale(.97)}60%{transform:translateX(2px) scale(.97)}70%{transform:translateX(-2px) scale(.97)}80%{transform:translateX(2px) scale(.97)}90%{transform:translateX(-1px) scale(.97)}}
+@media (prefers-reduced-motion:reduce){.radar .ract.holding{animation:none}}
 .radar .rbody.ctr{margin:auto 0;text-align:center}
 .radar .rdone{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;margin:0 auto 20px;box-shadow:0 0 0 18px rgba(255,255,255,.05),0 0 80px 30px rgba(255,255,255,.08)}
 .radar .rdone svg{width:32px;height:32px}
@@ -2161,9 +2164,15 @@ html.i18n-wait body{visibility:hidden}
   $("#r-next").onclick = () => { if (rWasHeld) { rWasHeld = false; return; } ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); };
   $("#r-prev").onclick = () => { if (rWasHeld) { rWasHeld = false; return; } showRadar(ri - 1); };
   let holdT = 0, held = false; const rAct = $("#r-act");
+  // وهو ضاغط: هزات خفيفة تتسارع (والزر يرجف شوي) عشان يحس إنه ماشي، وهزة أقوى لما يكتمل
+  let holdBuzz = 0;
+  const stopBuzz = () => { clearTimeout(holdBuzz); holdBuzz = 0; };
   rAct.addEventListener("pointerdown", () => { const d = RI[ri]; if (!d || !d.hold) return; held = false; clearTimeout(rtimer); rAct.classList.add("holding");
-    holdT = setTimeout(() => { held = true; rAct.classList.remove("holding"); if (navigator.vibrate) navigator.vibrate(15); crewRunAll(); }, 800); });
-  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => rAct.addEventListener(ev, () => { clearTimeout(holdT); rAct.classList.remove("holding"); }));
+    try { tick.prep(); tick.fire(); } catch {}
+    const t0 = Date.now(), step = () => { const k = (Date.now() - t0) / 800; if (k >= 1) return; try { tick.fire(); } catch {} holdBuzz = setTimeout(step, Math.max(60, 170 - 110 * k)); };
+    holdBuzz = setTimeout(step, 150);
+    holdT = setTimeout(() => { held = true; stopBuzz(); rAct.classList.remove("holding"); try { if (navigator.vibrate) navigator.vibrate([18, 40, 18]); else [0, 90].forEach(t => setTimeout(tick.fire, t)); } catch {} crewRunAll(); }, 800); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => rAct.addEventListener(ev, () => { clearTimeout(holdT); stopBuzz(); rAct.classList.remove("holding"); }));
   rAct.addEventListener("contextmenu", e => e.preventDefault());
   $("#r-act").onclick = () => { const d = RI[ri]; if (d.end) { if (held) { held = false; return; } closeRadar(); return; } if (d.run) { closeRadar(); d.run(); return; } if (d.next) { ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); return; } closeRadar(); if (d.go) go(d.go); else if (d.say) { go("chat"); submit(d.say); } };
   (() => { let y0 = null; const r = $("#radar");

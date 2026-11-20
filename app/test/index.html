@@ -1466,7 +1466,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "dup_label") { const e = new Error("dup_label"); e.info = j; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -3685,6 +3685,11 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const exp = $("#pap-exp").value, err = $("#pap-err");
     if ($("#pap-kind").value === "other" && !$("#pap-label").value.trim()) { err.textContent = L("اكتب اسم المستند أو البطاقة.", "Type the document or card name."); err.hidden = false; $("#pap-label").focus(); return; }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(exp)) { err.textContent = L("اختر تاريخ الانتهاء.", "Pick the expiry date."); err.hidden = false; return; }
+    if (!papEdit) {       // نفس الاسم محفوظ من قبل؟
+      const nm = t => String(t || "").replace(/\s+/g, " ").trim().toLowerCase(), opt = $("#pap-kind").selectedOptions[0];
+      const lb = $("#pap-label").value.trim() || (opt ? opt.text : "");
+      if (lb && papList.concat(papers).some(p => nm(p.label) === nm(lb))) { err.textContent = L(`حفظت مستند بنفس الاسم «${lb}» من قبل. تقدر تعدّله من «تذكيراتي»، أو اكتب اسم ثاني يميّزه.`, `You already saved a document named “${lb}”. Edit it from Reminders, or give this one a different name.`); err.hidden = false; $("#pap-label").focus(); return; }
+    }
     $("#pap-save").disabled = true;
     try {
       const ed = papEdit, r = await api(ed ? "/papers/edit" : "/papers/add", { method: "POST", body: JSON.stringify({ id: ed || undefined, kind: $("#pap-kind").value, label: $("#pap-label").value.trim(), expires: exp }) });
@@ -3692,7 +3697,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       toast(ed ? L("انعدّل ✅ وتذكيراته على التاريخ الجديد", "Updated ✅ Its reminders follow the new date") : r.reminders ? L(`انحفظ ✅ وبذكرك قبله (${r.reminders} تذكيرات)`, `Saved ✅ I'll remind you before it expires (${r.reminders} reminders)`) : L("هالمستند محفوظ من قبل بنفس التاريخ ✅", "This document is already saved with that date ✅"));
       try { const [rr, pp] = await Promise.all([api("/reminders"), api("/papers")]); reminders = rr.reminders || []; papers = pp.papers || []; } catch {}
       go("tasks"); drawTasks(); syncRadar();      // يرجع لتذكيراتي ويلقى المستند في «مستنداتك المحفوظة»
-    } catch (x) { err.textContent = x.message === "limit" ? L("وصلت حد المستندات.", "You've reached the documents limit.") : x.message === "label" ? L("اكتب اسم المستند أو البطاقة.", "Type the document or card name.") : errText(x); err.hidden = false; }
+    } catch (x) { err.textContent = x.message === "limit" ? L("وصلت حد المستندات.", "You've reached the documents limit.") : x.message === "label" ? L("اكتب اسم المستند أو البطاقة.", "Type the document or card name.") : x.message === "dup_label" ? L("حفظت مستند بنفس الاسم من قبل. اكتب اسم ثاني يميّزه.", "You already saved a document with this name. Give it a different name.") : errText(x); err.hidden = false; }
     finally { $("#pap-save").disabled = false; }
   };
   // ---------- ربط تيليجرام ----------

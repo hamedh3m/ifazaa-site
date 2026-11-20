@@ -1337,7 +1337,10 @@ html.i18n-wait body{visibility:hidden}
     return true;
   }
   const closeSheetsSafe = () => $$(".sheet.on").forEach(x => x.classList.remove("on"));
+  var SHS = [], papFrom = false;
   const go = (v, force) => {
+    if (SHS && SHS.length) closeSheets();
+    if (v !== "papers") papFrom = false;
     if (!force && GATED_VIEWS.has(v) && needSignin()) return;
     $$(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
     $$(".tab").forEach(t => { if (t.dataset.v === v || (v === "papers" && t.dataset.v === "tasks")) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
@@ -1355,11 +1358,13 @@ html.i18n-wait body{visibility:hidden}
 
   // ---------- sheets ----------
   const openSheet = id => { if (id === "s-papers") { go("papers"); return; }      // مستنداتي صارت تبويب تحت
-    if (GATED_SHEETS.has(id) && needSignin()) return; $("#" + id).classList.add("on"); history.pushState({ sheet: id }, ""); };
-  const closeSheets = () => $$(".sheet.on").forEach(s => s.classList.remove("on"));
+    if (GATED_SHEETS.has(id) && needSignin()) return; const el = $("#" + id); if (el.classList.contains("on")) return;
+    SHS.push(id); el.style.zIndex = String(40 + SHS.length); el.classList.add("on"); history.pushState({ sheet: id }, ""); };
+  // الصفحات فوق بعض: «رجوع» يقفل اللي فوق بس ويرجعك للي قبلها
+  const closeSheets = () => { SHS.length = 0; $$(".sheet.on").forEach(s => s.classList.remove("on")); };
   $$("[data-sheet]").forEach(b => b.addEventListener("click", () => openSheet(b.dataset.sheet)));
   $$("[data-close]").forEach(b => b.addEventListener("click", () => history.back()));
-  addEventListener("popstate", closeSheets);
+  addEventListener("popstate", () => { const id = SHS.pop(); if (!id) { closeSheets(); return; } $("#" + id).classList.remove("on"); });
 
   // ---------- time helpers ----------
   const DAYS = EN ? ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"] : ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
@@ -2764,7 +2769,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const b = $("#ap-go"); b.disabled = true;
     try {
       await api("/reminders", { method: "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: +$("#ap-before").value, repeat: rep }) });
-      history.back();
+      const n = SHS.length; closeSheets(); if (n) history.go(-n);
       toast(L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
       try { reminders = (await api("/reminders")).reminders || []; } catch {}
       drawTasks(); drawHome(); syncRadar();
@@ -2772,17 +2777,18 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     finally { b.disabled = false; }
   };
   // صفحة «تذكير»: سريع + مستنداتي + أدويتي + رسالة موعد + أفكار
+  const V = fn => { fn.view = true; return fn; };     // يفتح تبويب (مو صفحة فوق): نقفل صفحة «تذكير» أول
   const REMOPTS = [
     ["", "", [
       ["⏰", L("تذكير عادي", "A simple reminder"), L("أي شي، بيوم وساعة، ويتكرر لو تبي", "Anything, on a day and time, repeating if you like"), () => openAppt("rem")],
-      ["📄", L("مستنداتي", "My documents"), L("الهوية والإقامة والجواز والرخصة والاستمارة، أذكّرك قبل لا تنتهي", "ID, iqama, passport, licence and car registration, reminded before they expire"), () => go("papers")],
+      ["📄", L("مستنداتي", "My documents"), L("الهوية والإقامة والجواز والرخصة والاستمارة، أذكّرك قبل لا تنتهي", "ID, iqama, passport, licence and car registration, reminded before they expire"), V(() => { go("papers"); papFrom = true; })],
       ["💊", L("سجل أدويتي", "My medicines"), L("مواعيد أدويتك، وتسجّل وش أخذت ومتى", "Your medicine times, and a log of what you took and when"), () => { openSheet("s-meds"); drawMeds(); loadMeds(); }],
       ["📋", L("وصلتك رسالة موعد؟", "Got an appointment message?"), L("الصقها وأسجّلها لك", "Paste it and I'll save it"), () => openPaste()],
     ]],
     ["🚗", L("سيارتي", "My car"), [
-      ["", L("الاستمارة والتأمين", "Registration & insurance"), L("سجّل تاريخها، وأذكّرك قبل لا تنتهي", "Add the date, and I'll remind you before it expires"), () => go("papers")],
+      ["", L("الاستمارة والتأمين", "Registration & insurance"), L("سجّل تاريخها، وأذكّرك قبل لا تنتهي", "Add the date, and I'll remind you before it expires"), V(() => { go("papers"); papFrom = true; })],
       ["", L("الفحص الدوري", "Car inspection"), L("أذكّرك قبل موعده بأسبوع", "A reminder a week before"), () => openAppt("rem", { title: L("الفحص الدوري للسيارة", "Car inspection"), before: 10080, time: "09:00" })],
-      ["", L("تغيير الزيت", "Oil change"), L("تذكير كل 3 شهور", "A reminder every 3 months"), () => { go("chat"); cardSay(L("ذكّرني أغيّر زيت السيارة كل 3 شهور، وأول مرة ", "Remind me to change the car oil every 3 months, starting ")); }],
+      ["", L("تغيير الزيت", "Oil change"), L("تذكير كل 3 شهور", "A reminder every 3 months"), V(() => { go("chat"); cardSay(L("ذكّرني أغيّر زيت السيارة كل 3 شهور، وأول مرة ", "Remind me to change the car oil every 3 months, starting ")); })],
     ]],
     ["💰", L("فواتيري", "My bills"), [
       ["", L("فاتورة الكهرباء", "Electricity bill"), L("كل شهر بيومها", "Every month on its day"), () => openAppt("rem", { title: L("فاتورة الكهرباء", "Electricity bill"), repeat: "monthly", time: "10:00" })],
@@ -2798,16 +2804,17 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     ]],
   ];
   const roFns = [];
+  papFrom = false;      // دخل «مستنداتي» من صفحة «تذكير»؟ الرجوع يرجّعه لها
   $("#remopts").innerHTML = REMOPTS.map(([ic, name, rows]) => (name ? `<div class="idc t-sand">${ic} ${esc(name)}</div>` : "") + rows.map(([e, h, p, fn]) => {
     const i = roFns.push(fn) - 1;
     return `<button type="button" class="idea" data-ro="${i}"><b>${e ? e + " " : ""}${esc(h)}</b><span>${esc(p)}</span><i aria-hidden="true">+</i></button>`;
   }).join("")).join("");
-  $$("#remopts [data-ro]").forEach(b => b.onclick = () => { const fn = roFns[+b.dataset.ro]; history.back(); setTimeout(fn, 340); });
+  $$("#remopts [data-ro]").forEach(b => b.onclick = () => { const fn = roFns[+b.dataset.ro]; if (fn.view) { history.back(); setTimeout(fn, 340); } else fn(); });
   $("#rm-appt").onclick = () => openAppt("appt");
   $("#ag-runall").onclick = async () => { const b = $("#ag-runall"); b.disabled = true; try { await crewRunAll(); } finally { b.disabled = false; } };
   if (EN) $("#ag-runall-t").textContent = "Check now: anything new?";
   $("#rm-rem").onclick = () => { if (!needSignin()) openSheet("s-remopts"); };
-  $("#pap-back").onclick = () => go("tasks");
+  $("#pap-back").onclick = () => { const back = papFrom; papFrom = false; go("tasks"); if (back) setTimeout(() => openSheet("s-remopts"), 60); };
   if (EN) {
     [["#tab-rm", "Reminders"], ["#rm-h", "My reminders"], ["#rm-sub", "Your appointments and reminders in one place."], ["#rm-appt-t", "Appointment"], ["#rm-appt-s", "Pick the day and time, and I'll remind you before"],
      ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#ap-l-r", "Repeats"],

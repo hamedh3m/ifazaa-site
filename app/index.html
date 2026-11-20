@@ -278,7 +278,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar .rlock .rli{flex:none;width:76px;height:76px;border-radius:22px;background:#fff;display:grid;place-items:center;margin-bottom:4px}
 .radar .rlock .rli svg{width:42px;height:42px}
 .radar .rlock b{font-size:24px;font-weight:800}
-.radar .tapzone{top:70px;bottom:90px}#radar .tapzone{direction:ltr}.radar #r-prev{grid-column:1;grid-row:1}.radar #r-next{grid-column:2;grid-row:1}   /* يمين الشاشة = اللي بعده */
+.radar .tapzone{top:70px;bottom:90px;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;touch-action:manipulation}.radar .tapzone button{-webkit-tap-highlight-color:transparent}#radar .tapzone{direction:ltr}.radar #r-prev{grid-column:1;grid-row:1}.radar #r-next{grid-column:2;grid-row:1}   /* يمين الشاشة = اللي بعده */
 @media (prefers-reduced-motion:reduce){.radar .rin,.radar.out .rin,.ccard,.qr{animation:none}}
 
 /* المحادثات المتعددة */
@@ -2068,7 +2068,10 @@ html.i18n-wait body{visibility:hidden}
     if (tm.length && new Date().getHours() >= 17) R.push({ key: "m" + tm[0].id, t: "t-green", k: L("بكرة", "Tomorrow"), h: L(`أول شي بكرة: ${tm[0].title}`, `First thing tomorrow: ${tm[0].title}`), p: L(`الساعة ${fmtTime(new Date(tm[0].t))}. نم بدري 😴`, `At ${fmtTime(new Date(tm[0].t))}. Get some sleep 😴`), act: L("وش عندي بكرة؟", "What's on tomorrow?"), say: L("وش عندي بكرة؟", "What do I have tomorrow?") });
     return R;
   }
-  let RI = [], ri = 0, rtimer;
+  let RI = [], ri = 0, rtimer, rStart = 0, rLeft = 6000, rPaused = false;
+  // المؤقت: نحفظ كم باقي عشان الضغط المطوّل يوقفه ويكمل من نفس المكان
+  const armR = ms => { rLeft = ms; rStart = Date.now(); clearTimeout(rtimer);
+    rtimer = setTimeout(() => { if (!$("#radar").hidden) ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); }, ms); };
   function syncRadar(auto) {
     RI = radarItems();
     if (calLinked === null && signedIn()) { calLinked = false; api("/connections").then(r => { calLinked = !!r.calendar; }).catch(() => { calLinked = null; }); }
@@ -2121,7 +2124,7 @@ html.i18n-wait body{visibility:hidden}
     else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b, u]) => `<li><span>${esc(a)}${u ? `<a class="rloc" href="${esc(u)}" target="_blank" rel="noopener">🗺️ ${L("الموقع", "Map")}</a>` : ""}</span><small>${b}</small></li>`).join("")}</ul>` : "");
     $("#r-act").textContent = d.act;
     markSeen([d.key]);
-    clearTimeout(rtimer); if (!d.end) rtimer = setTimeout(() => { if (!$("#radar").hidden) ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); }, 6000);
+    clearTimeout(rtimer); rPaused = false; if (!d.end) armR(6000);
   }
   function openRadar(i = 0) { RI = withExtras(RI); $("#radar").hidden = false; $("#radar").classList.remove("out"); showRadar(i); }
   function closeRadar() {
@@ -2138,8 +2141,18 @@ html.i18n-wait body{visibility:hidden}
     openRadar(0); };
   const syncBusy = () => { const b = $("#radar-btn"); if (b) b.classList.toggle("busy", AG.some(a => a.active)); };
   $("#r-x").onclick = closeRadar;
-  $("#r-next").onclick = () => ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar();
-  $("#r-prev").onclick = () => showRadar(ri - 1);
+  // ضغط مطوّل على الشاشة = إيقاف مؤقت (البار والمؤقت) لين يشيل يده، زي سناب وانستقرام. الضغطة العادية تنقل.
+  let rHoldT = 0, rWasHeld = false;
+  const rBar = () => document.querySelector("#r-bars i.now b");
+  const rPause = () => { const d = RI[ri]; if (!d || d.end || rPaused) return; rPaused = rWasHeld = true; clearTimeout(rtimer);
+    rLeft = Math.max(300, rLeft - (Date.now() - rStart)); const b = rBar(); if (b) b.style.animationPlayState = "paused"; $("#radar").classList.add("paused"); };
+  const rResume = () => { if (!rPaused) return; rPaused = false; const b = rBar(); if (b) b.style.animationPlayState = "running"; $("#radar").classList.remove("paused"); armR(rLeft); };
+  ["#r-next", "#r-prev"].forEach(q => { const el = $(q);
+    el.addEventListener("pointerdown", () => { rWasHeld = false; clearTimeout(rHoldT); rHoldT = setTimeout(rPause, 220); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(ev => el.addEventListener(ev, () => { clearTimeout(rHoldT); rResume(); }));
+    el.addEventListener("contextmenu", e => e.preventDefault()); });
+  $("#r-next").onclick = () => { if (rWasHeld) { rWasHeld = false; return; } ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); };
+  $("#r-prev").onclick = () => { if (rWasHeld) { rWasHeld = false; return; } showRadar(ri - 1); };
   let holdT = 0, held = false; const rAct = $("#r-act");
   rAct.addEventListener("pointerdown", () => { const d = RI[ri]; if (!d || !d.hold) return; held = false; clearTimeout(rtimer); rAct.classList.add("holding");
     holdT = setTimeout(() => { held = true; rAct.classList.remove("holding"); if (navigator.vibrate) navigator.vibrate(15); crewRunAll(); }, 800); });

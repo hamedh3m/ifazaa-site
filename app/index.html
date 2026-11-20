@@ -392,6 +392,7 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .ag .live i{width:6px;height:6px;border-radius:50%;background:#ff4d64;animation:blink 1.2s ease-in-out infinite}
 @keyframes blink{50%{opacity:.25}}
 #ag-tpl .soon,#ag-tpl .full{opacity:.45;cursor:default}#ag-tpl .soon span{font-weight:700}
+.ag .pinb{margin-inline-start:auto;flex:none;width:36px;height:36px;border:0;border-radius:10px;background:none;color:var(--muted);display:grid;place-items:center}.ag .pinb svg{width:19px;height:19px}.ag .pinb.on{color:var(--sand)}
 .ag .grip{margin-inline-start:auto;flex:none;width:36px;height:36px;border:0;border-radius:10px;background:none;color:var(--muted);display:grid;place-items:center;touch-action:none;cursor:grab}
 .ag .grip svg{width:20px;height:20px}.ag.drag{position:relative;z-index:5;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:none;opacity:.96}.sorting{user-select:none;-webkit-user-select:none}
 #agf-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}#agf-fields>.field{grid-column:1/-1}#agf-fields>.field.half{grid-column:auto}
@@ -2482,6 +2483,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const mapLink = p => /Android/i.test(navigator.userAgent) ? `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}` : `https://maps.apple.com/?daddr=${p.lat},${p.lng}&q=${encodeURIComponent(p.name)}`;
   let carePlaces = null, careMsg = "", careFallback = null, careAcc = 0, careHere = null;
   const mapSearch = p => /Android/i.test(navigator.userAgent) ? `https://www.google.com/maps/search/${encodeURIComponent(L("مستشفى طوارئ", "emergency hospital"))}/@${p.lat},${p.lng},14z` : `https://maps.apple.com/?q=${encodeURIComponent(L("مستشفى طوارئ", "emergency hospital"))}&sll=${p.lat},${p.lng}`;
+  // جهة اتصال الطوارئ من الحساب (تنتقل بين الأجهزة). لو الحساب فاضي وهي محفوظة بالجهاز من قبل، نرفعها له
+  function syncEm() {
+    api("/emergency").then(r => {
+      if (r.phone && (r.phone !== telOf(S.emPhone || "") || r.name !== (S.emName || ""))) { S.emName = r.name; S.emPhone = r.phone; save(); syncCareSmall(); drawCare(); }
+      else if (!r.phone && S.emPhone) api("/emergency", { method: "POST", body: JSON.stringify({ name: S.emName || "", phone: S.emPhone }) }).catch(() => {});
+    }).catch(() => {});
+  }
   function drawCare() {
     const b = $("#care-body"); if (!b) return;
     const em = S.emPhone ? `<div class="care-row"><a class="btn btn-primary" href="tel:${esc(telOf(S.emPhone))}">${L("اتصل على", "Call")} ${esc(S.emName || L("الشخص القريب", "your contact"))}</a><button type="button" class="btn btn-ghost" id="em-edit">${L("عدّل", "Edit")}</button></div>`
@@ -2502,10 +2510,11 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       <a class="care-sos" href="tel:997">🚑 ${L("اتصل بالإسعاف 997", "Call an ambulance 997")}</a>
       ${S.paid ? "" : primeBox(L("مع برايم: فزعة يلقى لك أقرب المراكز الصحية من موقعك وقتها، ويحفظ جهة اتصال الطوارئ تتصل عليها بضغطة.", "With Prime: Fazaa finds the nearest health centers from your location when you need it, and keeps an emergency contact one tap away."))}
       <div class="care-box"${S.paid ? "" : " hidden"}><h3>${L("أقرب المراكز الصحية", "Nearest health centers")}</h3><p>${L("اختياري. إذا سمحت، فزعة يشوف موقعك بس لما تطلب أقرب المراكز الصحية. ما نحفظ موقعك.", "Optional. If you allow it, Fazaa checks your location only when you ask for the nearest health centers. We don't store it.")}</p>${loc}${list ? `<div style="margin-top:10px">${list}</div>` : ""}</div>
-      <div class="care-box"${S.paid ? "" : " hidden"}><h3>${L("جهة اتصال الطوارئ", "Emergency contact")}</h3><p>${L("اختياري. رقم شخص تثق فيه، تتصل عليه بضغطة. يتخزن على جوالك بس.", "Optional. Someone you trust, one tap to call. Saved on your phone only.")}</p>${em}</div>`;
+      <div class="care-box"${S.paid ? "" : " hidden"}><h3>${L("جهة اتصال الطوارئ", "Emergency contact")}</h3><p>${L("اختياري. رقم شخص تثق فيه، تتصل عليه بضغطة. ينحفظ في حسابك ويطلع لك في أي جهاز تدخل منه.", "Optional. Someone you trust, one tap to call. Saved to your account, so it shows on any device you sign in on.")}</p>${em}</div>`;
     wirePlans(b);
     const on = (id, f) => { const e = $("#" + id); if (e) e.onclick = f; };
-    on("em-save", () => { const n = $("#em-name").value.trim(), ph = telOf($("#em-phone").value); if (!telOk(ph)) { toast(L("اكتب رقم جوال صحيح", "Enter a valid mobile number")); return; } S.emName = n.slice(0, 30); S.emPhone = ph; save(); drawCare(); syncCareSmall(); toast(L("انحفظ ✅", "Saved ✅")); });
+    on("em-save", () => { const n = $("#em-name").value.trim(), ph = telOf($("#em-phone").value); if (!telOk(ph)) { toast(L("اكتب رقم جوال صحيح", "Enter a valid mobile number")); return; } S.emName = n.slice(0, 30); S.emPhone = ph; save(); drawCare(); syncCareSmall(); toast(L("انحفظ ✅", "Saved ✅"));
+      api("/emergency", { method: "POST", body: JSON.stringify({ name: S.emName, phone: ph }) }).catch(() => {}); });
     on("em-edit", () => { const n = S.emName, ph = S.emPhone; S.emPhone = ""; drawCare(); $("#em-name").value = n || ""; $("#em-phone").value = ph || ""; S.emPhone = ph; });
     on("loc-on", () => getLoc(true));
     on("loc-off", () => { S.locOk = false; save(); carePlaces = null; careMsg = ""; drawCare(); syncCareSmall(); });
@@ -2566,34 +2575,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   };
   setTimeout(loadNotices, 1500);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) loadNotices(); });
-  function wireReorder() {   // سحب البطاقة من المقبض وترتيبها، ونحفظ الترتيب
-    const list = $("#ag-list");
-    list.querySelectorAll(".grip").forEach(g => {
-      g.onpointerdown = e => {
-        e.preventDefault();
-        const card = g.closest(".ag"); if (!card) return;
-        g.setPointerCapture(e.pointerId); card.classList.add("drag"); list.classList.add("sorting");
-        let lastY = e.clientY;
-        const move = ev => {
-          const dy = ev.clientY - lastY;
-          const sib = dy < 0 ? card.previousElementSibling : card.nextElementSibling;
-          if (sib && sib.classList.contains("ag")) {
-            const r = sib.getBoundingClientRect(), mid = r.top + r.height / 2;
-            if ((dy < 0 && ev.clientY < mid) || (dy > 0 && ev.clientY > mid)) { dy < 0 ? list.insertBefore(card, sib) : list.insertBefore(sib, card); lastY = ev.clientY; }
-          }
-          card.style.transform = `translateY(${(ev.clientY - lastY) * 0.4}px)`;
-        };
-        const up = async () => {
-          g.removeEventListener("pointermove", move); g.removeEventListener("pointerup", up); g.removeEventListener("pointercancel", up);
-          card.classList.remove("drag"); card.style.transform = ""; list.classList.remove("sorting");
-          const ids = [...list.querySelectorAll(".ag[data-agid]")].map(x => +x.dataset.agid);
-          if (ids.join() === AG.map(a => a.id).join()) return;
-          AG.sort((x, y) => ids.indexOf(x.id) - ids.indexOf(y.id)); redrawHomeCards();
-          try { await api("/agents/order", { method: "POST", body: JSON.stringify({ ids }) }); toast(L("انحفظ الترتيب ✅", "Order saved ✅")); } catch (x) { toast(errText(x)); }
-        };
-        g.addEventListener("pointermove", move); g.addEventListener("pointerup", up); g.addEventListener("pointercancel", up);
-      };
-    });
+  // تثبيت 3 بالكثير فوق. والباقي ترتيبه بآخر تحديث (السيرفر يرتّب)
+  async function agPin(id) {
+    const a = AG.find(x => x.id === id); if (!a) return;
+    if (!a.pinned && AG.filter(x => x.pinned).length >= 3) { toast(L("تقدر تثبّت 3 بس. شيل التثبيت عن واحد أول.", "You can pin up to 3. Unpin one first.")); return; }
+    try { await api(`/agents/${id}/${a.pinned ? "unpin" : "pin"}`, { method: "POST" }); toast(a.pinned ? L("شلت التثبيت", "Unpinned") : L("ثبّته فوق 📌", "Pinned to top 📌")); await loadAgents(); }
+    catch (e) { toast(e.message === "pin_limit" ? L("تقدر تثبّت 3 بس. شيل التثبيت عن واحد أول.", "You can pin up to 3. Unpin one first.") : errText(e)); }
   }
   const crewLimitMsg = () => myTier === "free"
     ? L("الباقة المجانية فيها موظف واحد في طاقم عملك. احذف الموظف الحالي أو أوقفه عشان تضيف غيره، أو رقّ حسابك: 3 موظفين في برايم، أو 10 في إيليت، من «حسابي» ثم «الباقات».",
@@ -2618,13 +2605,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function drawAgents() {
     { const rb = $("#ag-runall"); if (rb) rb.hidden = !AG.some(a => a.active); }
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="grip" aria-label="${L("اسحب عشان ترتّب", "Drag to reorder")}"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></button>` : ""}</div>`
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcRich(a.last_text); return `<div class="al">${sp.html}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
       + (a.active ? `<p class="alive">${aliveTxt(a)}</p>` : "")
       + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("اضغط للتفاصيل", "Tap for details")}</button>`
       + `<div class="aa"><button type="button" class="tog${a.active ? "" : " on"}" data-agtog="${a.id}">${a.active ? L("⏸ إيقاف مؤقت", "⏸ Pause") : L("▶ تفعيل", "▶ Turn on")}</button>${a.active ? `<button type="button" class="ed now" data-agrun="${a.id}" aria-label="${L("ابحث الحين", "Search now")}" title="${L("ابحث الحين", "Search now")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>` : ""}${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
-    wireReorder();
+    $$("[data-agpin]").forEach(b => b.onclick = () => agPin(+b.dataset.agpin));
     $$("[data-aglog]").forEach(b => b.onclick = () => openAgLog(+b.dataset.aglog));
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); if (a) openAgForm(a.kind, a); });
@@ -3037,11 +3024,11 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       invite = m.invite || "";
       if ((m.email || "") !== S.email) { S.email = m.email || ""; save(); syncGoogleUI(); }
       tgLinked = !!m.telegram; syncTg(); syncBrief(m.brief || "");
-      if (m.has_avatar && !S.av) api("/profile").then(p => { if (p.avatar) { S.av = p.avatar; save(); drawAvatars(); } }).catch(() => {});
+      if (m.has_avatar) api("/profile").then(p => { if (p.avatar && p.avatar !== S.av) { S.av = p.avatar; save(); drawAvatars(); } }).catch(() => {});   // الصورة من الحساب: لو غيّرها من جهاز ثاني تتحدث هنا
       else if (m.has_avatar === false && S.av) { S.av = ""; save(); drawAvatars(); }
       $("#me-fill").hidden = m.profile_done !== false;
       if (m.birthday) celebrate(m.gender); // الاسم من الحساب نفسه: لو عدّله من جهاز ثاني (داخل بأبل أو قوقل) يطلع هنا بعد
-      if (m.name && m.name !== S.name && (signedIn() || !S.name)) { S.name = m.name; save(); $("#me-name").textContent = S.name; drawAvatars(); updateHello(); }
+      syncEm(); if (m.name && m.name !== S.name && (signedIn() || !S.name)) { S.name = m.name; save(); $("#me-name").textContent = S.name; drawAvatars(); updateHello(); }
     }).catch(() => {});
     syncGoogleUI();
   }

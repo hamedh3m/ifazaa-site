@@ -2150,9 +2150,9 @@ html.i18n-wait body{visibility:hidden}
   // ضغط مطوّل على الشاشة = إيقاف مؤقت (البار والمؤقت) لين يشيل يده، زي سناب وانستقرام. الضغطة العادية تنقل.
   let rHoldT = 0, rWasHeld = false;
   const rBar = () => document.querySelector("#r-bars i.now b");
-  const rPause = () => { const d = RI[ri]; if (!d || d.end || rPaused) return; rPaused = rWasHeld = true; clearTimeout(rtimer);
+  const rPause = () => { const d = RI[ri]; if (!d || rPaused) return; rPaused = rWasHeld = true; clearTimeout(rtimer);
     rLeft = Math.max(300, rLeft - (Date.now() - rStart)); const b = rBar(); if (b) b.style.animationPlayState = "paused"; $("#radar").classList.add("paused"); };
-  const rResume = () => { if (!rPaused) return; rPaused = false; const b = rBar(); if (b) b.style.animationPlayState = "running"; $("#radar").classList.remove("paused"); armR(rLeft); };
+  const rResume = () => { if (!rPaused) return; rPaused = false; const b = rBar(); if (b) b.style.animationPlayState = "running"; $("#radar").classList.remove("paused"); const d = RI[ri]; if (d && !d.end) armR(rLeft); };
   ["#r-next", "#r-prev"].forEach(q => { const el = $(q);
     el.addEventListener("pointerdown", () => { rWasHeld = false; clearTimeout(rHoldT); rHoldT = setTimeout(rPause, 220); });
     ["pointerup", "pointercancel", "pointerleave"].forEach(ev => el.addEventListener(ev, () => { clearTimeout(rHoldT); rResume(); }));

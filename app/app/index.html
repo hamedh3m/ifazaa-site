@@ -1943,14 +1943,14 @@ html.i18n-wait body{visibility:hidden}
       { c: "st-1", k: greet + (S.name ? ", " + S.name : ""), h: today.length ? `You have ${today.length} ${today.length === 1 ? "thing" : "things"} today` : "Your day is free so far",
         list: today.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.at))]), p: today.length ? "" : "Tell me any appointment or anything you want to remember, and I'll organize it for you." },
       { c: "st-2", k: "Coming up", h: next.length ? "Your next appointments" : "No upcoming appointments", list: next.slice(0, 4).map(x => [x.title, fmtWhen(new Date(x.at))]), p: next.length ? "" : "Try: “Remind me about my dentist appointment Thursday at 4 pm”." },
-      { c: "st-3", k: "Your documents", h: "Don't wait until they expire", list: [], p: "Tell me when your car registration, passport or licence expires, and I'll remind you a month and a week before." },
+      { c: "st-3", k: "Your documents", h: "Don't wait until they expire", list: [], p: "Tell me when your car registration, passport or licence expires, and I'll remind you a month before, a week before and on the day." },
       { c: "st-4", k: "Today's idea", h: "Plan Friday's gathering early", list: [], p: "Tell me how many people, and I'll give you the menu, quantities and shopping list, and remind you to shop the day before." }
     ];
     return [
       { c: "st-1", k: greet + (S.name ? " يا " + S.name : ""), h: today.length ? `عندك ${AR(today.length)} ${today.length === 1 ? "شي" : "أشياء"} اليوم` : "يومك فاضي للحين",
         list: today.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.at))]), p: today.length ? "" : "قل لي أي موعد أو شي تبي تتذكره، وأنا أرتبه لك." },
       { c: "st-2", k: "الجاي", h: next.length ? "أقرب مواعيدك" : "ما فيه مواعيد قادمة", list: next.slice(0, 4).map(x => [x.title, fmtWhen(new Date(x.at))]), p: next.length ? "" : "جرب: «ذكرني بموعد الأسنان الخميس الساعة 4 العصر»." },
-      { c: "st-3", k: "مستنداتك", h: "لا تنتظر لين تنتهي", list: [], p: "قل لي متى تنتهي استمارتك أو جوازك أو رخصتك، وأذكرك قبلها بشهر وقبلها بأسبوع." },
+      { c: "st-3", k: "مستنداتك", h: "لا تنتظر لين تنتهي", list: [], p: "قل لي متى تنتهي استمارتك أو جوازك أو رخصتك، وأذكرك قبلها بشهر وبأسبوع ويوم انتهائها." },
       { c: "st-4", k: "فكرة اليوم", h: "رتب عزيمة الجمعة بدري", list: [], p: "قل لي كم شخص وأطلع لك قائمة الأكل والكميات والأغراض، وأذكرك تشتري قبلها بيوم." }
     ];
   }

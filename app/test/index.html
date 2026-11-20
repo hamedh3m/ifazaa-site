@@ -1437,7 +1437,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -2779,7 +2779,16 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
         const r = await api("/agents", { method: "POST", body });
         AG.push(r.agent); drawAgents(); agBack(); toast(L("انضاف لطاقمك ✅", "Added to your crew ✅"));
       }
-    } catch (e) { toast(e.message === "prime" || e.message === "limit" ? crewLimitMsg() : e.message === "kind_full" ? kindFullMsg() : errText(e)); }
+    } catch (e) {
+      if (e.message === "no_airport" && e.info) {      // المدينة ما فيها مطار: نقول له على طول ونعرض أقرب مطار
+        const j = e.info, inp = $(`[data-agf="${j.field}"]`), near = j.nearest_label;
+        inp?.closest(".field")?.classList.add("bad");
+        if (await ask(L(`${j.city} ما فيها مطار`, `${j.city} has no airport`), L(`أقرب مطار لها ${near}. تبي أخليها ${near}؟`, `The nearest airport is ${near}. Use ${near} instead?`), L(`إيه، ${near}`, `Yes, ${near}`))) {
+          if (inp) { inp.value = near.replace(/\s*\(.*\)$/, ""); inp.closest(".field")?.classList.remove("bad"); } $("#agf-go").click();
+        }
+        return;
+      }
+      toast(e.message === "same_airport" ? L("المغادرة والوجهة نفس المطار", "Departure and destination are the same airport") : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : e.message === "kind_full" ? kindFullMsg() : errText(e)); }
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {

@@ -510,6 +510,7 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .row .chev{flex:none;width:18px;height:18px;color:var(--muted);transform:scaleX(-1)}
 .row .del{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
 .row .del svg{width:18px;height:18px}
+.row .acts{display:flex;gap:2px;flex:none;align-self:center}
 .sec-t{font-size:15px;color:var(--muted);margin:22px 0 10px;font-weight:700}
 
 /* account */
@@ -844,6 +845,7 @@ html.i18n-wait body{visibility:hidden}
   <symbol id="i-back" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M14.5 5.5l4 4M4.5 19.5l1-4.5L15.8 4.7a1.9 1.9 0 0 1 2.7 0l.8.8a1.9 1.9 0 0 1 0 2.7L9 18.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3v5M15 3v5M6.5 8h11v3a5.5 5.5 0 0 1-11 0ZM12 16.5V21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8" width="17" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 12v8h14v-8M12 8v12M12 8S10.5 3.5 8 4.5 9 8 12 8Zm0 0s1.5-4.5 4-3.5S15 8 12 8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -2981,13 +2983,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       const g = { ...x, ids: [x.id], grp: true, head: ex ? papHead({ label: x.paper_label || x.title, kind: x.paper_kind, days }) : x.title, ex };
       seenP[x.paper] = g; rows.push(g); });
     $("#task-list").innerHTML = rows.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + rows.map((x, i) => x.grp ? `
-      <div class="row tap" data-pap="1"><div><p>📄 ${esc(x.head)}</p><span class="tag">${x.ex ? L("آخر يوم ", "Expires ") + fmtDay(x.ex) + " · " : ""}${L("التذكير الجاي ", "Next reminder ")}${fmtWhen(new Date(x.at))}</span></div>
-      <button class="del" data-delg="${x.ids.join(",")}" data-lb="${esc(x.paper_label || "")}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>` : `
-      <div class="row tap" data-ed="${x.id}"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${placeHtml(x.note)}</div>
-      <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
+      <div class="row"><div><p>📄 ${esc(x.head)}</p><span class="tag">${x.ex ? L("آخر يوم ", "Expires ") + fmtDay(x.ex) : ""}</span><small class="rm-place">${L("التذكير الجاي ", "Next reminder ")}${fmtWhen(new Date(x.at))}</small></div>
+      <div class="acts"><button class="del" data-pap="1" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button class="del" data-delg="${x.ids.join(",")}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>` : `
+      <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${placeHtml(x.note)}</div>
+      <div class="acts"><button class="del" data-ed="${x.id}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`;
-    $$("#task-list [data-ed]").forEach(r => r.onclick = e => { if (e.target.closest("a,button")) return; editRem(reminders.find(x => String(x.id) === r.dataset.ed)); });
-    $$("#task-list [data-pap]").forEach(r => r.onclick = e => { if (e.target.closest("a,button")) return; openSheet("s-papers"); });
+    $$("#task-list [data-ed]").forEach(b => b.onclick = () => editRem(reminders.find(x => String(x.id) === b.dataset.ed)));
+    $$("#task-list [data-pap]").forEach(b => b.onclick = () => openSheet("s-papers"));      // المستند يتعدل من مستنداتي
     $$("#task-list [data-del]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("تحذف هالتذكير؟", "Delete this reminder?"), L("بينحذف ولا يوصلك.", "It will be deleted and won't reach you."), L("احذف", "Delete")))) return;
       try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); drawHome(); syncRadar(); toast(L("انحذف", "Deleted")); }

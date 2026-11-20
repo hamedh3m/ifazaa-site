@@ -433,6 +433,8 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .backlink{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin:2px 0 8px;padding:6px 0}
 .backlink svg{width:18px;height:18px}
 [dir=ltr] .backlink svg{transform:scaleX(-1)}
+.rm-place{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+#ap-place-w[hidden]{display:none}
 .ap-quick{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
 .ap-quick button{padding:8px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:13.5px}
 .ap-quick button.on{background:var(--ink);color:#111;border-color:var(--ink)}
@@ -993,6 +995,7 @@ html.i18n-wait body{visibility:hidden}
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ap-h">موعد جديد</h1><span style="width:42px"></span></header>
   <div class="body">
     <label class="field"><span id="ap-l-t">وش الموعد؟</span><input id="ap-title" maxlength="120" placeholder="مثلاً: موعد الأسنان"></label>
+    <label class="field" id="ap-place-w"><span id="ap-l-p">المكان (اختياري)</span><input id="ap-place" maxlength="120" placeholder="مثلاً: عيادة الابتسامة، حي الروضة" autocomplete="off"></label>
     <div class="row2">
       <label class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="date"></label>
       <label class="field"><span id="ap-l-h">الساعة</span><input id="ap-time" type="time" value="09:00"></label>
@@ -2764,7 +2767,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#ap-title").placeholder = kind === "appt" ? L("مثلاً: موعد الأسنان", "e.g. Dentist appointment") : L("مثلاً: أدفع الإيجار", "e.g. Pay the rent");
     $("#ap-go").textContent = kind === "appt" ? L("احفظ الموعد", "Save appointment") : L("احفظ التذكير", "Save reminder");
     const t = new Date(); t.setDate(t.getDate() + (kind === "appt" ? 1 : 0));
-    $("#ap-title").value = pre.title || ""; $("#ap-date").value = ymd(t); $("#ap-date").min = ymd(new Date());
+    $("#ap-title").value = pre.title || ""; $("#ap-place").value = pre.place || ""; $("#ap-place-w").hidden = kind !== "appt"; $("#ap-date").value = ymd(t); $("#ap-date").min = ymd(new Date());
     $("#ap-time").value = pre.time || (kind === "appt" ? "09:00" : pad2(Math.min(23, new Date().getHours() + 1)) + ":00");
     $("#ap-before").value = String(pre.before != null ? pre.before : kind === "appt" ? 60 : 0);
     $("#ap-repeat").value = pre.repeat || "none";
@@ -2782,7 +2785,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (rep === "none" && when.getTime() < Date.now() - 60e3) { toast(L("هالوقت راح، اختر وقت جاي", "That time has passed, pick a later one")); return; }
     const b = $("#ap-go"); b.disabled = true;
     try {
-      await api("/reminders", { method: "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: +$("#ap-before").value, repeat: rep }) });
+      await api("/reminders", { method: "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: +$("#ap-before").value, repeat: rep, place: apKind === "appt" ? $("#ap-place").value.trim() : "" }) });
       const n = SHS.length; closeSheets(); if (n) history.go(-n);
       toast(L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
       try { reminders = (await api("/reminders")).reminders || []; } catch {}
@@ -2831,8 +2834,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#pap-back").onclick = () => { const back = papFrom; papFrom = false; go("tasks"); if (back) setTimeout(() => openSheet("s-remopts"), 60); };
   if (EN) {
     [["#tab-rm", "Reminders"], ["#rm-h", "My reminders"], ["#rm-sub", "Your appointments and reminders in one place."], ["#rm-appt-t", "Appointment"], ["#rm-appt-s", "Pick the day and time, and I'll remind you before"],
-     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#ap-l-r", "Repeats"],
+     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-p", "Place (optional)"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#ap-l-r", "Repeats"],
      ["#ro-h", "Reminder"], ["#ro-sub", "What should I remind you about?"]].forEach(([q, t]) => { $(q).textContent = t; });
+    $("#ap-place").placeholder = "e.g. Smile Clinic, Al Rawdah";
     $("#v-tasks").setAttribute("aria-label", "My reminders"); $("#s-appt").setAttribute("aria-label", "New appointment"); $("#s-remopts").setAttribute("aria-label", "Reminder");
     $$("#s-appt [data-close], #s-remopts [data-close]").forEach(b => b.setAttribute("aria-label", "Back"));
   }
@@ -2873,7 +2877,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   function drawTasks() {
     const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
     $("#task-list").innerHTML = up.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + up.map(x => `
-      <div class="row"><div><p>${x.paper ? "📄 " : ""}${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span></div>
+      <div class="row"><div><p>${x.paper ? "📄 " : ""}${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${/^📍 /.test(x.note || "") ? `<small class="rm-place">${esc(x.note)}</small>` : ""}</div>
       <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`;
     $$("#task-list [data-del]").forEach(b => b.onclick = async () => {

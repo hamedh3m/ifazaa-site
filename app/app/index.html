@@ -111,6 +111,13 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .wp-acts{display:flex;gap:10px;margin-top:14px}.wp-acts .btn{flex:1}
 .tbtn{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink);text-align:start}
 .tbtn:disabled{opacity:.45}
+.crop{position:fixed;inset:0;z-index:120;background:#000;display:flex;flex-direction:column;padding:calc(var(--top,0px) + 8px) 0 calc(var(--bot,0px) + 16px)}
+.crop-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px}.crop-bar b{color:#fff;font-size:16px}
+.crop-bar button{color:#fff;font-size:16px;padding:8px 6px}.crop-bar .ok{background:#fff;color:#000;border-radius:999px;padding:8px 18px;font-weight:800}
+.crop-st{position:relative;flex:1;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.crop-st img{position:absolute;left:50%;top:50%;max-width:none;pointer-events:none;-webkit-user-drag:none}
+.crop-mask{position:absolute;left:50%;top:50%;width:84%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 0 200vmax rgba(0,0,0,.62);border:2px solid rgba(255,255,255,.85);pointer-events:none}
+.crop-z{display:flex;align-items:center;gap:12px;padding:16px 28px 4px;color:#fff;direction:ltr}.crop-z input{flex:1;accent-color:#fff}
 #cp{z-index:96}.cp-sh{padding-top:14px}.cp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cp-title{font-size:18px;font-weight:800;color:var(--ink);padding:8px 12px;border-radius:12px}.cp-title::after{content:" ⌄";font-size:14px;color:var(--muted)}
 .cp-nav{width:44px;height:44px;border-radius:50%;font-size:28px;line-height:1;color:var(--ink);background:var(--s2);display:grid;place-items:center}
@@ -316,7 +323,7 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .dp .newth svg{width:18px;height:18px}
 .thl{flex:1;overflow-y:auto;display:grid;gap:4px;align-content:start}
 .dprof{display:flex;align-items:center;gap:10px;padding:8px 4px 14px;text-align:start}
-.dprof .dav{width:40px;height:40px;border-radius:12px;background:var(--red2);display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;flex:none}
+.dprof .dav{width:40px;height:40px;border-radius:50%;background:var(--red2);display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;flex:none}
 .dprof .dn{flex:1;min-width:0}.dprof .dn b{display:block;font-size:17px;font-weight:800}.dprof .dn small{color:var(--muted);font-size:13px}
 .dprof svg{width:18px;height:18px;color:var(--muted)}
 .dtiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
@@ -539,7 +546,7 @@ html{touch-action:manipulation}
 .me-fill{display:inline-block;margin-top:6px;padding:4px 10px;border-radius:999px;background:var(--redsoft,rgba(224,33,59,.15));color:#ff6b7e;font-size:12px;font-weight:700}
 .avatar img,.dav img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}.avatar{color:#fff;overflow:hidden;padding:0}
 .pf-top{display:flex;align-items:center;gap:16px;margin-top:6px}
-.pf-av{position:relative;width:92px;height:92px;border-radius:30px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:36px;color:#fff;flex:none}
+.pf-av{position:relative;width:92px;height:92px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:36px;color:#fff;flex:none}
 .pf-av>span{width:100%;height:100%;display:grid;place-items:center;border-radius:inherit;overflow:hidden}.pf-av img{width:100%;height:100%;object-fit:cover}
 .pf-cam{position:absolute;bottom:-4px;inset-inline-end:-4px;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#111;display:grid;place-items:center;border:3px solid var(--bg)}.pf-cam svg{width:16px;height:16px}
 .pf-pick{display:flex;flex-direction:column;gap:8px;align-items:flex-start}.pf-pick .btn{width:auto;padding:10px 18px}
@@ -593,7 +600,7 @@ html{touch-action:manipulation}
 .pf-u .pf-bar{height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}.pf-u .pf-bar i{display:block;height:100%;border-radius:inherit;background:#3ecf8e}
 .pf-u.warn .pf-bar i{background:#f5b14c}.pf-u.full .pf-bar i{background:#ff6b7e}.field.bad input,.field.bad .plat button,.field.bad .pf-date{border-color:#ff6b7e}
 .me-card{display:flex;align-items:center;gap:14px;padding:18px;border-radius:24px;background:var(--s1);border:1px solid var(--line);margin-top:8px}
-.avatar{width:54px;height:54px;border-radius:18px;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
+.avatar{width:54px;height:54px;border-radius:50%;background:var(--red);display:grid;place-items:center;font-weight:800;font-size:22px;flex:none}
 .dprof .dav{overflow:hidden}
 .me-card b{font-size:18px;display:block}
 .me-card span{color:var(--muted);font-size:14px}
@@ -1329,6 +1336,9 @@ html.i18n-wait body{visibility:hidden}
   <div class="box"><h3 id="cf-t"></h3><p id="cf-p"></p><button class="btn btn-red" id="cf-yes"></button><button class="btn btn-ghost" id="cf-no">إلغاء</button></div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<div class="crop" id="crop" hidden role="dialog" aria-modal="true" aria-label="قص الصورة"><div class="crop-bar"><button type="button" id="crop-x">إلغاء</button><b id="crop-t">حرّك وكبّر</b><button type="button" class="ok" id="crop-ok">تطبيق</button></div>
+<div class="crop-st" id="crop-st"><img id="crop-img" alt="" draggable="false"><div class="crop-mask"></div></div>
+<div class="crop-z"><span>－</span><input type="range" id="crop-z" min="1" max="5" step="0.01" value="1" aria-label="تكبير"><span>＋</span></div></div>
 <div class="wp-bg" id="cp" hidden><div class="wp-sh cp-sh" role="dialog" aria-modal="true" aria-labelledby="cp-t">
 <div class="cp-head"><button type="button" class="cp-nav" id="cp-prev" aria-label="الشهر اللي قبل">‹</button><button type="button" class="cp-title" id="cp-t"></button><button type="button" class="cp-nav" id="cp-next" aria-label="الشهر اللي بعد">›</button></div>
 <div class="cp-wd" id="cp-wd"></div><div class="cp-days" id="cp-days"></div>
@@ -2336,7 +2346,7 @@ html.i18n-wait body{visibility:hidden}
   $("#th-rem").onclick = () => { closeThreads(); go("tasks"); };
   if (EN) $("#th-rem-t").textContent = "Reminders";
   $$("[data-tsheet]").forEach(b => b.onclick = () => { closeThreads(); const sh = b.dataset.tsheet; openSheet(sh); if (sh === "s-papers") loadPapers(); if (sh === "s-connect") loadConn(); });
-  if (EN) { $("#th-sec").textContent = "Recent chats"; $("#cp-x").textContent = "Cancel"; $("#cp-ok").textContent = "Done"; $("#th-hint").textContent = "Press and hold a chat to pin or delete it"; $("#ta-x").textContent = "Cancel"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
+  if (EN) { $("#th-sec").textContent = "Recent chats"; $("#crop-x").textContent = "Cancel"; $("#crop-t").textContent = "Move and zoom"; $("#crop-ok").textContent = "Apply"; $("#cp-x").textContent = "Cancel"; $("#cp-ok").textContent = "Done"; $("#th-hint").textContent = "Press and hold a chat to pin or delete it"; $("#ta-x").textContent = "Cancel"; $$(".dtiles b")[1].textContent = "Documents"; $$(".dtiles b")[2].textContent = "Connect"; $$(".dtiles b")[3].textContent = "Radar"; }
   if (EN) { $("#th-h").textContent = "Menu"; $("#th-new-t").textContent = "New chat"; $("#th-btn").setAttribute("aria-label", "Chats"); $("#th-x").setAttribute("aria-label", "Close"); }
 
   // ---------- المكالمة: تكلم فزعة بصوتك ويرد عليك بصوت ----------
@@ -3319,12 +3329,51 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     });
   }
   $("#pf-photo").onclick = $("#pf-av").onclick = () => $("#pf-file").click();
+  // قص الصورة زي تويتر: دائرة، تسحب الصورة وتكبّرها (بإصبعين أو بالشريط)، وبعدها «تطبيق»
+  function cropImg(file) {
+    return new Promise((res, rej) => {
+      const url = URL.createObjectURL(file), im = new Image();
+      im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+      im.onload = () => {
+        const box = $("#crop"), st = $("#crop-st"), pic = $("#crop-img"), zr = $("#crop-z");
+        pic.src = url; box.hidden = false; tick.prep();
+        const S0 = () => st.clientWidth * 0.84;               // قطر الدائرة
+        let z = 1, x = 0, y = 0;                               // التكبير والإزاحة (من المركز)
+        const base = () => S0() / Math.min(im.naturalWidth, im.naturalHeight);     // أصغر مقاس يغطي الدائرة
+        const clamp = () => { const k = base() * z, w = im.naturalWidth * k, h = im.naturalHeight * k, d = S0();
+          x = Math.max(-(w - d) / 2, Math.min((w - d) / 2, x)); y = Math.max(-(h - d) / 2, Math.min((h - d) / 2, y)); };
+        const draw = () => { clamp(); const k = base() * z; pic.style.width = im.naturalWidth * k + "px"; pic.style.height = im.naturalHeight * k + "px";
+          pic.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`; zr.value = String(z); };
+        const pts = new Map(); let start = null;
+        st.onpointerdown = e => { st.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.clientX, e.clientY]);
+          start = { x, y, z, pts: new Map(pts), d: pts.size === 2 ? Math.hypot(...(([a, b]) => [a[0] - b[0], a[1] - b[1]])([...pts.values()])) : 0 }; };
+        st.onpointermove = e => { if (!pts.has(e.pointerId) || !start) return; pts.set(e.pointerId, [e.clientX, e.clientY]);
+          if (pts.size === 2 && start.d) { const [a, b] = [...pts.values()]; z = Math.max(1, Math.min(5, start.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / start.d)); }
+          else { const p0 = start.pts.get(e.pointerId); if (p0) { x = start.x + e.clientX - p0[0]; y = start.y + e.clientY - p0[1]; } }
+          draw(); };
+        const up = e => { pts.delete(e.pointerId); start = pts.size ? { x, y, z, pts: new Map(pts), d: 0 } : null; };
+        st.onpointerup = st.onpointercancel = up;
+        st.onwheel = e => { e.preventDefault(); z = Math.max(1, Math.min(5, z * (e.deltaY < 0 ? 1.08 : 0.93))); draw(); };
+        zr.oninput = () => { z = +zr.value; draw(); };
+        const done = v => { box.hidden = true; URL.revokeObjectURL(url); $("#crop-ok").onclick = $("#crop-x").onclick = null; res(v); };
+        $("#crop-x").onclick = () => done(null);
+        $("#crop-ok").onclick = () => {
+          const k = base() * z, d = S0(), out = 512, cv = document.createElement("canvas"); cv.width = cv.height = out;
+          const sw = d / k, sx = (im.naturalWidth - sw) / 2 - x / k, sy = (im.naturalHeight - sw) / 2 - y / k;
+          cv.getContext("2d").drawImage(im, sx, sy, sw, sw, 0, 0, out, out); done(cv.toDataURL("image/jpeg", 0.88));
+        };
+        requestAnimationFrame(draw);
+      };
+      im.src = url;
+    });
+  }
   $("#pf-file").onchange = async e => {
     const f = e.target.files && e.target.files[0]; e.target.value = ""; if (!f) return;
     if (!/^image\//.test(f.type || "image/")) { toast(L("اختر صورة", "Pick an image")); return; }
     try {
+      const img = await cropImg(f); if (!img) return;
       toast(L("يرفع الصورة…", "Uploading…"));
-      const r = await api("/profile/avatar", { method: "POST", body: JSON.stringify({ image: await shrinkImg(f) }) });
+      const r = await api("/profile/avatar", { method: "POST", body: JSON.stringify({ image: img }) });
       S.av = r.avatar || ""; save(); drawAvatars(); toast(L("انحفظت صورتك ✅", "Photo saved ✅"));
     } catch (x) { toast(x.message === "img" ? L("ما قدرت أقرا الصورة، جرب وحدة ثانية", "Couldn't read that image, try another") : errText(x)); }
   };
@@ -3598,7 +3647,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#pap-list").innerHTML = r.papers.length ? r.papers.map(p => `<div class="pap"><div><p>${esc(p.label)}</p><small>${L(!ABSHER.includes(p.kind) && p.kind !== "insurance" ? "آخر يوم " : papM(p) ? "ينتهي " : "تنتهي ", "Expires ")}${fmtDay(new Date(p.expires + "T12:00:00"))}${p.mine ? "" : L(" · حق اللي معك", " · your family member's")}${p.created ? L(" · انضاف ", " · added ") + fmtDay(new Date(p.created + "T12:00:00")) : ""}</small></div><span class="left${p.days < 0 ? " bad" : p.days <= 30 ? " warn" : ""}">${p.days < 0 ? L(papM(p) ? "منتهي" : !ABSHER.includes(p.kind) ? "انتهى" : "منتهية", "Expired") : p.days === 0 ? L("اليوم", "Today") : AR(String(p.days)) + L(" يوم", " days")}</span><button type="button" data-edpap="${p.id}" aria-label="${L("عدّل", "Edit")}"><svg><use href="#i-pen"/></svg></button><button type="button" data-delpap="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<p class="note">${L("ما فيه مستندات للحين. اضغط «أضف مستند» أو أرسل صورته لفزعة.", "No documents yet. Tap “Add a document” or send Fazaa a photo of it.")}</p>`;
     $$("[data-edpap]").forEach(b => b.onclick = () => papOpenEdit(+b.dataset.edpap));
-    if (papPending) { const id = papPending; papPending = 0; papOpenEdit(id); }
+    // صفحة المستند للإضافة والتعديل بس: القائمة صارت في «تذكيراتي»
+    $("#pap-list").hidden = true;
+    if (papPending) { const id = papPending; papPending = 0; papOpenEdit(id); } else if ($("#pap-form").hidden) papForm(true);
     $$("[data-delpap]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { const r = await api("/papers/delete", { method: "POST", body: JSON.stringify({ id: +b.dataset.delpap }) });
@@ -3625,7 +3676,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   dateBtn($("#pap-exp"), $("#pap-exp-b"));
   const papOpenEdit = id => { const p = papList.find(x => x.id === id); if (p) papForm(true, p); };
   $("#pap-add").onclick = () => papForm(true);
-  $("#pap-cancel").onclick = () => papForm(false);
+  $("#pap-cancel").onclick = () => { papForm(false); go("tasks"); };
   $("#pap-photo").onclick = () => {
     setTimeout(() => { go("chat"); const i = $("#inp"); i.value = L("هذا مستند، احفظ لي تاريخ انتهائه: ", "This is a document, save its expiry date: "); i.dispatchEvent(new Event("input")); const f = $("#file") || document.querySelector('input[type=file]'); if (f) f.click(); }, 60);
   };
@@ -3639,7 +3690,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       const ed = papEdit, r = await api(ed ? "/papers/edit" : "/papers/add", { method: "POST", body: JSON.stringify({ id: ed || undefined, kind: $("#pap-kind").value, label: $("#pap-label").value.trim(), expires: exp }) });
       papForm(false);
       toast(ed ? L("انعدّل ✅ وتذكيراته على التاريخ الجديد", "Updated ✅ Its reminders follow the new date") : r.reminders ? L(`انحفظ ✅ وبذكرك قبله (${r.reminders} تذكيرات)`, `Saved ✅ I'll remind you before it expires (${r.reminders} reminders)`) : L("هالمستند محفوظ من قبل بنفس التاريخ ✅", "This document is already saved with that date ✅"));
-      loadPapers(); try { reminders = (await api("/reminders")).reminders || []; drawTasks(); syncRadar(); } catch {}
+      try { const [rr, pp] = await Promise.all([api("/reminders"), api("/papers")]); reminders = rr.reminders || []; papers = pp.papers || []; } catch {}
+      go("tasks"); drawTasks(); syncRadar();      // يرجع لتذكيراتي ويلقى المستند في «مستنداتك المحفوظة»
     } catch (x) { err.textContent = x.message === "limit" ? L("وصلت حد المستندات.", "You've reached the documents limit.") : x.message === "label" ? L("اكتب اسم المستند أو البطاقة.", "Type the document or card name.") : errText(x); err.hidden = false; }
     finally { $("#pap-save").disabled = false; }
   };

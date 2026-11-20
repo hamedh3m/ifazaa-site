@@ -439,9 +439,10 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .backlink{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin:2px 0 8px;padding:6px 0}
 .backlink svg{width:18px;height:18px}
 [dir=ltr] .backlink svg{transform:scaleX(-1)}
-.rm-place{text-decoration:none;width:fit-content;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-top:5px}
-.rm-map{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:var(--s2);border:1px solid var(--line);color:var(--ink);font-size:12.5px}
-#ap-place-w[hidden]{display:none}
+.rm-place{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-top:5px}
+.rm-map{text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:var(--s2);border:1px solid var(--line);color:var(--ink);font-size:12.5px}
+#ap-place-w[hidden],#ap-loc-w[hidden]{display:none}
+.radar li .rloc{position:relative;z-index:3;display:inline-flex;align-items:center;gap:4px;margin-inline-start:8px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.16);color:#fff;font-size:13px;text-decoration:none;white-space:nowrap}
 .ap-quick{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
 .ap-quick button{padding:8px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:13.5px}
 .ap-quick button.on{background:var(--ink);color:#111;border-color:var(--ink)}
@@ -1002,7 +1003,8 @@ html.i18n-wait body{visibility:hidden}
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ap-h">موعد جديد</h1><span style="width:42px"></span></header>
   <div class="body">
     <label class="field"><span id="ap-l-t">وش الموعد؟</span><input id="ap-title" maxlength="120" placeholder="مثلاً: موعد الأسنان"></label>
-    <label class="field" id="ap-place-w"><span id="ap-l-p">المكان (اختياري)</span><input id="ap-place" maxlength="480" placeholder="اسم المكان أو الصق رابط قوقل ماب" autocomplete="off"></label>
+    <label class="field" id="ap-place-w"><span id="ap-l-p">اسم المكان (اختياري)</span><input id="ap-place" maxlength="120" placeholder="مثلاً: عيادة الابتسامة" autocomplete="off"></label>
+    <label class="field" id="ap-loc-w"><span id="ap-l-loc">اللوكيشن (اختياري)</span><input id="ap-loc" maxlength="400" inputmode="url" dir="ltr" placeholder="الصق رابط الموقع من قوقل ماب" autocomplete="off"></label>
     <div class="row2">
       <label class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="date"></label>
       <div class="field"><span id="ap-l-h">الساعة</span><input id="ap-time" type="hidden" value="09:00"><button type="button" class="tbtn" id="ap-time-b">9 ص</button></div>
@@ -2053,13 +2055,13 @@ html.i18n-wait body{visibility:hidden}
   function radarItems() {
     const now = Date.now(), R = [];
     conflicts().slice(0, 2).forEach(([a, b]) => R.push({ key: "c" + a.id + "-" + b.id, t: "t-red", k: L("مواعيدك", "Your schedule"), h: L("عندك موعدين بنفس الوقت", "You have two things at the same time"),
-      list: [[a.title, fmtWhen(new Date(a.t))], [b.title, fmtTime(new Date(b.t))]], act: L("رتّبهم مع فزعة", "Sort it out with Fazaa"), say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
+      list: [[a.title, fmtWhen(new Date(a.t)), splitPlace(a.note).url], [b.title, fmtTime(new Date(b.t)), splitPlace(b.note).url]], act: L("رتّبهم مع فزعة", "Sort it out with Fazaa"), say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
     const td = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && startOf(x.t) === startOf(now)).sort((a, b) => a.t - b.t);
     if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عندك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
-      list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t))]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" });
+      list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t)), splitPlace(x.note).url]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" });
     if (!td.length) { const nx = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && x.t < now + 7 * DAY).sort((a, b) => a.t - b.t);
       if (nx.length) R.push({ key: "n" + nx.slice(0, 3).map(x => x.id).join("."), t: "t-blue", k: L("الجاي", "Coming up"), h: L("أقرب مواعيدك", "Your next appointments"),
-        list: nx.slice(0, 3).map(x => [x.title, fmtWhen(new Date(x.t))]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" }); }
+        list: nx.slice(0, 3).map(x => [x.title, fmtWhen(new Date(x.t)), splitPlace(x.note).url]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" }); }
     papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("مستنداتك", "Your documents"),
       h: papHead(p), p: papRenew(p), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
     const tm = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => startOf(x.t) === startOf(now) + DAY).sort((a, b) => a.t - b.t);
@@ -2116,7 +2118,7 @@ html.i18n-wait body{visibility:hidden}
     if (d.end) rb.innerHTML = `<div class="rdone"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p>`;
     else if (d.lock) { rb.innerHTML = `<div class="rblur" aria-hidden="true"><span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p></div><div class="rlock"><span class="rli"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.5" fill="#e0213b"/><rect x="3" y="4.5" width="18" height="5.5" rx="2.5" fill="#a8182f"/><rect x="7" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><rect x="15" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><text x="12" y="18.6" font-size="7.5" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">${new Date().getDate()}</text></svg></span><b>${esc(d.lt)}</b><p>${esc(d.lp)}</p></div>`;
       try { localStorage.setItem(LKEY, String(Date.now())); } catch {} }
-    else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b]) => `<li>${esc(a)}<small>${b}</small></li>`).join("")}</ul>` : "");
+    else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b, u]) => `<li><span>${esc(a)}${u ? `<a class="rloc" href="${esc(u)}" target="_blank" rel="noopener">🗺️ ${L("الموقع", "Map")}</a>` : ""}</span><small>${b}</small></li>`).join("")}</ul>` : "");
     $("#r-act").textContent = d.act;
     markSeen([d.key]);
     clearTimeout(rtimer); if (!d.end) rtimer = setTimeout(() => { if (!$("#radar").hidden) ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); }, 6000);
@@ -2837,7 +2839,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#ap-title").placeholder = kind === "appt" ? L("مثلاً: موعد الأسنان", "e.g. Dentist appointment") : L("مثلاً: أدفع الإيجار", "e.g. Pay the rent");
     $("#ap-go").textContent = apEdit ? L("احفظ التعديل", "Save changes") : kind === "appt" ? L("احفظ الموعد", "Save appointment") : L("احفظ التذكير", "Save reminder");
     const t = new Date(); t.setDate(t.getDate() + (kind === "appt" ? 1 : 0));
-    $("#ap-title").value = pre.title || ""; $("#ap-place").value = pre.place || ""; $("#ap-place-w").hidden = kind !== "appt"; $("#ap-date").value = pre.date || ymd(t); $("#ap-date").min = ymd(new Date());
+    $("#ap-title").value = pre.title || ""; $("#ap-place").value = pre.place || ""; $("#ap-loc").value = pre.loc || ""; $("#ap-place-w").hidden = $("#ap-loc-w").hidden = kind !== "appt"; $("#ap-date").value = pre.date || ymd(t); $("#ap-date").min = ymd(new Date());
     $("#ap-time").value = pre.time || (kind === "appt" ? "09:00" : pad2(Math.min(23, new Date().getHours() + 1)) + ":00");
     befSel = pre.befores ? [...pre.befores] : [pre.before != null ? pre.before : kind === "appt" ? 60 : 0]; befExtra = befSel.filter(m => !BEFORE.some(([v]) => v === m)); syncBefore(); syncApTime();
     $("#ap-repeat").value = pre.repeat || "none";
@@ -2853,9 +2855,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (!d || !tm) { toast(L("اختر اليوم والساعة", "Pick the day and time")); return; }
     const rep = $("#ap-repeat").value, when = new Date(d + "T" + tm);
     if (rep === "none" && when.getTime() < Date.now() - 60e3) { toast(L("هالوقت راح، اختر وقت جاي", "That time has passed, pick a later one")); return; }
+    const locRaw = $("#ap-loc").value.trim(), loc = (locRaw.match(/https?:\/\/\S+/) || [""])[0];
+    if (apKind === "appt" && locRaw && !loc) { toast(L("الصق رابط الموقع من قوقل ماب (يبدأ بـ https)", "Paste the location link from Google Maps (starts with https)")); $("#ap-loc").focus(); return; }
+    const place = apKind === "appt" ? [$("#ap-place").value.replace(/https?:\/\/\S+/g, "").trim(), loc].filter(Boolean).join(" ") : "";
     const b = $("#ap-go"); b.disabled = true;
     try {
-      await api(apEdit ? "/reminders/" + apEdit : "/reminders", { method: apEdit ? "PATCH" : "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: Math.max(...befSel), befores: [...befSel].sort((x, y) => y - x), repeat: rep, place: apKind === "appt" ? $("#ap-place").value.trim() : "" }) });
+      await api(apEdit ? "/reminders/" + apEdit : "/reminders", { method: apEdit ? "PATCH" : "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: Math.max(...befSel), befores: [...befSel].sort((x, y) => y - x), repeat: rep, place }) });
       const n = SHS.length; closeSheets(); if (n) history.go(-n);
       toast(apEdit ? L(`انعدّل ✅ ${fmtWhen(when)}`, `Updated ✅ ${fmtWhen(when)}`) : L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
       try { reminders = (await api("/reminders")).reminders || []; } catch {}
@@ -2904,9 +2909,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#pap-back").onclick = () => { const back = papFrom; papFrom = false; go("tasks"); if (back) setTimeout(() => openSheet("s-remopts"), 60); };
   if (EN) {
     [["#tab-rm", "Reminders"], ["#rm-h", "My reminders"], ["#rm-sub", "Your appointments and reminders in one place."], ["#rm-appt-t", "Appointment"], ["#rm-appt-s", "Pick the day and time, and I'll remind you before"],
-     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-p", "Place (optional)"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#bp-t", "Remind me"], ["#bp-sub", "You can pick more than one"], ["#bp-x", "Cancel"], ["#bp-ok", "Done"], ["#ap-l-r", "Repeats"],
+     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-p", "Place name (optional)"], ["#ap-l-loc", "Location (optional)"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#bp-t", "Remind me"], ["#bp-sub", "You can pick more than one"], ["#bp-x", "Cancel"], ["#bp-ok", "Done"], ["#ap-l-r", "Repeats"],
      ["#ro-h", "Reminder"], ["#ro-sub", "What should I remind you about?"]].forEach(([q, t]) => { $(q).textContent = t; });
-    $("#ap-place").placeholder = "Place name or paste a Google Maps link";
+    $("#ap-place").placeholder = "e.g. Smile Dental Clinic"; $("#ap-loc").placeholder = "Paste the Google Maps link";
     $("#v-tasks").setAttribute("aria-label", "My reminders"); $("#s-appt").setAttribute("aria-label", "New appointment"); $("#s-remopts").setAttribute("aria-label", "Reminder");
     $$("#s-appt [data-close], #s-remopts [data-close]").forEach(b => b.setAttribute("aria-label", "Back"));
   }
@@ -2945,13 +2950,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const repTxt = r => REP[r] || (String(r || "").startsWith("days:") ? r.slice(5).split(",").map(d => DAYN[d.trim().slice(0, 3).toLowerCase()] || "").filter(Boolean).join(EN ? ", " : "، ") : "");
   const REP = EN ? { daily: "Daily", weekdays: "Sun–Thu", weekends: "Fri & Sat", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" } : { daily: "يومياً", weekdays: "الأحد للخميس", weekends: "الجمعة والسبت", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
   // مكان الموعد: اسم، أو رابط خريطة (يطلع زر «افتح الموقع»)، أو الثنين
+  // المكان محفوظ «📍 الاسم الرابط»: نفصلهم. زر الخريطة يطلع بس لو حط لوكيشن
+  const splitPlace = note => { if (!/^📍 /.test(note || "")) return { name: "", url: "" };
+    const pl = note.slice(2).trim(), m = pl.match(/https?:\/\/\S+/);
+    return { name: pl.replace(/https?:\/\/\S+/g, "").replace(/^[\s،,-]+|[\s،,-]+$/g, ""), url: m ? m[0] : "" }; };
   function placeHtml(note) {
-    if (!/^📍 /.test(note || "")) return "";
-    const pl = note.slice(2).trim(), m = pl.match(/https?:\/\/\S+/), name = pl.replace(/https?:\/\/\S+/g, "").replace(/^[\s،,-]+|[\s،,-]+$/g, "");
-    // المكان كله ينضغط ويفتح قوقل ماب: الرابط اللي لصقه، أو بحث باسم المكان
-    const href = m ? m[0] : name ? "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(name) : "";
-    if (!href) return "";
-    return `<a class="rm-place" href="${esc(href)}" target="_blank" rel="noopener">${name ? "📍 " + esc(name) : ""}<span class="rm-map">🗺️ ${L("افتح الموقع", "Open map")}</span></a>`;
+    const { name, url } = splitPlace(note); if (!name && !url) return "";
+    return `<small class="rm-place">${name ? "📍 " + esc(name) : ""}${url ? `<a class="rm-map" href="${esc(url)}" target="_blank" rel="noopener">🗺️ ${L("افتح الموقع", "Open map")}</a>` : ""}</small>`;
   }
   function drawTasks() {
     const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
@@ -2984,8 +2989,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function editRem(x) {
     if (!x) return;
-    const d = new Date(x.at), bf = x.befores && x.befores.length ? x.befores : [0], m = /^📍 /.test(x.note || "") ? x.note.slice(2).trim() : "";
-    openAppt(m || Math.max(...bf) > 0 ? "appt" : "rem", { id: x.id, title: x.title, place: m, date: ymd(d), time: pad2(d.getHours()) + ":" + pad2(d.getMinutes()), befores: bf, repeat: x.repeat && x.repeat !== "none" ? x.repeat : "none" });
+    const d = new Date(x.at), bf = x.befores && x.befores.length ? x.befores : [0], sp = splitPlace(x.note);
+    openAppt(sp.name || sp.url || Math.max(...bf) > 0 ? "appt" : "rem", { id: x.id, title: x.title, place: sp.name, loc: sp.url, date: ymd(d), time: pad2(d.getHours()) + ":" + pad2(d.getMinutes()), befores: bf, repeat: x.repeat && x.repeat !== "none" ? x.repeat : "none" });
   }
   async function renderTasks() {
     drawTasks();

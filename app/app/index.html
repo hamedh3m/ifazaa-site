@@ -70,7 +70,7 @@ svg{display:block}
 
 /* tab bar */
 body.kb .tabs,body.kb .demo-note{display:none}
-.tabs{flex:none;display:grid;grid-template-columns:repeat(5,1fr);padding:4px 4px max(10px, calc(var(--bot) * .55));border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:4px 4px max(10px, calc(var(--bot) * .55));border-top:1px solid var(--line);background:rgba(9,9,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0 2px;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap}
 .tab svg{width:24px;height:24px}
 .tab[aria-current="page"]{color:var(--ink)}
@@ -424,6 +424,23 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .idea span{display:block;font-size:13px;color:var(--muted);line-height:1.55;margin-top:3px}
 .idea i{position:absolute;inset-inline-end:13px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:var(--s3);display:grid;place-items:center;font-style:normal;font-size:20px;line-height:1}
 .starters{margin-top:20px}.starters:empty{display:none}
+.rm-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.rm-pick button{min-height:122px;border-radius:22px;padding:16px;text-align:start;display:flex;flex-direction:column;gap:5px;border:1px solid rgba(255,255,255,.08);transition:transform 140ms var(--ease)}
+.rm-pick button:active{transform:scale(.97)}
+.rm-pick i{font-style:normal;font-size:28px}
+.rm-pick b{font-size:19px;font-weight:800}
+.rm-pick span{font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.45}
+.backlink{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin:2px 0 8px;padding:6px 0}
+.backlink svg{width:18px;height:18px}
+[dir=ltr] .backlink svg{transform:scaleX(-1)}
+.ap-quick{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.ap-quick button{padding:8px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:13.5px}
+.ap-quick button.on{background:var(--ink);color:#111;border-color:var(--ink)}
+.ap-cal{margin-top:6px;padding:12px 14px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:10px}
+.ap-cal:empty{display:none}
+.ap-cal b{color:var(--ink)}
+.ap-cal button{margin-inline-start:auto;padding:7px 14px;border-radius:999px;background:var(--ink);color:#111;font-weight:700;font-size:13px;white-space:nowrap}
+#ap-date,#ap-time{color-scheme:dark}
 .st-h{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);margin-bottom:10px}
 .st-h::before,.st-h::after{content:"";flex:1;height:1px;background:var(--line)}
 #inp::placeholder{transition:opacity .3s}
@@ -841,7 +858,7 @@ html.i18n-wait body{visibility:hidden}
 <div class="app">
   <header class="bar">
     <div class="brand"><button class="icon-btn" id="th-btn" type="button" aria-label="المحادثات"><svg><use href="#i-menu"/></svg></button><svg><use href="#logo"/></svg><span id="bar-title">فزعة</span></div>
-    <div class="bar-r"><button class="radar-btn" id="call-btn" type="button" aria-label="كلّم فزعة"><svg><use href="#i-phone"/></svg></button><button class="radar-btn" id="today-btn" type="button" aria-label="يومك"><svg><use href="#i-sun"/></svg></button><button class="radar-btn" id="bell-btn" type="button" aria-label="التنبيهات"><svg><use href="#i-bell"/></svg><b id="bell-n" hidden></b></button><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار"><i class="sweep"></i><i class="ring"></i><i class="dot"></i><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><button type="button" class="plan-chip" id="plan-chip" aria-label="الباقات">مجاني</button></div>
+    <div class="bar-r"><button class="radar-btn" id="call-btn" type="button" aria-label="كلّم فزعة"><svg><use href="#i-phone"/></svg></button><button class="radar-btn" id="today-btn" type="button" hidden aria-label="يومك"><svg><use href="#i-sun"/></svg></button><button class="radar-btn" id="bell-btn" type="button" aria-label="التنبيهات"><svg><use href="#i-bell"/></svg><b id="bell-n" hidden></b></button><button class="radar-btn" id="radar-btn" type="button" aria-label="الرادار"><i class="sweep"></i><i class="ring"></i><i class="dot"></i><svg><use href="#i-radar"/></svg><b id="radar-n" hidden></b></button><button type="button" class="plan-chip" id="plan-chip" aria-label="الباقات">مجاني</button></div>
   </header>
 
   <main class="views">
@@ -868,6 +885,7 @@ html.i18n-wait body{visibility:hidden}
 
     <!-- today -->
     <section class="view" id="v-papers" aria-label="مستنداتي">
+    <button type="button" class="backlink" id="pap-back"><svg><use href="#i-back"/></svg><span id="pap-back-t">تذكيراتي</span></button>
     <h2 class="h2">إدارة مستنداتك وبطايقك</h2>
     <p class="sub">صوّر هويتك أو إقامتك أو جوازك أو رخصتك أو الاستمارة وأرسلها لفزعة، أو اكتب «إقامتي تنتهي 15 مارس». يذكرك قبلها بشهر وبأسبوع ويوم انتهائها، ومعه خطوات التجديد من أبشر.</p>
     <ul class="safe">
@@ -897,14 +915,15 @@ html.i18n-wait body{visibility:hidden}
     </section>
 
     <!-- tasks -->
-    <section class="view" id="v-tasks" aria-label="المجدول">
-      <h2 class="h2">المجدول</h2>
-      <p class="sub">تذكيراتك ومهامك اللي تتكرر لحالها.</p>
-      <p class="how"><span>مثال: «ذكرني أدفع الإيجار أول كل شهر».</span><em class="pl">المجاني: 10 تذكيرات جديدة بالشهر · برايم وإيليت: بلا حد</em></p>
-      <button type="button" class="paste-cta" id="paste-cta"><span class="pi">📋</span><span class="pt"><b id="paste-t">وصلتك رسالة موعد؟</b><small id="paste-s">انسخها والصقها هنا، وفزعة يسجلها ويذكّرك فيها</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+    <section class="view" id="v-tasks" aria-label="تذكيراتي">
+      <h2 class="h2" id="rm-h">تذكيراتي</h2>
+      <p class="sub" id="rm-sub">مواعيدك وتذكيراتك في مكان واحد.</p>
+      <div class="rm-pick">
+        <button type="button" class="t-blue" id="rm-appt"><i>📅</i><b id="rm-appt-t">موعد</b><span id="rm-appt-s">اختر اليوم والساعة، وأذكّرك قبله</span></button>
+        <button type="button" class="t-red" id="rm-rem"><i>⏰</i><b id="rm-rem-t">تذكير</b><span id="rm-rem-s">مستنداتك وأدويتك وفواتيرك وغيرها</span></button>
+      </div>
       <div id="task-list"></div>
-      <div class="sep" id="ideas-sep">أمثلة تقدر تعدّلها قبل ما ترسلها</div>
-      <div id="task-ideas"></div>
+      <div id="task-ideas" hidden></div>
     </section>
 
     <section class="view" id="v-crew" aria-label="طاقم عملك">
@@ -912,7 +931,7 @@ html.i18n-wait body{visibility:hidden}
       <h2 class="h2" id="ag-h2">يشتغلون عنك وأنت مرتاح</h2>
       <p class="sub" id="ag-sub">كل واحد في طاقمك يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
       <p class="how" id="ag-how"><span id="ag-ex">مثال: «تابع لي سعر آيفون 15 برو ونبهني إذا نزل»، أو «علّمني بنتيجة الهلال».</span><em class="pl" id="ag-pl">برايم: 3 بالطاقم · إيليت: 10</em></p>
-      <button type="button" class="ideas-btn" id="ideas-btn"><i>💡</i><span><b id="ideas-btn-t">أفكار جاهزة</b><small id="ideas-btn-s">لسيارتك وفلوسك وعائلتك وسفرك، بضغطة</small></span><em id="ideas-btn-a">‹</em></button>
+      <button type="button" class="ideas-btn" id="ideas-btn"><i>💡</i><span><b id="ideas-btn-t">أفكار جاهزة</b><small id="ideas-btn-s">أسعار، طيران، أخبار، فريقك، وقصة قبل النوم</small></span><em id="ideas-btn-a">‹</em></button>
       <div class="agl" id="ag-list"></div>
       <p class="sec-t" id="ag-add-t" style="margin-top:22px">أضف لطاقمك</p>
       <div class="agt" id="ag-tpl"></div>
@@ -955,14 +974,34 @@ html.i18n-wait body{visibility:hidden}
 
   <nav class="tabs" aria-label="التنقل">
     <button class="tab" data-v="chat" aria-current="page"><svg><use href="#i-chat"/></svg>فزعة<i class="tab-dot"></i></button>
+    <button class="tab" data-v="tasks"><svg><use href="#i-clock"/></svg><span id="tab-rm">تذكيراتي</span><i class="tab-dot"></i></button>
     <button class="tab" data-v="crew"><svg><use href="#i-radar"/></svg><span id="tab-crew">طاقم عملك</span><i class="tab-dot"></i></button>
-    <button class="tab" data-v="papers"><svg><use href="#i-doc"/></svg><span id="tab-pap">مستنداتي</span><i class="tab-dot"></i></button>
-    <button class="tab" data-v="tasks"><svg><use href="#i-clock"/></svg>المجدول<i class="tab-dot"></i></button>
     <button class="tab" data-v="me"><svg><use href="#i-user"/></svg>حسابي<i class="tab-dot"></i></button>
   </nav>
 </div>
 
 <!-- sheets -->
+<section class="sheet" id="s-appt" aria-label="موعد جديد">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ap-h">موعد جديد</h1><span style="width:42px"></span></header>
+  <div class="body">
+    <label class="field"><span id="ap-l-t">وش الموعد؟</span><input id="ap-title" maxlength="120" placeholder="مثلاً: موعد الأسنان"></label>
+    <div class="row2">
+      <label class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="date"></label>
+      <label class="field"><span id="ap-l-h">الساعة</span><input id="ap-time" type="time" value="09:00"></label>
+    </div>
+    <div class="ap-quick" id="ap-quick"></div>
+    <div class="row2">
+      <label class="field"><span id="ap-l-b">ذكّرني</span><select id="ap-before"></select></label>
+      <label class="field"><span id="ap-l-r">يتكرر</span><select id="ap-repeat"></select></label>
+    </div>
+    <div class="ap-cal" id="ap-cal"></div>
+    <button class="btn btn-primary" type="button" id="ap-go" style="margin-top:18px">احفظ الموعد</button>
+  </div>
+</section>
+<section class="sheet" id="s-remopts" aria-label="تذكير">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ro-h">تذكير</h1><span style="width:42px"></span></header>
+  <div class="body"><p class="sub" id="ro-sub">وش تبيني أذكّرك فيه؟</p><div id="remopts"></div></div>
+</section>
 <section class="sheet" id="s-ideas" aria-label="أفكار جاهزة">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ideas-h">أفكار جاهزة</h1><span style="width:42px"></span></header>
   <div class="body"><p class="sub" id="ideas-sub">اضغط على أي فكرة ونكمّلها مع بعض. نضيف أفكار جديدة باستمرار.</p><div id="ideas"></div></div>
@@ -1284,7 +1323,7 @@ html.i18n-wait body{visibility:hidden}
   });
 
   // ---------- tabs ----------
-  const titles = EN ? { chat: "Fazaa", crew: "Your crew", today: "Your day", papers: "My documents", tasks: "Schedule", me: "Account" } : { chat: "فزعة", crew: "طاقم عملك", today: "يومك", papers: "مستنداتي", tasks: "المجدول", me: "حسابي" };
+  const titles = EN ? { chat: "Fazaa", crew: "Your crew", today: "Your day", papers: "My documents", tasks: "Reminders", me: "Account" } : { chat: "فزعة", crew: "طاقم عملك", today: "يومك", papers: "مستنداتي", tasks: "تذكيراتي", me: "حسابي" };
   // ---------- الضيف: المحادثة بس. باقي الميزات والشراء تحتاج دخول بقوقل أو أبل ----------
   const signedIn = () => !!S.email;
   const GATED_VIEWS = new Set(["crew", "today", "tasks", "papers"]);
@@ -1300,7 +1339,7 @@ html.i18n-wait body{visibility:hidden}
   const go = (v, force) => {
     if (!force && GATED_VIEWS.has(v) && needSignin()) return;
     $$(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v));
-    $$(".tab").forEach(t => { if (t.dataset.v === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
+    $$(".tab").forEach(t => { if (t.dataset.v === v || (v === "papers" && t.dataset.v === "tasks")) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); });
     $("#bar-title").textContent = titles[v];
     syncHead(v);
     if (v === "today") startStories();
@@ -1960,7 +1999,10 @@ html.i18n-wait body{visibility:hidden}
       list: [[a.title, fmtWhen(new Date(a.t))], [b.title, fmtTime(new Date(b.t))]], act: L("رتّبهم مع فزعة", "Sort it out with Fazaa"), say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
     const td = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && startOf(x.t) === startOf(now)).sort((a, b) => a.t - b.t);
     if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عندك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
-      list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t))]), act: L("افتح المجدول", "Open schedule"), go: "tasks" });
+      list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t))]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" });
+    if (!td.length) { const nx = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && x.t < now + 7 * DAY).sort((a, b) => a.t - b.t);
+      if (nx.length) R.push({ key: "n" + nx.slice(0, 3).map(x => x.id).join("."), t: "t-blue", k: L("الجاي", "Coming up"), h: L("أقرب مواعيدك", "Your next appointments"),
+        list: nx.slice(0, 3).map(x => [x.title, fmtWhen(new Date(x.t))]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" }); }
     papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("مستنداتك", "Your documents"),
       h: p.days < 0 ? L(`${p.label} منتهية`, `${p.label} has expired`) : p.days === 0 ? L(`${p.label} تنتهي اليوم`, `${p.label} expires today`) : L(`${p.label} تنتهي بعد ${arDays(p.days)}`, p.days === 1 ? `${p.label} expires tomorrow` : `${p.label} expires in ${p.days} days`),
       p: L("جدّدها من أبشر قبل لا تنتهي، وأنا أذكرك.", "Renew it before it expires, and I'll keep reminding you."), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
@@ -2592,14 +2634,14 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (fromSheet) { history.back(); setTimeout(act, 340); } else act();
   }
   const ideaRows = [];
-  $("#ideas").innerHTML = IDEAS.map(([ic, name, t, rows]) => `<div class="idc ${t}">${ic} ${esc(name)}</div>` + rows.map(([h, p, o]) => {
+  $("#ideas").innerHTML = IDEAS.map(([ic, name, t, rows]) => [ic, name, t, rows.filter(r => r[2].k)]).filter(c => c[3].length).map(([ic, name, t, rows]) => `<div class="idc ${t}">${ic} ${esc(name)}</div>` + rows.map(([h, p, o]) => {
     const i = ideaRows.push(o) - 1, desc = p || (AGK[o.k] ? AGK[o.k][2] : "");
     return `<button type="button" class="idea" data-ix="${i}"><b>${esc(h)}</b><span>${esc(desc)}</span><i aria-hidden="true">+</i></button>`;
   }).join("")).join("");
   $$("#ideas [data-ix]").forEach(b => b.onclick = () => runIdea(ideaRows[+b.dataset.ix], true));
   $("#ideas-btn").onclick = () => openSheet("s-ideas");
   if (EN) {
-    $("#ideas-btn-t").textContent = "Ready-made ideas"; $("#ideas-btn-s").textContent = "For your car, money, family and travel, in one tap"; $("#ideas-btn-a").textContent = "›";
+    $("#ideas-btn-t").textContent = "Ready-made ideas"; $("#ideas-btn-s").textContent = "Prices, flights, news, your team and bedtime stories"; $("#ideas-btn-a").textContent = "›";
     $("#ideas-h").textContent = "Ready-made ideas"; $("#ideas-sub").textContent = "Tap any idea and we'll finish it together. New ideas are added all the time.";
     $("#s-ideas").setAttribute("aria-label", "Ready-made ideas"); $("#s-ideas [data-close]").setAttribute("aria-label", "Back");
   }
@@ -2664,10 +2706,109 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {
-    [["#tab-crew", "Crew"], ["#tab-pap", "Documents"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-ex", "For example: “Watch the iPhone 15 Pro price and tell me if it drops”, or “Tell me the Al Hilal score.”"], ["#ag-pl", "Prime: 3 crew members · Elite: 10"], ["#ag-add-t", "Add to your crew"],
+    [["#tab-crew", "Crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-ex", "For example: “Watch the iPhone 15 Pro price and tell me if it drops”, or “Tell me the Al Hilal score.”"], ["#ag-pl", "Prime: 3 crew members · Elite: 10"], ["#ag-add-t", "Add to your crew"],
      ["#agf-every-l", "Every"], ["#agf-at-l", "At"], ["#agf-day-l", "Day"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
   }
 
+
+  // ---------- تذكيراتي: موعد (نموذج بالتقويم) أو تذكير (خيارات) ----------
+  const pad2 = n => String(n).padStart(2, "0");
+  const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const BEFORE = [[0, L("وقت الموعد", "At the time")], [15, L("قبله بربع ساعة", "15 min before")], [60, L("قبله بساعة", "1 hour before")], [180, L("قبله بثلاث ساعات", "3 hours before")], [1440, L("قبله بيوم", "1 day before")], [10080, L("قبله بأسبوع", "1 week before")]];
+  const REPEAT = [["none", L("ما يتكرر", "Doesn't repeat")], ["daily", L("كل يوم", "Every day")], ["weekly", L("كل أسبوع", "Every week")], ["monthly", L("كل شهر", "Every month")], ["yearly", L("كل سنة", "Every year")]];
+  $("#ap-before").innerHTML = BEFORE.map(([v, n]) => `<option value="${v}">${n}</option>`).join("");
+  $("#ap-repeat").innerHTML = REPEAT.map(([v, n]) => `<option value="${v}">${n}</option>`).join("");
+  let apKind = "appt";
+  function apQuick() {
+    const t = new Date(), days = [[0, L("اليوم", "Today")], [1, L("بكرة", "Tomorrow")], [2, L("بعد بكرة", "Day after")], [7, L("بعد أسبوع", "In a week")]];
+    $("#ap-quick").innerHTML = days.map(([n, l]) => { const d = new Date(t); d.setDate(t.getDate() + n); return `<button type="button" data-d="${ymd(d)}">${l}</button>`; }).join("");
+    const mark = () => $$("#ap-quick button").forEach(b => b.classList.toggle("on", b.dataset.d === $("#ap-date").value));
+    $$("#ap-quick button").forEach(b => b.onclick = () => { $("#ap-date").value = b.dataset.d; mark(); });
+    $("#ap-date").oninput = mark; mark();
+  }
+  function apCal() {
+    const el = $("#ap-cal");
+    if (calLinked) el.innerHTML = `<span>📅</span><span><b>${L("بيطلع في تقويم جوالك لحاله", "It'll show up in your phone calendar")}</b></span>`;
+    else if (calLinked === false) { el.innerHTML = `<span>📅</span><span>${L("تبي مواعيدك تطلع في تقويم جوالك؟", "Want your appointments in your phone calendar?")}</span><button type="button" id="ap-link">${L("اربطه", "Link it")}</button>`;
+      $("#ap-link").onclick = () => { history.back(); setTimeout(openCal, 340); }; }
+    else el.innerHTML = "";
+  }
+  function openAppt(kind, pre = {}) {
+    if (needSignin()) return;
+    apKind = kind;
+    $("#ap-h").textContent = kind === "appt" ? L("موعد جديد", "New appointment") : L("تذكير جديد", "New reminder");
+    $("#ap-l-t").textContent = kind === "appt" ? L("وش الموعد؟", "What's the appointment?") : L("وش أذكّرك فيه؟", "What should I remind you about?");
+    $("#ap-title").placeholder = kind === "appt" ? L("مثلاً: موعد الأسنان", "e.g. Dentist appointment") : L("مثلاً: أدفع الإيجار", "e.g. Pay the rent");
+    $("#ap-go").textContent = kind === "appt" ? L("احفظ الموعد", "Save appointment") : L("احفظ التذكير", "Save reminder");
+    const t = new Date(); t.setDate(t.getDate() + (kind === "appt" ? 1 : 0));
+    $("#ap-title").value = pre.title || ""; $("#ap-date").value = ymd(t); $("#ap-date").min = ymd(new Date());
+    $("#ap-time").value = pre.time || (kind === "appt" ? "09:00" : pad2(Math.min(23, new Date().getHours() + 1)) + ":00");
+    $("#ap-before").value = String(pre.before != null ? pre.before : kind === "appt" ? 60 : 0);
+    $("#ap-repeat").value = pre.repeat || "none";
+    apQuick(); apCal();
+    if (calLinked === null && signedIn()) api("/connections").then(r => { calLinked = !!r.calendar; apCal(); }).catch(() => {});
+    openSheet("s-appt");
+    if (!pre.title) setTimeout(() => $("#ap-title").focus(), 350);
+    else setTimeout(() => { const i = $("#ap-title"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 350);
+  }
+  $("#ap-go").onclick = async () => {
+    const title = $("#ap-title").value.trim(), d = $("#ap-date").value, tm = $("#ap-time").value;
+    if (!title) { toast(L("اكتب وش الموعد", "Type what it's about")); $("#ap-title").focus(); return; }
+    if (!d || !tm) { toast(L("اختر اليوم والساعة", "Pick the day and time")); return; }
+    const rep = $("#ap-repeat").value, when = new Date(d + "T" + tm);
+    if (rep === "none" && when.getTime() < Date.now() - 60e3) { toast(L("هالوقت راح، اختر وقت جاي", "That time has passed, pick a later one")); return; }
+    const b = $("#ap-go"); b.disabled = true;
+    try {
+      await api("/reminders", { method: "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: +$("#ap-before").value, repeat: rep }) });
+      history.back();
+      toast(L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
+      try { reminders = (await api("/reminders")).reminders || []; } catch {}
+      drawTasks(); drawHome(); syncRadar();
+    } catch (e) { toast(e.message === "limit" ? L("وصلت حد التذكيرات الجديدة في الباقة المجانية هالشهر (10)", "You've reached this month's free limit of 10 new reminders") : errText(e)); }
+    finally { b.disabled = false; }
+  };
+  // صفحة «تذكير»: سريع + مستنداتي + أدويتي + رسالة موعد + أفكار
+  const REMOPTS = [
+    ["", "", [
+      ["⏰", L("تذكير عادي", "A simple reminder"), L("أي شي، بيوم وساعة، ويتكرر لو تبي", "Anything, on a day and time, repeating if you like"), () => openAppt("rem")],
+      ["📄", L("مستنداتي", "My documents"), L("الهوية والإقامة والجواز والرخصة والاستمارة، أذكّرك قبل لا تنتهي", "ID, iqama, passport, licence and car registration, reminded before they expire"), () => go("papers")],
+      ["💊", L("سجل أدويتي", "My medicines"), L("مواعيد أدويتك، وتسجّل وش أخذت ومتى", "Your medicine times, and a log of what you took and when"), () => { openSheet("s-meds"); drawMeds(); loadMeds(); }],
+      ["📋", L("وصلتك رسالة موعد؟", "Got an appointment message?"), L("الصقها وأسجّلها لك", "Paste it and I'll save it"), () => openPaste()],
+    ]],
+    ["🚗", L("سيارتي", "My car"), [
+      ["", L("الاستمارة والتأمين", "Registration & insurance"), L("سجّل تاريخها، وأذكّرك قبل لا تنتهي", "Add the date, and I'll remind you before it expires"), () => go("papers")],
+      ["", L("الفحص الدوري", "Car inspection"), L("أذكّرك قبل موعده بأسبوع", "A reminder a week before"), () => openAppt("rem", { title: L("الفحص الدوري للسيارة", "Car inspection"), before: 10080, time: "09:00" })],
+      ["", L("تغيير الزيت", "Oil change"), L("تذكير كل 3 شهور", "A reminder every 3 months"), () => { go("chat"); cardSay(L("ذكّرني أغيّر زيت السيارة كل 3 شهور، وأول مرة ", "Remind me to change the car oil every 3 months, starting ")); }],
+    ]],
+    ["💰", L("فواتيري", "My bills"), [
+      ["", L("فاتورة الكهرباء", "Electricity bill"), L("كل شهر بيومها", "Every month on its day"), () => openAppt("rem", { title: L("فاتورة الكهرباء", "Electricity bill"), repeat: "monthly", time: "10:00" })],
+      ["", L("الإيجار", "Rent"), L("كل شهر قبلها بيوم", "Every month, a day before"), () => openAppt("rem", { title: L("دفع الإيجار", "Pay the rent"), repeat: "monthly", before: 1440, time: "10:00" })],
+      ["", L("الاشتراكات", "Subscriptions"), L("نتفلكس، شاهد، الجوال… قبل التجديد", "Netflix, phone plan… before renewal"), () => openAppt("rem", { title: L("تجديد اشتراك ", "Subscription renewal: "), repeat: "monthly", before: 1440, time: "10:00" })],
+    ]],
+    ["👨‍👩‍👧", L("أهلي", "My family"), [
+      ["", L("المناسبات وأعياد الميلاد", "Birthdays & special days"), L("كل سنة، وأذكّرك قبلها بيوم", "Every year, a day before"), () => openAppt("rem", { title: L("عيد ميلاد ", "Birthday: "), repeat: "yearly", before: 1440, time: "09:00" })],
+      ["", L("تطعيمات الأطفال", "Kids' vaccines"), L("موعد التطعيم الجاي", "The next vaccine date"), () => openAppt("appt", { title: L("تطعيم ", "Vaccine: "), before: 1440 })],
+    ]],
+    ["✈️", L("السفر", "Travel"), [
+      ["", L("موعد رحلتك", "Your flight"), L("أذكّرك قبلها بيوم", "A reminder the day before"), () => openAppt("appt", { title: L("رحلة إلى ", "Flight to "), before: 1440 })],
+    ]],
+  ];
+  const roFns = [];
+  $("#remopts").innerHTML = REMOPTS.map(([ic, name, rows]) => (name ? `<div class="idc t-sand">${ic} ${esc(name)}</div>` : "") + rows.map(([e, h, p, fn]) => {
+    const i = roFns.push(fn) - 1;
+    return `<button type="button" class="idea" data-ro="${i}"><b>${e ? e + " " : ""}${esc(h)}</b><span>${esc(p)}</span><i aria-hidden="true">+</i></button>`;
+  }).join("")).join("");
+  $$("#remopts [data-ro]").forEach(b => b.onclick = () => { const fn = roFns[+b.dataset.ro]; history.back(); setTimeout(fn, 340); });
+  $("#rm-appt").onclick = () => openAppt("appt");
+  $("#rm-rem").onclick = () => { if (!needSignin()) openSheet("s-remopts"); };
+  $("#pap-back").onclick = () => go("tasks");
+  if (EN) {
+    [["#tab-rm", "Reminders"], ["#rm-h", "My reminders"], ["#rm-sub", "Your appointments and reminders in one place."], ["#rm-appt-t", "Appointment"], ["#rm-appt-s", "Pick the day and time, and I'll remind you before"],
+     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#ap-l-r", "Repeats"],
+     ["#ro-h", "Reminder"], ["#ro-sub", "What should I remind you about?"]].forEach(([q, t]) => { $(q).textContent = t; });
+    $("#v-tasks").setAttribute("aria-label", "My reminders"); $("#s-appt").setAttribute("aria-label", "New appointment"); $("#s-remopts").setAttribute("aria-label", "Reminder");
+    $$("#s-appt [data-close], #s-remopts [data-close]").forEach(b => b.setAttribute("aria-label", "Back"));
+  }
   // ---------- رسالة موعد: يلصقها وفزعة يسجلها (بدون ما يكتب شي) ----------
   const APPT_RE = /موعد|مواعيد|حجز|عياد|مستشف|مستوصف|مركز|الطبيب|د\.|appointment|booking|clinic|hospital|reservation|\d{1,2}[:\/.-]\d{1,2}/i;
   const apptMsg = t => L("وصلتني هذي الرسالة عن موعد. سجّلها تذكير بالتاريخ والوقت والمكان اللي فيها، وذكرني قبله بوقت مناسب:\n", "I got this message about an appointment. Save it as a reminder with its date, time and place, and remind me ahead of time:\n") + t.trim().slice(0, 1500);
@@ -2676,10 +2817,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     try { const t = navigator.clipboard && navigator.clipboard.readText ? await navigator.clipboard.readText() : ""; if (t && t.trim().length > 8) ta.value = t.trim(); } catch {}
     if (!ta.value) setTimeout(() => ta.focus(), 300);
   }
-  $("#paste-cta").onclick = openPaste;
   $("#ps-clip").onclick = async () => { try { const t = await navigator.clipboard.readText(); if (t && t.trim()) { $("#ps-txt").value = t.trim(); return; } } catch {} toast(L("اضغط على الخانة مطوّل واختر «لصق»", "Long-press the box and choose “Paste”")); $("#ps-txt").focus(); };
   $("#ps-go").onclick = () => { const t = $("#ps-txt").value.trim(); if (t.length < 6) { toast(L("الصق رسالة الموعد أول", "Paste the appointment message first")); $("#ps-txt").focus(); return; } history.back(); setTimeout(() => { go("chat"); submit(apptMsg(t)); }, 250); };
-  if (EN) [["#paste-t", "Got an appointment text?"], ["#paste-s", "Copy it and paste it here, and Fazaa saves it and reminds you"], ["#ps-h", "Appointment text"], ["#ps-sub", "A text from a hospital, clinic or any business? Paste it here as is, and Fazaa picks out the date, time and place and saves a reminder."], ["#ps-clip", "📋 Paste from clipboard"], ["#ps-go", "Save the appointment"], ["#ps-note", "The text is sent to Fazaa in your chat like any message, and you can delete the chat any time."]].forEach(([q, t]) => { $(q).textContent = t; });
+  if (EN) [["#ps-h", "Appointment text"], ["#ps-sub", "A text from a hospital, clinic or any business? Paste it here as is, and Fazaa picks out the date, time and place and saves a reminder."], ["#ps-clip", "📋 Paste from clipboard"], ["#ps-go", "Save the appointment"], ["#ps-note", "The text is sent to Fazaa in your chat like any message, and you can delete the chat any time."]].forEach(([q, t]) => { $(q).textContent = t; });
   if (EN) $("#ps-txt").placeholder = "Long-press here and choose “Paste”";
   // لو لصق رسالة موعد في المحادثة: زر صغير «سجّلها موعد»
   inp.addEventListener("paste", () => setTimeout(() => {
@@ -2704,19 +2844,14 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const repTxt = r => REP[r] || (String(r || "").startsWith("days:") ? r.slice(5).split(",").map(d => DAYN[d.trim().slice(0, 3).toLowerCase()] || "").filter(Boolean).join(EN ? ", " : "، ") : "");
   const REP = EN ? { daily: "Daily", weekdays: "Sun–Thu", weekends: "Fri & Sat", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" } : { daily: "يومياً", weekdays: "الأحد للخميس", weekends: "الجمعة والسبت", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
   function drawTasks() {
-    const up = reminders.slice().sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
-    $("#task-list").innerHTML = up.length ? `<p class="sec-t">${L("تذكيراتك", "Your reminders")}</p>` + up.map(x => `
-      <div class="row"><div><p>${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span></div>
+    const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
+    $("#task-list").innerHTML = up.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + up.map(x => `
+      <div class="row"><div><p>${x.paper ? "📄 " : ""}${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span></div>
       <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
-      + `<button class="btn btn-ghost" id="new-task" style="margin-top:14px"><svg><use href="#i-plus"/></svg>${L("جديد", "New")}</button>`
-      : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي مجدول للحين", "Nothing scheduled yet")}</h3><button class="btn btn-primary" id="new-task"><svg><use href="#i-plus"/></svg>${L("سوّ واحد جديد", "Create one")}</button></div>`;
-    $("#task-ideas").innerHTML = taskIdeas.map(([a, b, c]) => `<button class="row" data-idea="${c}"><div><p>${a}</p><span class="tag">${b}</span></div><svg class="chev"><use href="#i-chev"/></svg></button>`).join("");
-    $("#new-task").onclick = () => { go("chat"); inp.value = L("ذكرني ", "Remind me "); grow(); syncSend(); inp.focus(); };
-    // المثال ما ينرسل لحاله: ينكتب في خانة الكتابة يعدّله (الوقت أو التفاصيل) ويرسله بنفسه
-    $$("[data-idea]").forEach(b => b.onclick = () => { go("chat"); inp.value = b.dataset.idea; grow(); syncSend(); setTimeout(() => { inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch {} }, 80); toast(L("عدّله مثل ما تبي، وبعدين أرسله ✍️", "Edit it the way you want, then send ✍️")); });
-    $$("[data-del]").forEach(b => b.onclick = async () => {
+      : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`;
+    $$("#task-list [data-del]").forEach(b => b.onclick = async () => {
       if (!(await ask(L("تحذف هالتذكير؟", "Delete this reminder?"), L("بينحذف ولا يوصلك.", "It will be deleted and won't reach you."), L("احذف", "Delete")))) return;
-      try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); toast(L("انحذف", "Deleted")); }
+      try { await api("/reminders/" + b.dataset.del, { method: "DELETE" }); reminders = reminders.filter(x => String(x.id) !== b.dataset.del); drawTasks(); drawHome(); syncRadar(); toast(L("انحذف", "Deleted")); }
       catch (e) { toast(errText(e)); }
     });
   }

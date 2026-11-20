@@ -433,7 +433,8 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .backlink{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;margin:2px 0 8px;padding:6px 0}
 .backlink svg{width:18px;height:18px}
 [dir=ltr] .backlink svg{transform:scaleX(-1)}
-.rm-place{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+.rm-place{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-top:5px}
+.rm-map{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;background:var(--s2);border:1px solid var(--line);color:var(--ink);font-size:12.5px}
 #ap-place-w[hidden]{display:none}
 .ap-quick{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
 .ap-quick button{padding:8px 14px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:13.5px}
@@ -995,7 +996,7 @@ html.i18n-wait body{visibility:hidden}
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="ap-h">موعد جديد</h1><span style="width:42px"></span></header>
   <div class="body">
     <label class="field"><span id="ap-l-t">وش الموعد؟</span><input id="ap-title" maxlength="120" placeholder="مثلاً: موعد الأسنان"></label>
-    <label class="field" id="ap-place-w"><span id="ap-l-p">المكان (اختياري)</span><input id="ap-place" maxlength="120" placeholder="مثلاً: عيادة الابتسامة، حي الروضة" autocomplete="off"></label>
+    <label class="field" id="ap-place-w"><span id="ap-l-p">المكان (اختياري)</span><input id="ap-place" maxlength="480" placeholder="اسم المكان أو الصق رابط قوقل ماب" autocomplete="off"></label>
     <div class="row2">
       <label class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="date"></label>
       <div class="field"><span id="ap-l-h">الساعة</span><input id="ap-time" type="hidden" value="09:00"><button type="button" class="tbtn" id="ap-time-b">9 ص</button></div>
@@ -2870,7 +2871,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     [["#tab-rm", "Reminders"], ["#rm-h", "My reminders"], ["#rm-sub", "Your appointments and reminders in one place."], ["#rm-appt-t", "Appointment"], ["#rm-appt-s", "Pick the day and time, and I'll remind you before"],
      ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-p", "Place (optional)"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#ap-l-r", "Repeats"],
      ["#ro-h", "Reminder"], ["#ro-sub", "What should I remind you about?"]].forEach(([q, t]) => { $(q).textContent = t; });
-    $("#ap-place").placeholder = "e.g. Smile Clinic, Al Rawdah";
+    $("#ap-place").placeholder = "Place name or paste a Google Maps link";
     $("#v-tasks").setAttribute("aria-label", "My reminders"); $("#s-appt").setAttribute("aria-label", "New appointment"); $("#s-remopts").setAttribute("aria-label", "Reminder");
     $$("#s-appt [data-close], #s-remopts [data-close]").forEach(b => b.setAttribute("aria-label", "Back"));
   }
@@ -2908,10 +2909,16 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const DAYN = EN ? { sun: "Sun", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat" } : { sun: "الأحد", mon: "الاثنين", tue: "الثلاثاء", wed: "الأربعاء", thu: "الخميس", fri: "الجمعة", sat: "السبت" };
   const repTxt = r => REP[r] || (String(r || "").startsWith("days:") ? r.slice(5).split(",").map(d => DAYN[d.trim().slice(0, 3).toLowerCase()] || "").filter(Boolean).join(EN ? ", " : "، ") : "");
   const REP = EN ? { daily: "Daily", weekdays: "Sun–Thu", weekends: "Fri & Sat", weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" } : { daily: "يومياً", weekdays: "الأحد للخميس", weekends: "الجمعة والسبت", weekly: "كل أسبوع", monthly: "كل شهر", yearly: "كل سنة" };
+  // مكان الموعد: اسم، أو رابط خريطة (يطلع زر «افتح الموقع»)، أو الثنين
+  function placeHtml(note) {
+    if (!/^📍 /.test(note || "")) return "";
+    const pl = note.slice(2).trim(), m = pl.match(/https?:\/\/\S+/), name = pl.replace(/https?:\/\/\S+/g, "").replace(/^[\s،,-]+|[\s،,-]+$/g, "");
+    return `<small class="rm-place">${name ? "📍 " + esc(name) : ""}${m ? `<a class="rm-map" href="${esc(m[0])}" target="_blank" rel="noopener">🗺️ ${L("افتح الموقع", "Open map")}</a>` : ""}</small>`;
+  }
   function drawTasks() {
     const now = Date.now(), up = reminders.filter(x => Date.parse(x.at) > now - 3600e3).sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
     $("#task-list").innerHTML = up.length ? `<p class="sec-t" style="margin-top:20px">${L("الجاي عندك", "Coming up")}</p>` + up.map(x => `
-      <div class="row"><div><p>${x.paper ? "📄 " : ""}${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${/^📍 /.test(x.note || "") ? `<small class="rm-place">${esc(x.note)}</small>` : ""}</div>
+      <div class="row"><div><p>${x.paper ? "📄 " : ""}${esc(x.title)}</p><span class="tag">${fmtWhen(new Date(x.at))}${repTxt(x.repeat) ? " · " + repTxt(x.repeat) : ""}</span>${placeHtml(x.note)}</div>
       <button class="del" data-del="${x.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("")
       : `<div class="empty-tasks"><div class="clock"><svg><use href="#i-clock"/></svg></div><h3>${L("ما عندك شي للحين", "Nothing coming up yet")}</h3><p class="sub">${L("اختر «موعد» أو «تذكير» فوق، أو قلها لفزعة في المحادثة.", "Pick “Appointment” or “Reminder” above, or just tell Fazaa in the chat.")}</p></div>`;
     $$("#task-list [data-del]").forEach(b => b.onclick = async () => {

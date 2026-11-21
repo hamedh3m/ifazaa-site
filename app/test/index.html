@@ -1538,7 +1538,8 @@ html.i18n-wait body{visibility:hidden}
     html += esc(body.slice(last));
     return { html, links: [] };
   }
-  const linkify = s => esc(s).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="text-decoration:underline">$1</a>')
+  const linkify = s => esc(s).replace(/\*\*([^*\n]{1,200}?)\*\*/g, "<b>$1</b>").replace(/(^|\n)#{1,4} +/g, "$1")   // **غامق** يطلع غامق بدل النجوم
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="text-decoration:underline">$1</a>')
     .replace(/(📞[^:\n<]{0,40}:\s*)(\+?\d{8,15})/g, '$1<a href="tel:$2" class="tel">$2</a>');
 
   // ---------- chat ui ----------
@@ -4174,7 +4175,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v60".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v61".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

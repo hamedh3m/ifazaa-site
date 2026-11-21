@@ -2261,10 +2261,10 @@ html.i18n-wait body{visibility:hidden}
     const rb = $("#r-body"); rb.classList.toggle("ctr", !!(d.end || d.lock)); rb.classList.toggle("lockb", !!d.lock);
     if (d.end) Object.assign(d, radarEnd());     // الطاقم ممكن وصل بعد ما انفتح الرادار
     $("#r-title").textContent = d.cat || L("الرادار", "Radar");
-    const crewNow = d.end ? AG.filter(a => a.active).slice(0, 5) : [];
+    const crewNow = d.end ? AG.filter(a => a.active).sort((x, y) => (Date.parse(y.upd_at || "") || 0) - (Date.parse(x.upd_at || "") || 0)).slice(0, 5) : [];
     if (d.end && crewNow.length) {   // آخر صفحة: موظفين الطاقم الشغالين بشكل مختصر (الضغط يفتح بطاقة الموظف)
       rb.classList.remove("ctr");
-      rb.innerHTML = `<span class="rk">${L("شغّالين لك الحين", "Working for you now")}</span><h3>${L(`${AR(crewNow.length)} في طاقمك`, `${crewNow.length} in your crew`)}</h3><ul class="rcrew">${crewNow.map(a => {
+      rb.innerHTML = `<span class="rk">${L("شغّالين لك الحين", "Working for you now")}</span><h3>${L("آخر التحديثات", "Latest updates")}</h3><ul class="rcrew">${crewNow.map(a => {
         const line = String(a.last_text || "").replace(/https?:\/\/\S+/g, "").replace(/\*\*/g, "").split("\n").map(x => x.trim()).filter(Boolean)[0] || L("يدوّر لك… أول نتيجة تطلع هنا", "Searching… the first result shows here");
         return `<li data-rcrew="${a.id}"><span><b>${a.emoji || "🔁"} ${esc(agTitle(a))}</b><em>${esc(line.slice(0, 90))}</em></span><small>${a.upd_at ? esc(agUpd(a).replace(/^(آخر تحديث|Updated) /, "")) : ""}</small></li>`; }).join("")}</ul>`;
       rb.querySelectorAll("[data-rcrew]").forEach(li => li.onclick = e => { e.stopPropagation(); const id = +li.dataset.rcrew; closeRadar(); agWant = id; go("crew"); });
@@ -4174,7 +4174,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v59".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v60".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

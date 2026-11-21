@@ -429,6 +429,8 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;background:var(--s2);color:var(--ink);text-decoration:none;font-weight:700;font-size:12px;line-height:1.7;vertical-align:baseline;white-space:nowrap}
 .agl .srcs a{display:inline-block;margin:6px 0 0 6px;padding:6px 10px;border-radius:999px;background:var(--s2);color:var(--ink);text-decoration:none;font-weight:700;font-size:13px}
 .ag .more{display:block;width:100%;margin-top:8px;padding:10px;border-radius:12px;border:1px dashed var(--line);background:none;color:var(--ink);font-size:14px;font-weight:700}
+.ag .nw{white-space:nowrap}
+.ag .agv{margin-top:10px;font-size:13px;color:var(--muted)}.ag .agv a{display:inline-block;margin:6px 0 0 6px;padding:7px 12px;border-radius:999px;background:var(--s2);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700}
 .ag .srcs{margin-top:8px;font-size:13px}.ag .srcs summary{cursor:pointer;color:var(--muted);list-style:none;padding:4px 0}.ag .srcs summary::-webkit-details-marker{display:none}
 .ag .srcs a{display:inline-block;margin:4px 0 0 6px;padding:6px 10px;border-radius:999px;background:var(--s2);color:var(--ink);text-decoration:none;font-weight:700}
 .ag .al{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--s2);font-size:14px;color:#d8d8d4;white-space:pre-wrap;max-height:96px;overflow:hidden}
@@ -2701,6 +2703,21 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     agObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && e.intersectionRatio >= .5 && !$("#v-crew").hidden) { agObs.unobserve(e.target); agMarkSeen(+e.target.dataset.agid, 2100); } }), { threshold: [.5] });
     els.forEach(el => agObs.observe(el));
   }
+  // رحلات الطيران: روابط بنفس المسار والتاريخ وعدد المسافرين، عشان يتأكد من السعر بنفسه بضغطة
+  function agVerify(a) {
+    if (a.kind !== "travel") return "";
+    const c = a.config || {}, f = String(c.from_iata || "").split(",")[0].trim(), t = String(c.to_iata || "").split(",")[0].trim();
+    const d = String(c.date || ""), r = c.trip === "round" ? String(c.back || "") : "";
+    if (!/^[A-Z]{3}$/.test(f) || !/^[A-Z]{3}$/.test(t) || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return "";
+    const ad = Math.max(1, +c.adults || 1), kids = +c.kids || 0, inf = +c.infants || 0, cab = ["business", "first"].includes(c.cabin) ? c.cabin : "economy";
+    const yy = x => x.slice(2).replace(/-/g, "");
+    const ch = [...Array(kids).fill(8), ...Array(inf).fill(1)].join("|");
+    const sky = `https://www.skyscanner.com.sa/transport/flights/${f.toLowerCase()}/${t.toLowerCase()}/${yy(d)}/${/^\d{4}-\d{2}-\d{2}$/.test(r) ? yy(r) + "/" : ""}`
+      + `?adultsv2=${ad}${ch ? "&childrenv2=" + encodeURIComponent(ch) : ""}&cabinclass=${cab}&rtn=${r ? 1 : 0}${c.stops === "nonstop" ? "&preferdirects=true" : ""}&currency=SAR`;
+    const q = `Flights from ${f} to ${t} on ${d}${r ? " through " + r : " one way"}${ad > 1 ? ` for ${ad} adults` : ""}${kids ? ` ${kids} children` : ""}${cab !== "economy" ? " " + cab + " class" : ""}${c.stops === "nonstop" ? " nonstop" : ""}`;
+    const gf = `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}&curr=SAR&hl=${EN ? "en" : "ar"}`;
+    return `<div class="agv">${L("تأكد من السعر بنفس رحلتك:", "Check the price for your exact trip:")}<br><a href="${esc(gf)}" target="_blank" rel="noopener">Google Flights</a><a href="${esc(sky)}" target="_blank" rel="noopener">Skyscanner</a></div>`;
+  }
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] + (a.at ? " · " + L("من ", "from ") + fmtTime(d) : "") : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
   async function openAgLog(id) {
@@ -2756,8 +2773,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function drawAgents() {
     { const rb = $("#ag-runall"); if (rb) rb.hidden = !AG.some(a => a.active); }
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}${agFresh(a) ? " fresh" : ""}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}${agFresh(a) ? `<em class="agnew">${L("جديد", "New")}</em>` : ""}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${esc(agUpd(a))}` : L("موقف", "Paused") + " · " + esc(agUpd(a))}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}${agFresh(a) ? " fresh" : ""}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}${agFresh(a) ? `<em class="agnew">${L("جديد", "New")}</em>` : ""}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · <span class="nw">${esc(agUpd(a))}</span>` : L("موقف", "Paused") + ` · <span class="nw">${esc(agUpd(a))}</span>`}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcRich(a.last_text); return `<div class="al">${sp.html}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
+      + agVerify(a)
       + (a.active ? `<p class="alive">${aliveTxt(a)}</p>` : "")
       + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("اضغط للتفاصيل", "Tap for details")}</button>`
       + `<div class="aa"><button type="button" class="tog${a.active ? "" : " on"}" data-agtog="${a.id}">${a.active ? L("⏸ إيقاف مؤقت", "⏸ Pause") : L("▶ تفعيل", "▶ Turn on")}</button>${a.active ? `<button type="button" class="ed now" data-agrun="${a.id}" aria-label="${L("ابحث الحين", "Search now")}" title="${L("ابحث الحين", "Search now")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>` : ""}${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
@@ -4084,7 +4102,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v50".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v51".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

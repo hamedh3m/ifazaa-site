@@ -4050,12 +4050,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v42".slice(10);
+  const APPV = "fazaa-app-v43".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();
       const m = t.match(/fazaa-app-(v\d+)/);
-      if (m && m[1] !== APPV) { const u = new URL(location.href); u.searchParams.set("v", m[1]); location.replace(u.toString()); }
+      if (m && m[1] !== APPV && new URL(location.href).searchParams.get("v") !== m[1]) { const u = new URL(location.href); u.searchParams.set("v", m[1]); location.replace(u.toString()); }   // مرة وحدة بس، عشان ما تصير إعادة تحميل بلا نهاية
     } catch {}
   }
   if (NATIVE) { freshCheck(); document.addEventListener("visibilitychange", () => { if (!document.hidden) freshCheck(); }); }

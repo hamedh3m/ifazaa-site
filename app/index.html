@@ -2497,7 +2497,7 @@ html.i18n-wait body{visibility:hidden}
       ["infants", L("الرضّع (أقل من سنتين)", "Infants (under 2)"), "", 0, [0, 1, 2, 3].map(n => [String(n), String(n)])],
       ["cabin", L("الدرجة", "Class"), "", 0, [["economy", L("سياحية", "Economy")], ["business", L("أعمال", "Business")], ["first", L("أولى", "First")]]],
       ["bags", L("الشنط", "Bags"), "", 0, [["cabin", L("شنطة يد بس", "Cabin bag only")], ["1", L("شنطة مشحونة لكل مسافر", "1 checked bag each")], ["2", L("شنطتين مشحونة لكل مسافر", "2 checked bags each")]]],
-      ["stops", L("التوقف", "Stops"), "", 0, [["any", L("أي رحلة", "Any")], ["nonstop", L("بدون توقف بس", "Nonstop only")]]]],
+      ["stops", L("التوقف", "Stops"), "", 0, [["any", L("أي رحلة", "Any")], ["nonstop", L("بدون توقف", "Nonstop")]]]],
     news: [["topics", L("وش تتابع؟", "What do you follow?"), L("الذهب، التقنية، الدوري", "Gold, tech, the league"), 1]],
     team: [["team", L("وش فريقك؟", "Which team?"), L("الهلال", "Al Hilal"), 1], ["league", L("الدوري (اختياري)", "League (optional)"), L("دوري روشن", "Saudi Pro League")]],
     finance: [["budget", L("ميزانيتك بالشهر (ريال، اختياري)", "Monthly budget (SAR, optional)"), "6000"]],
@@ -4052,7 +4052,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v46".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v47".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

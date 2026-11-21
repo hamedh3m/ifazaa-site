@@ -2669,7 +2669,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const loc = S.locOk ? `<button type="button" class="btn btn-primary" id="care-find" style="width:100%">🏥 ${L("وريني أقرب المراكز الصحية", "Show the nearest health centers")}</button>
          <button type="button" class="btn btn-ghost" id="loc-off" style="width:100%;margin-top:8px">${L("وقّف استخدام موقعي", "Stop using my location")}</button>`
       : `<button type="button" class="btn btn-primary" id="loc-on" style="width:100%">${PIN} ${L("اسمح بموقعي وقت الطوارئ", "Allow my location for emergencies")}</button>`;
-    const gUrl = p => p.src === "google" && p.url ? p.url : `https://www.google.com/maps/search/${encodeURIComponent(p.name)}/@${p.lat},${p.lng},17z`;
+    // بالإحداثيات بالضبط (مو بالاسم): البحث بالاسم كان يفتح فرع ثاني بنفس الاسم في قوقل
+    const gUrl = p => p.src === "google" && p.url ? p.url : `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}&travelmode=driving`;
     const aUrl = p => `https://maps.apple.com/?q=${encodeURIComponent(p.name)}&ll=${p.lat},${p.lng}`;
     const accNote = carePlaces && careAcc > 1500 ? `<p class="note care-src" style="color:var(--sand)">${L(`⚠️ موقعك اللي وصلنا تقريبي (بفرق حوالي ${AR(Math.round(careAcc / 1000))} كم)، فالمسافات ممكن ما تكون دقيقة. الأدق تفتح فزعة من جوالك والـ GPS شغّال.`, `⚠️ Your location is approximate (about ${Math.round(careAcc / 1000)} km off), so distances may be off. It's most accurate from your phone with GPS on.`)}</p>` : "";
     const hereNote = carePlaces && careHere && careHere.district ? `<p class="note care-src">📍 ${L("موقعك حسب الخريطة", "Your location on the map")}: ${esc(careHere.district)}${careHere.city ? "، " + esc(careHere.city) : ""}. ${L("لو الحي غلط، شغّل الموقع الدقيق في جوالك وجرّب مرة ثانية.", "If the district is wrong, turn on precise location and try again.")}</p>` : "";
@@ -4180,7 +4181,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v66".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v67".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

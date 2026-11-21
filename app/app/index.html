@@ -1552,7 +1552,9 @@ html.i18n-wait body{visibility:hidden}
   document.addEventListener("focusout", () => setTimeout(() => { if (!typing(document.activeElement)) document.body.classList.remove("kb"); }, 60));
   // فيديو «كيف يشتغل فزعة»: بطاقة مرة وحدة فوق المحادثة (يختار يفتحه، ما يشتغل لحاله) + سطر في «حسابي». عربي بس للحين
   const INTRO_KEY = "fz-intro-never", INTRO_SRC = "/app/intro-ar-v5.mp4";   // يطلع كل ما يفتح التطبيق، لين يختار «لا عاد تطلع لي»
-  const introSeen = () => { try { return !!localStorage.getItem(INTRO_KEY); } catch { return true; } };
+  // تطلع البطاقة ٣ مرات بالكثير، وما ترجع أبد لو شاف الفيديو كامل أو اختار «لا عاد تطلع لي»
+  const INTRO_N = "fz-intro-n", INTRO_DONE = "fz-intro-done";
+  const introSeen = () => { try { return !!localStorage.getItem(INTRO_KEY) || !!localStorage.getItem(INTRO_DONE) || (+localStorage.getItem(INTRO_N) || 0) >= 3; } catch { return true; } };
   const markIntro = () => { if ($("#intro-never").checked) { try { localStorage.setItem(INTRO_KEY, "1"); } catch {} } $("#intro-c").hidden = true; };
   let introShown = false;
   function openIntro() {
@@ -1561,11 +1563,11 @@ html.i18n-wait body{visibility:hidden}
   }
   function closeIntro() { const v = $("#intro-vid"); try { v.pause(); } catch {} $("#intro-v").hidden = true; }
   // تطلع بعد ما يسجل دخول أول مرة (مو فوق شاشة الترحيب)، ومرة وحدة بس
-  function introMaybe() { if (EN || introSeen() || introShown || (typeof S !== "undefined" && !S.onb)) return; setTimeout(() => { if (!introSeen() && !introShown && $("#radar").hidden !== false) { introShown = true; $("#intro-c").hidden = false; } }, 900); }
+  function introMaybe() { if (EN || introSeen() || introShown || (typeof S !== "undefined" && !S.onb)) return; setTimeout(() => { if (!introSeen() && !introShown && $("#radar").hidden !== false) { introShown = true; $("#intro-c").hidden = false; try { localStorage.setItem(INTRO_N, String((+localStorage.getItem(INTRO_N) || 0) + 1)); } catch {} } }, 900); }
   introMaybe();
   $("#intro-play").onclick = openIntro; $("#intro-go").onclick = openIntro; $("#intro-x").onclick = markIntro; $("#intro-close2").onclick = markIntro;
   $("#intro-close").onclick = closeIntro;
-  $("#intro-vid").addEventListener("ended", closeIntro);
+  $("#intro-vid").addEventListener("ended", () => { try { localStorage.setItem(INTRO_DONE, "1"); } catch {} closeIntro(); });   // شافه كامل: ما يطلع له مرة ثانية
   if ($("#me-intro")) { $("#me-intro").hidden = EN; $("#me-intro").onclick = openIntro; }
   const ideas = EN ? ["Remind me to call Abdulaziz tomorrow afternoon to congratulate him", "My car registration expires on January 10, remind me before", "What's on my schedule?", "Write a congratulations message for Khalid on his new baby"]
     : ["ذكرني أتصل على عبدالعزيز أبارك له بكرة العصر", "استمارتي تنتهي 10 يناير، ذكرني قبلها", "وش عندي؟", "اكتب لي تهنئة لخالد بالمولود"];
@@ -4177,7 +4179,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v62".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v63".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

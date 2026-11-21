@@ -2171,7 +2171,9 @@ html.i18n-wait body{visibility:hidden}
     const el = document.createElement("div"); el.className = "qr";
     el.innerHTML = `<button type="button" class="pri">${L("إيه", "Yes")}</button><button type="button">${L("لا", "No")}</button>`;
     const [y, n] = el.querySelectorAll("button");
-    y.onclick = () => { el.remove(); submit(L("إيه", "Yes")); }; n.onclick = () => { el.remove(); submit(L("لا", "No")); };
+    // الضغط يحط «إيه» أو «لا» في خانة الكتابة (ما يرسل لحاله)، عشان يقدر يضيف تعليقه جنبها ويرسل
+    const put = w => { el.remove(); inp.value = w + " "; grow(); syncSend(); inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch {} };
+    y.onclick = () => put(L("إيه", "Yes")); n.onclick = () => put(L("لا", "No"));
     msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
   }
   const draftOf = text => text.match(/«([^»]{30,})»/) || text.match(/“([^”]{30,})”/);
@@ -4175,7 +4177,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v61".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v62".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

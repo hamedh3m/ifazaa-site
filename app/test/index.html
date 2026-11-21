@@ -1727,7 +1727,10 @@ html.i18n-wait body{visibility:hidden}
       const step = k => { view = new Date(view.getFullYear(), view.getMonth() + k, 1, 12); try { tick.fire(); } catch {} draw(); };
       // العربي يمين لليسار: السهم اليمين = الشهر اللي قبل
       $("#cp-prev").onclick = () => step(-1); $("#cp-next").onclick = () => step(1);
-      $("#cp-prev").textContent = EN ? "‹" : "›"; $("#cp-next").textContent = EN ? "›" : "‹";
+      // أسهم SVG (الحروف ‹ › تنقلب لحالها في العربي): السابق يشير لجهته، والتالي لجهته
+      { const chev = d => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+        const R = "M9 6l6 6-6 6", Lf = "M15 6l-6 6 6 6";
+        $("#cp-prev").innerHTML = chev(EN ? Lf : R); $("#cp-next").innerHTML = chev(EN ? R : Lf); }
       $("#cp-t").onclick = async () => { $("#cp").hidden = true; const d = await wheelPick("date", sel); $("#cp").hidden = false; if (d) { sel = d; sel.setHours(12, 0, 0, 0); view = new Date(sel.getFullYear(), sel.getMonth(), 1, 12); draw(); } };
       draw(); $("#cp").hidden = false;
       const done = v => { $("#cp").hidden = true; $("#cp-ok").onclick = $("#cp-x").onclick = $("#cp").onclick = null; res(v); };
@@ -2834,7 +2837,19 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
   let agLoaded = false;
-  async function loadAgents() { try { AG = (await api("/agents")).agents || []; agLoaded = true; } catch {} drawAgents(); syncBusy(); drawStarters(); }
+  let agWant = 0;   // بطاقة لازم تنفتح أول ما يوصل الطاقم (من ضغطة تنبيه)
+  async function loadAgents() { try { AG = (await api("/agents")).agents || []; agLoaded = true; } catch {}
+    if (agWant && AG.some(a => a.id === agWant)) { agOpen = agWant; agMarkSeen(agWant); } agWant = 0;
+    drawAgents(); syncBusy(); drawStarters(); }
+  // ضغطة تنبيه من موظف في الطاقم: يفتح «طاقم عملك» وبطاقة الموظف نفسه (مو المحادثة)
+  function openTarget(hash) {
+    const m = /^#crew-(\d+)$/.exec(String(hash || ""));
+    try { if (location.hash) history.replaceState(null, "", location.pathname + location.search); } catch {}
+    if (!m) { go("chat"); lastId = 0; loadHistory(); return; }
+    agWant = +m[1]; go("crew");
+  }
+  try { navigator.serviceWorker && navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.type === "fz-open") openTarget(e.data.hash); }); } catch {}
+  if (/^#crew-\d+$/.test(location.hash)) setTimeout(() => openTarget(location.hash), 400);
   const redrawHomeCards = () => drawHome();
   async function agAct(id, action) {
     if (action === "run") toast(L("يدوّر لك الحين… ⏳", "Searching now… ⏳"));
@@ -4070,7 +4085,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (!apnsWired) {
       apnsWired = true;
       P.addListener("registration", t => { api("/push/apns", { method: "POST", body: JSON.stringify({ token: t.value, name: S.name || "", test: !!S.pushTest, lang: L("ar", "en") }) }).catch(() => {}); S.pushTest = false; });
-      P.addListener("pushNotificationActionPerformed", () => { go("chat"); lastId = 0; loadHistory(); });
+      P.addListener("pushNotificationActionPerformed", a => { const u = String((a && a.notification && a.notification.data && a.notification.data.url) || ""); const i = u.indexOf("#"); openTarget(i >= 0 ? u.slice(i) : ""); });
     }
     S.pushTest = !!test; await P.register();
   }
@@ -4145,7 +4160,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v55".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v56".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

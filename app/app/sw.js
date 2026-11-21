@@ -1,5 +1,5 @@
 // فزعة: يخزن ملفات التطبيق عشان يفتح بسرعة وبدون نت
-const CACHE = "fazaa-app-v44";
+const CACHE = "fazaa-app-v56";
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./manifest-en.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
@@ -24,14 +24,18 @@ self.addEventListener("push", e => {
   try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data ? e.data.text() : "" }; }
   e.waitUntil(self.registration.showNotification(d.title || "فزعة", {
     body: d.body || "", icon: "icon-192.png", badge: "icon-192.png", dir: "auto",
-    tag: "fazaa-" + Date.now(), data: { url: self.registration.scope }
+    tag: "fazaa-" + Date.now(), data: { url: self.registration.scope + (() => { try { return d.url ? new URL(d.url).hash : ""; } catch { return ""; } })() }
   }));
 });
 self.addEventListener("notificationclick", e => {
   e.notification.close();
   const url = (e.notification.data && e.notification.data.url) || self.registration.scope;
   e.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(cs => {
-    for (const c of cs) if (c.url.startsWith(self.registration.scope) && "focus" in c) return c.focus();
+    const hash = (() => { try { return new URL(url).hash; } catch { return ""; } })();
+    for (const c of cs) if (c.url.startsWith(self.registration.scope) && "focus" in c) {
+      if (hash) c.postMessage({ type: "fz-open", hash });      // التطبيق مفتوح: يروح للبطاقة على طول
+      return c.focus();
+    }
     return clients.openWindow(url);
   }));
 });

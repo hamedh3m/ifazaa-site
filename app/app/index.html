@@ -558,6 +558,7 @@ html{touch-action:manipulation}
 #s-profile.view .plat button{pointer-events:none}#s-profile.view .plat button[aria-pressed="false"]{display:none}#s-profile.view .plat button[aria-pressed="true"]{flex:none;padding:8px 18px}
 #s-profile.view .req{display:none}
 [dir="rtl"] #s-profile.view .field input[dir="ltr"]{text-align:right}
+[dir="rtl"] #ap-loc:placeholder-shown{direction:rtl;text-align:right}
 #s-profile input:-webkit-autofill{-webkit-box-shadow:0 0 0 40px var(--s1) inset;-webkit-text-fill-color:var(--ink);caret-color:var(--ink)}
 .bday{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:24px;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:bdIn .35s ease-out}
 .bday[hidden]{display:none}.bday canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -4051,7 +4052,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v45".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v46".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

@@ -425,11 +425,17 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 #ag-list .ag.mini .at b{font-size:15px;line-height:1.3;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 #ag-list .ag.mini .at span{font-size:12px}
 #ag-list .ag.mini .agnew{font-size:10px;padding:1px 6px;margin-inline-start:4px}
-#ag-list .ag.mini .sub-full,#ag-list .ag:not(.mini) .sub-mini{display:none}
+#ag-list .ag.mini .sub-full,.ag.pop .sub-mini{display:none}
 #ag-list .ag.mini .pinb,#ag-list .ag.mini .aa,#ag-list .ag.mini .more,#ag-list .ag.mini .alive,#ag-list .ag.mini .agv,#ag-list .ag.mini .srcs,#ag-list .ag.mini .al a.il{display:none!important}
 #ag-list .ag.mini .al{font-size:12.5px;line-height:1.55;margin-top:8px;padding:8px 9px;max-height:none;white-space:normal;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-#ag-list .ag:not(.mini){grid-column:1/-1}
-#ag-list .ag:not(.mini){cursor:pointer}
+#ag-pop{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 70px) 16px calc(env(safe-area-inset-bottom,0px) + 90px)}
+#ag-pop[hidden]{display:none}
+#ag-pop .ag-dim{position:absolute;inset:0;background:rgba(0,0,0,.45);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:agdim 200ms ease-out}
+#ag-pop .ag.pop{position:relative;width:100%;max-width:520px;max-height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;cursor:pointer;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:agpop 220ms cubic-bezier(.23,1,.32,1)}
+#ag-pop .ag.pop .al{max-height:none}
+@keyframes agdim{from{opacity:0}to{opacity:1}}
+@keyframes agpop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#ag-pop .ag-dim,#ag-pop .ag.pop{animation:none}}
 
 .ag:not(.off) .ae::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid transparent;border-top-color:#ff4d64;border-right-color:rgba(255,77,100,.35);animation:sweep 1.6s linear infinite}
 .ag .live{display:inline-flex;align-items:center;gap:5px;color:#ff8a9b;font-weight:700}
@@ -2685,7 +2691,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   syncCareSmall();
   let AG = [], agKind = "", agOpen = 0;   // agOpen: البطاقة المفتوحة كاملة (والباقي مصغّر)
   const agCollapse = () => { if (!agOpen) return; agOpen = 0; drawAgents(); };
-  document.addEventListener("click", e => { if (agOpen && !e.target.closest("#ag-list .ag")) agCollapse(); });
+  document.addEventListener("click", e => { if (agOpen && !e.target.closest("#ag-list .ag, #ag-pop")) agCollapse(); });
+  document.addEventListener("keydown", e => { if (agOpen && e.key === "Escape") agCollapse(); });
   // وش يسوي الحين: كلمة تناسب شغله (وللمهام الخاصة فزعة يختار الكلمة لما يسويها)
   const AGDO = { morning: ["يجهّز موجزك", "Preparing your brief"], price: ["يراقب السعر", "Watching the price"], travel: ["يتابع أسعار الطيران", "Tracking fares"],
     news: ["يتابع الأخبار", "Following the news"], team: ["يتابع فريقك", "Following your team"], finance: ["يراجع مصاريفك", "Reviewing your spending"],
@@ -2790,31 +2797,39 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (next && next > Date.now()) parts.push(L("الجاي ", "next ") + fmtWhen(new Date(next)));
     return esc(parts.join(" · "));
   }
-  function drawAgents() {
-    { const rb = $("#ag-runall"); if (rb) rb.hidden = !AG.some(a => a.active); }
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}${agFresh(a) ? " fresh" : ""}${agOpen === a.id ? "" : " mini"}" data-agid="${a.id}"${agOpen === a.id ? "" : ` role="button" tabindex="0" aria-expanded="false" aria-label="${esc(agTitle(a))}"`}><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}${agFresh(a) ? `<em class="agnew">${L("جديد", "New")}</em>` : ""}</b><span class="sub-full">${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · <span class="nw">${esc(agUpd(a))}</span>` : L("موقف", "Paused") + ` · <span class="nw">${esc(agUpd(a))}</span>`}</span><span class="sub-mini">${a.active ? "🕒 " + esc(agUpd(a).replace(/^(آخر تحديث|Updated) /, "")) : L("⏸ موقف", "⏸ Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
+  const agCard = (a, full) => `<div class="ag${a.active ? "" : " off"}${!full && agFresh(a) ? " fresh" : ""}${full ? " pop" : " mini"}" data-agid="${a.id}"${full ? ` role="dialog" aria-modal="true" aria-label="${esc(agTitle(a))}"` : ` role="button" tabindex="0" aria-expanded="false" aria-label="${esc(agTitle(a))}"`}><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}${agFresh(a) ? `<em class="agnew">${L("جديد", "New")}</em>` : ""}</b><span class="sub-full">${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · <span class="nw">${esc(agUpd(a))}</span>` : L("موقف", "Paused") + ` · <span class="nw">${esc(agUpd(a))}</span>`}</span><span class="sub-mini">${a.active ? "🕒 " + esc(agUpd(a).replace(/^(آخر تحديث|Updated) /, "")) : L("⏸ موقف", "⏸ Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcRich(a.last_text); return `<div class="al">${sp.html}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
       + agVerify(a)
       + (a.active ? `<p class="alive">${aliveTxt(a)}</p>` : "")
       + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("اضغط للتفاصيل", "Tap for details")}</button>`
-      + `<div class="aa"><button type="button" class="tog${a.active ? "" : " on"}" data-agtog="${a.id}">${a.active ? L("⏸ إيقاف مؤقت", "⏸ Pause") : L("▶ تفعيل", "▶ Turn on")}</button>${a.active ? `<button type="button" class="ed now" data-agrun="${a.id}" aria-label="${L("ابحث الحين", "Search now")}" title="${L("ابحث الحين", "Search now")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>` : ""}${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
+      + `<div class="aa"><button type="button" class="tog${a.active ? "" : " on"}" data-agtog="${a.id}">${a.active ? L("⏸ إيقاف مؤقت", "⏸ Pause") : L("▶ تفعيل", "▶ Turn on")}</button>${a.active ? `<button type="button" class="ed now" data-agrun="${a.id}" aria-label="${L("ابحث الحين", "Search now")}" title="${L("ابحث الحين", "Search now")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>` : ""}${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`;
+  function drawAgents() {
+    { const rb = $("#ag-runall"); if (rb) rb.hidden = !AG.some(a => a.active); }
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => agCard(a, false)).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
-    $$("[data-agpin]").forEach(b => b.onclick = () => agPin(+b.dataset.agpin));
-    $$("[data-aglog]").forEach(b => b.onclick = () => { agMarkSeen(+b.dataset.aglog); openAgLog(+b.dataset.aglog); });
     agWatchFresh();
-    // الضغط على مربع يفتحه، والضغط مرة ثانية على نفس المربع أو أي مربع ثاني أو أي مكان في الصفحة يصغّره
+    // الضغط على مربع يفتحه فوق الكل والباقي يتغبّش، والضغط على نفس البطاقة أو أي مكان ثاني يرجّعها
+    let pop = $("#ag-pop");
+    if (!pop) { pop = document.createElement("div"); pop.id = "ag-pop"; $("#v-crew").appendChild(pop); }
+    const oa = agOpen && AG.find(x => x.id === agOpen);
+    if (!oa) agOpen = 0;
+    pop.innerHTML = oa ? `<div class="ag-dim"></div>${agCard(oa, true)}` : "";
+    pop.hidden = !oa; document.body.classList.toggle("ag-popped", !!oa);
     $$("#ag-list .ag.mini").forEach(el => {
-      const tap = () => { if (agOpen) { agCollapse(); return; } agOpen = +el.dataset.agid; drawAgents();
-        const o = $(`.ag[data-agid="${agOpen}"]`); if (o) o.scrollIntoView({ block: "nearest", behavior: "smooth" }); };
+      const tap = () => { if (agOpen) { agCollapse(); return; } agOpen = +el.dataset.agid; drawAgents(); };
       el.onclick = e => { if (e.target.closest("a")) return; e.stopPropagation(); tap(); };
       el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tap(); } };
     });
-    const big = $("#ag-list .ag:not(.mini)");
-    if (big) big.onclick = e => { if (e.target.closest("button, a, summary, details, input, select, textarea, label")) return; e.stopPropagation(); agCollapse(); };
+    if (oa) {
+      pop.onclick = e => { if (e.target.closest(".ag.pop") && e.target.closest("button, a, summary, details, input, select, textarea, label")) return; e.stopPropagation(); agCollapse(); };
+      agMarkSeen(oa.id);
+    }
+    $$("[data-agpin]").forEach(b => b.onclick = () => agPin(+b.dataset.agpin));
+    $$("[data-aglog]").forEach(b => b.onclick = () => { agMarkSeen(+b.dataset.aglog); agCollapse(); openAgLog(+b.dataset.aglog); });
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
-    $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); if (a) openAgForm(a.kind, a); });
+    $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); agCollapse(); if (a) openAgForm(a.kind, a); });
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
-    $$("[data-agdel]").forEach(b => b.onclick = async () => { if (await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
+    $$("[data-agdel]").forEach(b => b.onclick = async () => { agCollapse(); if (await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
     syncTpl();
     if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
@@ -4130,7 +4145,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v54".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v55".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

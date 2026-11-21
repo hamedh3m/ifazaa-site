@@ -281,6 +281,10 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .radar ul{list-style:none;display:grid;gap:8px;margin-top:14px}
 .radar li{display:flex;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.12);font-size:15px}
 .radar li small{color:rgba(255,255,255,.7);white-space:nowrap}
+.radar ul.rcrew li{position:relative;z-index:3;cursor:pointer;align-items:center}
+.radar ul.rcrew li span{display:grid;gap:3px;min-width:0}
+.radar ul.rcrew li b{font-size:15px}
+.radar ul.rcrew li em{font-style:normal;font-size:13px;color:rgba(255,255,255,.75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .radar .ract{position:relative;z-index:3;margin-top:22px;height:52px;width:100%;border-radius:999px;background:#fff;color:#111;font-weight:800;font-size:16px;transition:transform 140ms var(--ease)}
 .radar .ract:active{transform:scale(.97)}
 .radar .ract{overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -2191,18 +2195,18 @@ html.i18n-wait body{visibility:hidden}
   const markSeen = keys => { try { localStorage.setItem(RKEY, JSON.stringify({ d: todayKey(), k: [...new Set([...seen(), ...keys])] })); } catch {} };
   function radarItems() {
     const now = Date.now(), R = [];
-    conflicts().slice(0, 2).forEach(([a, b]) => R.push({ key: "c" + a.id + "-" + b.id, t: "t-red", k: L("مواعيدك", "Your schedule"), h: L("عندك موعدين بنفس الوقت", "You have two things at the same time"),
+    conflicts().slice(0, 2).forEach(([a, b]) => R.push({ key: "c" + a.id + "-" + b.id, t: "t-red", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("مواعيدك", "Your schedule"), h: L("عندك موعدين بنفس الوقت", "You have two things at the same time"),
       list: [[a.title, fmtWhen(new Date(a.t)), splitPlace(a.note).url], [b.title, fmtTime(new Date(b.t)), splitPlace(b.note).url]], act: L("رتّبهم مع فزعة", "Sort it out with Fazaa"), say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
     const td = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && startOf(x.t) === startOf(now)).sort((a, b) => a.t - b.t);
-    if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عندك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
+    if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عندك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
       list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t)), splitPlace(x.note).url]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" });
     if (!td.length) { const nx = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && x.t < now + 7 * DAY).sort((a, b) => a.t - b.t);
-      if (nx.length) R.push({ key: "n" + nx.slice(0, 3).map(x => x.id).join("."), t: "t-blue", k: L("الجاي", "Coming up"), h: L("أقرب مواعيدك", "Your next appointments"),
+      if (nx.length) R.push({ key: "n" + nx.slice(0, 3).map(x => x.id).join("."), t: "t-blue", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("الجاي", "Coming up"), h: L("أقرب مواعيدك", "Your next appointments"),
         list: nx.slice(0, 3).map(x => [x.title, fmtWhen(new Date(x.t)), splitPlace(x.note).url]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" }); }
-    papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", k: L("مستنداتك", "Your documents"),
+    papers.filter(p => p.days <= 30).sort((a, b) => a.days - b.days).slice(0, 2).forEach(p => R.push({ key: "p" + p.id + ":" + p.days, t: "t-sand", cat: L("مستنداتك", "Your documents"), k: L("مستنداتك", "Your documents"),
       h: papHead(p), p: papRenew(p), act: L("وش خطوات التجديد؟", "How do I renew it?"), say: L(`وش خطوات تجديد ${p.label}؟`, `How do I renew my ${p.label}?`) }));
     const tm = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => startOf(x.t) === startOf(now) + DAY).sort((a, b) => a.t - b.t);
-    if (tm.length && new Date().getHours() >= 17) R.push({ key: "m" + tm[0].id, t: "t-green", k: L("بكرة", "Tomorrow"), h: L(`أول شي بكرة: ${tm[0].title}`, `First thing tomorrow: ${tm[0].title}`), p: L(`الساعة ${fmtTime(new Date(tm[0].t))}. نم بدري 😴`, `At ${fmtTime(new Date(tm[0].t))}. Get some sleep 😴`), act: L("وش عندي بكرة؟", "What's on tomorrow?"), say: L("وش عندي بكرة؟", "What do I have tomorrow?") });
+    if (tm.length && new Date().getHours() >= 17) R.push({ key: "m" + tm[0].id, t: "t-green", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("بكرة", "Tomorrow"), h: L(`أول شي بكرة: ${tm[0].title}`, `First thing tomorrow: ${tm[0].title}`), p: L(`الساعة ${fmtTime(new Date(tm[0].t))}. نم بدري 😴`, `At ${fmtTime(new Date(tm[0].t))}. Get some sleep 😴`), act: L("وش عندي بكرة؟", "What's on tomorrow?"), say: L("وش عندي بكرة؟", "What do I have tomorrow?") });
     return R;
   }
   let RI = [], ri = 0, rtimer, rStart = 0, rLeft = 6000, rPaused = false;
@@ -2224,12 +2228,12 @@ html.i18n-wait body{visibility:hidden}
     try { if (Date.now() - (+localStorage.getItem(LKEY) || 0) < 7 * DAY) return null; } catch {}
     const nx = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > Date.now()).sort((a, b) => a.t - b.t)[0];
     if (!nx) return null;
-    return { key: "lk", t: "t-sand", lock: true, k: L("تقويم جوالك", "Phone calendar"), h: nx.title, p: fmtWhen(new Date(nx.t)),
+    return { key: "lk", t: "t-sand", lock: true, cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("تقويم جوالك", "Phone calendar"), h: nx.title, p: fmtWhen(new Date(nx.t)),
       lt: L("تقويم جوالك", "Phone calendar"), lp: L("اربط تقويم جوالك، وتطلع تذكيراتك فيه بدون ما تفتح التطبيق.", "Link your phone calendar and your reminders show up there without opening the app."),
       act: L("اربط التقويم", "Link calendar"), run: () => openCal() };
   }
   const crewOn = () => AG.some(a => a.active);
-  const radarEnd = () => ({ key: "end", t: "t-green", end: true, h: L("ما فاتك شي", "You're all caught up"),
+  const radarEnd = () => ({ key: "end", t: "t-green", end: true, cat: crewOn() ? L("طاقم عملك", "Your crew") : "", h: L("ما فاتك شي", "You're all caught up"),
     p: crewOn() ? L("وتبي أكثر؟ خلّ طاقمك يدوّر لك الحين.", "Want more? Get your crew searching now.") : L("أول ما يجي شي جديد، تلقاه هنا.", "New things will show up here."),
     act: crewOn() ? L("اضغط مطوّل وخلّ طاقمك يدوّر", "Press and hold to get your crew searching") : L("تمام", "Got it"), hold: crewOn() });
   function withExtras(list) {
@@ -2255,7 +2259,17 @@ html.i18n-wait body{visibility:hidden}
     $("#r-bars").innerHTML = RI.map((_, j) => `<i class="${j < ri ? "done" : j === ri ? "now" : ""}"><b></b></i>`).join("");
     $("#r-n").textContent = AR(ri + 1) + L(" من ", " of ") + AR(RI.length);
     const rb = $("#r-body"); rb.classList.toggle("ctr", !!(d.end || d.lock)); rb.classList.toggle("lockb", !!d.lock);
-    if (d.end) rb.innerHTML = `<div class="rdone"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p>`;
+    if (d.end) Object.assign(d, radarEnd());     // الطاقم ممكن وصل بعد ما انفتح الرادار
+    $("#r-title").textContent = d.cat || L("الرادار", "Radar");
+    const crewNow = d.end ? AG.filter(a => a.active).slice(0, 5) : [];
+    if (d.end && crewNow.length) {   // آخر صفحة: موظفين الطاقم الشغالين بشكل مختصر (الضغط يفتح بطاقة الموظف)
+      rb.classList.remove("ctr");
+      rb.innerHTML = `<span class="rk">${L("شغّالين لك الحين", "Working for you now")}</span><h3>${L(`${AR(crewNow.length)} في طاقمك`, `${crewNow.length} in your crew`)}</h3><ul class="rcrew">${crewNow.map(a => {
+        const line = String(a.last_text || "").replace(/https?:\/\/\S+/g, "").replace(/\*\*/g, "").split("\n").map(x => x.trim()).filter(Boolean)[0] || L("يدوّر لك… أول نتيجة تطلع هنا", "Searching… the first result shows here");
+        return `<li data-rcrew="${a.id}"><span><b>${a.emoji || "🔁"} ${esc(agTitle(a))}</b><em>${esc(line.slice(0, 90))}</em></span><small>${a.upd_at ? esc(agUpd(a).replace(/^(آخر تحديث|Updated) /, "")) : ""}</small></li>`; }).join("")}</ul>`;
+      rb.querySelectorAll("[data-rcrew]").forEach(li => li.onclick = e => { e.stopPropagation(); const id = +li.dataset.rcrew; closeRadar(); agWant = id; go("crew"); });
+    }
+    else if (d.end) rb.innerHTML = `<div class="rdone"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p>`;
     else if (d.lock) { rb.innerHTML = `<div class="rblur" aria-hidden="true"><span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3><p>${esc(d.p)}</p></div><div class="rlock"><span class="rli"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.5" fill="#e0213b"/><rect x="3" y="4.5" width="18" height="5.5" rx="2.5" fill="#a8182f"/><rect x="7" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><rect x="15" y="2.5" width="2" height="4" rx="1" fill="#a8182f"/><text x="12" y="18.6" font-size="7.5" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">${new Date().getDate()}</text></svg></span><b>${esc(d.lt)}</b><p>${esc(d.lp)}</p></div>`;
       try { localStorage.setItem(LKEY, String(Date.now())); } catch {} }
     else rb.innerHTML = `<span class="rk">${esc(d.k)}</span><h3>${esc(d.h)}</h3>` + (d.p ? `<p>${esc(d.p)}</p>` : "") + (d.list ? `<ul>${d.list.map(([a, b, u]) => `<li><span>${esc(a)}${u ? `<a class="rloc" href="${esc(u)}" target="_blank" rel="noopener">${PIN} ${L("الموقع", "Map")}</a>` : ""}</span><small>${b}</small></li>`).join("")}</ul>` : "");
@@ -4160,7 +4174,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v57".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v58".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

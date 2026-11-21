@@ -958,7 +958,7 @@ html.i18n-wait body{visibility:hidden}
         <div class="comp">
           <button class="send att" id="att" type="button" aria-label="أرفق صورة أو ملف"><svg><use href="#i-plus"/></svg></button>
           <input id="file" type="file" accept="image/*,application/pdf" hidden>
-          <textarea id="inp" rows="1" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
+          <textarea id="inp" rows="1" enterkeyhint="enter" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
           <button class="send" id="send" type="button" aria-label="أرسل"><svg id="send-ic"><use href="#i-mic"/></svg></button>
         </div>
       </div>
@@ -1876,7 +1876,7 @@ html.i18n-wait body{visibility:hidden}
   const grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, inp.scrollHeight) + "px"; };
   const syncSend = () => { const has = !!inp.value.trim() || !!pend; send.classList.toggle("go", has); $("#send-ic").innerHTML = `<use href="#${has ? "i-send" : "i-mic"}"/>`; send.setAttribute("aria-label", has ? L("أرسل", "Send") : L("فويس", "Voice")); };
   inp.addEventListener("input", () => { grow(); syncSend(); syncSugg(); });
-  inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); pend ? sendPend() : submit(); } });
+  // «Enter» ينزل سطر جديد بس، والإرسال من زر الإرسال (طلب حامد)
   send.addEventListener("click", () => pend ? sendPend() : inp.value.trim() ? submit() : (rec ? stopRec(true) : startRec()));
 
   // ---------- صورة أو ملف أو فويس: نفس طريقة الرسالة، والسيرفر يتحقق من النوع والحجم ----------
@@ -3912,7 +3912,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("ربط تقويمك وبرامجك", "Connect your calendar and apps"), CK, CK, CK)}
       ${row(L("إدارة مستنداتك وبطايقك", "Manage your documents and cards"), CK, CK, CK)}
       ${row(L("سجل أدويتك", "Medicine log"), CK, CK, CK)}
-      ${row(L("موقع إلكتروني لمشروعك", "A website for your business"), NO, TX(L("موقع واحد", "1 site"), L("20 صورة بالشهر", "20 images a month")), TX(L("3 مواقع", "3 sites"), L("40 صورة بالشهر", "40 images a month")))}
+      ${row(L("موقع إلكتروني لمشروعك", "A website for your business"), TX(L("موقع واحد", "1 site"), L("3 صور بالشهر", "3 images a month")), TX(L("موقع واحد", "1 site"), L("20 صورة بالشهر", "20 images a month")), TX(L("3 مواقع", "3 sites"), L("40 صورة بالشهر", "40 images a month")))}
       ${row(L("أماكنك المحفوظة", "Your saved places"), NO, CK, CK)}
       ${row(L("الطوارئ: أقرب المراكز الصحية وجهة اتصال الطوارئ", "Emergency: nearest health centers and an emergency contact"), NO, CK, CK)}
       ${row(L("مصاريفك ومواعيدك من رسائل الجوال (قريباً)", "Spending and appointments from your texts (soon)"), NO, TX(L("قريباً", "Soon")), TX(L("قريباً", "Soon")))}
@@ -4174,7 +4174,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v58".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v59".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

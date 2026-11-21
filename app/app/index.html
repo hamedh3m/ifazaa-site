@@ -369,6 +369,10 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .agl{display:grid;gap:10px;margin-top:16px}
 .ag{border-radius:20px;background:var(--s1);border:1px solid var(--line);padding:14px}
 .ag.off{opacity:.6}
+.ag.fresh{animation:agblink 1s ease-in-out 2}
+@keyframes agblink{0%,100%{box-shadow:0 0 0 0 rgba(224,33,59,0);border-color:var(--line)}50%{box-shadow:0 0 0 4px rgba(224,33,59,.55);border-color:rgba(224,33,59,.9)}}
+@media (prefers-reduced-motion:reduce){.ag.fresh{animation:none;border-color:rgba(224,33,59,.7)}}
+.ag .agnew{display:inline-block;margin-inline-start:8px;padding:2px 8px;border-radius:999px;background:var(--red,#e0213b);color:#fff;font-size:11px;font-weight:700;font-style:normal;vertical-align:middle}
 .ag .ah{display:flex;align-items:center;gap:10px}
 .ag .ae{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex:none;background:var(--s2)}
 .ag .at{flex:1;min-width:0}
@@ -2669,6 +2673,34 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const agBadge = a => /^(https:\/\/api\.ifazaa\.com\/fz-app\/api\/badge\/\d+\.png|data:image\/png;base64,[A-Za-z0-9+\/=]+)$/.test(a.badge || "") ? a.badge : "";
   // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
   setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
+  // آخر تحديث على البطاقة (وقت آخر نتيجة جديدة)، مثل «آخر تحديث اليوم 2:36 م»
+  const agUpd = a => { const t = Date.parse(a.upd_at || ""); if (!t) return L("ما فيه تحديث للحين", "No updates yet");
+    const d = new Date(t), now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - t0) / 864e5);
+    return L("آخر تحديث ", "Updated ") + (diff === 0 ? L("اليوم", "today") : diff === -1 ? L("أمس", "yesterday") : fmtDate(d)) + " " + fmtTime(d); };
+  // تحديث جديد ما شافه: البطاقة توميض مرتين وعليها «جديد»، لين تنشاف على الشاشة أو يفتح تفاصيلها (يتذكرها هالجهاز بس)
+  const AG_SEEN_KEY = "fz-ag-seen";
+  let agSeen = null;
+  const agSeenLoad = () => { if (agSeen) return agSeen; let first = false;
+    try { const v = localStorage.getItem(AG_SEEN_KEY); if (v) agSeen = JSON.parse(v) || {}; else first = true; } catch { agSeen = {}; }
+    agSeen = agSeen || {}; if (first) { (typeof AG !== "undefined" ? AG : []).forEach(a => { if (a.upd_at) agSeen[a.id] = a.upd_at; }); agSeenSave(); }
+    return agSeen; };
+  const agSeenSave = () => { try { localStorage.setItem(AG_SEEN_KEY, JSON.stringify(agSeen || {})); } catch {} };
+  const agFresh = a => !!a.upd_at && !!a.last_text && agSeenLoad()[a.id] !== a.upd_at;
+  const agMarkSeen = (id, wait = 0) => { const a = (typeof AG !== "undefined" ? AG : []).find(x => x.id === id); if (!a || !a.upd_at) return;
+    const done = () => { agSeenLoad()[id] = a.upd_at; agSeenSave(); agPending.delete(id); const el = document.querySelector(`.ag[data-agid="${id}"]`);
+      if (el) { el.classList.remove("fresh"); const b = el.querySelector(".agnew"); if (b) b.remove(); } };
+    if (!wait) return done();
+    if (agPending.has(id)) return; agPending.add(id); setTimeout(done, wait); };   // يخلّص الوميضين قبل ما نعتبره انشاف
+  const agPending = new Set();
+  let agObs = null;
+  function agWatchFresh() {
+    if (agObs) agObs.disconnect();
+    const els = $$(".ag.fresh"); if (!els.length) return;
+    if (!("IntersectionObserver" in window)) { els.forEach(el => agMarkSeen(+el.dataset.agid, 2100)); return; }
+    agObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && e.intersectionRatio >= .5 && !$("#v-crew").hidden) { agObs.unobserve(e.target); agMarkSeen(+e.target.dataset.agid, 2100); } }), { threshold: [.5] });
+    els.forEach(el => agObs.observe(el));
+  }
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] + (a.at ? " · " + L("من ", "from ") + fmtTime(d) : "") : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
   async function openAgLog(id) {
@@ -2724,14 +2756,15 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   function drawAgents() {
     { const rb = $("#ag-runall"); if (rb) rb.hidden = !AG.some(a => a.active); }
-    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${agWhen(a)}` : L("موقف", "Paused")}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
+    $("#ag-list").innerHTML = AG.length ? AG.map(a => `<div class="ag${a.active ? "" : " off"}${agFresh(a) ? " fresh" : ""}" data-agid="${a.id}"><div class="ah"><span class="ae${agBadge(a) ? " badge" : ""}">${agBadge(a) ? `<img src="${esc(agBadge(a))}" alt="" onerror="this.parentNode.classList.remove('badge');this.replaceWith('⚽')">` : a.emoji}</span><div class="at"><b>${esc(agTitle(a))}${agFresh(a) ? `<em class="agnew">${L("جديد", "New")}</em>` : ""}</b><span>${a.active ? `<span class="live"><i></i>${esc(agDoing(a))}</span> · ${esc(agUpd(a))}` : L("موقف", "Paused") + " · " + esc(agUpd(a))}</span></div>${AG.length > 1 ? `<button type="button" class="pinb${a.pinned ? " on" : ""}" data-agpin="${a.id}" aria-pressed="${!!a.pinned}" aria-label="${a.pinned ? L("شيل التثبيت", "Unpin") : L("ثبّته فوق", "Pin to top")}"><svg viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5 3.5 3.5v1.5h-5V20l-.5 1-.5-1v-6.5H6.5V12L10 8.5z" fill="${a.pinned ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></button>` : ""}</div>`
       + (a.last_text ? (() => { const sp = srcRich(a.last_text); return `<div class="al">${sp.html}</div>` + (sp.links.length ? `<details class="srcs"><summary>🔗 ${L("المصادر", "Sources")} (${AR(sp.links.length)})</summary>${sp.links.map(u => `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(hostOf(u))}</a>`).join("")}</details>` : ""); })() : "")
       + (a.active ? `<p class="alive">${aliveTxt(a)}</p>` : "")
       + `<button type="button" class="more" data-aglog="${a.id}">📜 ${L("اضغط للتفاصيل", "Tap for details")}</button>`
       + `<div class="aa"><button type="button" class="tog${a.active ? "" : " on"}" data-agtog="${a.id}">${a.active ? L("⏸ إيقاف مؤقت", "⏸ Pause") : L("▶ تفعيل", "▶ Turn on")}</button>${a.active ? `<button type="button" class="ed now" data-agrun="${a.id}" aria-label="${L("ابحث الحين", "Search now")}" title="${L("ابحث الحين", "Search now")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>` : ""}${AGK[a.kind] && AGF[a.kind] ? `<button type="button" class="ed" data-agedit="${a.id}" aria-label="${L("عدّل", "Edit")}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ""}<button type="button" class="del" data-agdel="${a.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("")
       : `<p class="note">${L("طاقمك فاضي للحين. اختر واحد من تحت، أو قل لفزعة مثلاً «تابع لي سعر آيفون 17».", "Your crew is empty. Pick one below, or tell Fazaa something like “Watch the iPhone 17 price for me”.")}</p>`;
     $$("[data-agpin]").forEach(b => b.onclick = () => agPin(+b.dataset.agpin));
-    $$("[data-aglog]").forEach(b => b.onclick = () => openAgLog(+b.dataset.aglog));
+    $$("[data-aglog]").forEach(b => b.onclick = () => { agMarkSeen(+b.dataset.aglog); openAgLog(+b.dataset.aglog); });
+    agWatchFresh();
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); if (a) openAgForm(a.kind, a); });
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
@@ -4051,7 +4084,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v49".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v50".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

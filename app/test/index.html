@@ -2483,7 +2483,8 @@ html.i18n-wait body{visibility:hidden}
     custom: ["🔁", "أي شي يتكرر", "قل له وش يسوي ومتى", "t-blue", "daily", "09:00"],
   };
   const AGF = {   // حقول كل مساعد: [المفتاح، العنوان، المثال، مطلوب؟]
-    morning: [["city", L("مدينتك", "Your city"), L("الرياض", "Riyadh")], ["topics", L("أخبار عن (اختياري)", "News about (optional)"), L("الاقتصاد، الهلال", "Economy, football")]],
+    morning: [["city", L("مدينتك", "Your city"), L("الرياض", "Riyadh")], ["topics", L("أخبار عن (اختياري، وإذا تركته فاضي يجيب أخبار مدينتك)", "News about (optional; leave empty for your city's news)"), L("الاقتصاد، الهلال", "Economy, football")],
+      ["noappts", L("بدون مواعيدي (الطقس والأخبار بس)", "Without my appointments (weather and news only)"), "", 0, null, "check"]],
     price: [["query", L("المنتج", "Product"), L("آيفون 17 برو 256", "iPhone 17 Pro 256GB"), 1], ["target", L("نبهني لو صار أقل من (ريال، اختياري)", "Alert me below (SAR, optional)"), "4500"]],
     travel: [["from", L("من", "From"), L("الرياض", "Riyadh"), 1, null, "city"], ["to", L("إلى", "To"), L("لندن", "London"), 1, null, "city"],
       ["trip", L("نوع الرحلة", "Trip type"), "", 0, [["oneway", L("ذهاب بس", "One way")], ["round", L("ذهاب وعودة", "Round trip")]]],
@@ -4050,7 +4051,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v44".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v45".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

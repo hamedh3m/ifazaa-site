@@ -430,6 +430,7 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .agl .srcs a{display:inline-block;margin:6px 0 0 6px;padding:6px 10px;border-radius:999px;background:var(--s2);color:var(--ink);text-decoration:none;font-weight:700;font-size:13px}
 .ag .more{display:block;width:100%;margin-top:8px;padding:10px;border-radius:12px;border:1px dashed var(--line);background:none;color:var(--ink);font-size:14px;font-weight:700}
 .ag .nw{white-space:nowrap}
+.ag .agd{margin:0 0 8px;font-size:12.5px;line-height:1.6;color:var(--muted)}
 .ag .agv{margin-top:10px;font-size:13px;color:var(--muted)}.ag .agv a{display:inline-block;margin:6px 0 0 6px;padding:7px 12px;border-radius:999px;background:var(--s2);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700}
 .ag .srcs{margin-top:8px;font-size:13px}.ag .srcs summary{cursor:pointer;color:var(--muted);list-style:none;padding:4px 0}.ag .srcs summary::-webkit-details-marker{display:none}
 .ag .srcs a{display:inline-block;margin:4px 0 0 6px;padding:6px 10px;border-radius:999px;background:var(--s2);color:var(--ink);text-decoration:none;font-weight:700}
@@ -2716,7 +2717,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       + `?adultsv2=${ad}${ch ? "&childrenv2=" + encodeURIComponent(ch) : ""}&cabinclass=${cab}&rtn=${r ? 1 : 0}${c.stops === "nonstop" ? "&preferdirects=true" : ""}&currency=SAR`;
     const q = `Flights from ${f} to ${t} on ${d}${r ? " through " + r : " one way"}${ad > 1 ? ` for ${ad} adults` : ""}${kids ? ` ${kids} children` : ""}${cab !== "economy" ? " " + cab + " class" : ""}${c.stops === "nonstop" ? " nonstop" : ""}`;
     const gf = `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}&curr=SAR&hl=${EN ? "en" : "ar"}`;
-    return `<div class="agv">${L("تأكد من السعر بنفس رحلتك:", "Check the price for your exact trip:")}<br><a href="${esc(gf)}" target="_blank" rel="noopener">Google Flights</a><a href="${esc(sky)}" target="_blank" rel="noopener">Skyscanner</a></div>`;
+    return `<div class="agv"><p class="agd">${L("الأسعار مبدئية وممكن تتغير وقت الحجز، وشركات الطيران ممكن تضيف رسوم على خدمات مثل الشنط واختيار المقعد والوجبات.", "Prices are indicative and may change at booking, and airlines may charge extra for services like bags, seat selection and meals.")}</p>${L("تأكد من السعر بنفس رحلتك:", "Check the price for your exact trip:")}<br><a href="${esc(gf)}" target="_blank" rel="noopener">Google Flights</a><a href="${esc(sky)}" target="_blank" rel="noopener">Skyscanner</a></div>`;
   }
   const agWhen = a => { const [h, m] = String(a.at || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0);
     return a.every.startsWith("hours:") ? EVN[a.every] + (a.at ? " · " + L("من ", "from ") + fmtTime(d) : "") : (a.every === "weekly" ? L("كل ", "Every ") + WDAY[a.day] : EVN.daily) + " · " + fmtTime(d); };
@@ -4102,7 +4103,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v51".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v52".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

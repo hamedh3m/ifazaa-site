@@ -977,7 +977,7 @@ html.i18n-wait body{visibility:hidden}
     <div id="ag-main">
       <h2 class="h2" id="ag-h2">يشتغلون عنك وأنت مرتاح</h2>
       <p class="sub" id="ag-sub">كل واحد في طاقمك يشتغل لك بالخلفية، ويرسل لك بس لما يلقى شي يستاهل.</p>
-      <p class="how" id="ag-how"><span id="ag-ex">مثال: «تابع لي سعر آيفون 15 برو ونبهني إذا نزل»، أو «علّمني بنتيجة الهلال».</span><em class="pl" id="ag-pl" style="display:none!important">برايم: 3 بالطاقم · إيليت: 10</em></p>
+      <p class="how" id="ag-how"><span id="ag-ex">مثال: «تابع لي سعر آيفون 15 برو ونبهني إذا نزل»، أو «علّمني بنتيجة الهلال».</span><em class="pl" id="ag-pl" style="display:none!important">المجاني: 2 · برايم: 4 بالطاقم · إيليت: 10</em></p>
       <button type="button" class="btn btn-ghost" id="ag-runall" hidden style="margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg><span id="ag-runall-t">حدّث الكل</span></button>
       <button type="button" class="ideas-btn" id="ideas-btn" style="display:none"><i>💡</i><span><b id="ideas-btn-t">أفكار جاهزة</b><small id="ideas-btn-s">أسعار، طيران، أخبار، فريقك، وقصة قبل النوم</small></span><em id="ideas-btn-a">‹</em></button>
       <div class="agl" id="ag-list"></div>
@@ -2700,8 +2700,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     catch (e) { toast(e.message === "pin_limit" ? L("تقدر تثبّت 3 بس. شيل التثبيت عن واحد أول.", "You can pin up to 3. Unpin one first.") : errText(e)); }
   }
   const crewLimitMsg = () => myTier === "free"
-    ? L("الباقة المجانية فيها موظف واحد في طاقم عملك. احذف الموظف الحالي أو أوقفه عشان تضيف غيره، أو رقّ حسابك: 3 موظفين في برايم، أو 10 في إيليت، من «حسابي» ثم «الباقات».",
-        "The free plan includes one crew member. Remove or pause the current one to add another, or upgrade: 3 crew members with Prime or 10 with Elite, from Account, then Plans.")
+    ? L("الباقة المجانية فيها موظفين في طاقم عملك. احذف واحد منهم أو أوقفه عشان تضيف غيره، أو رقّ حسابك: 4 موظفين في برايم، أو 10 في إيليت، من «حسابي» ثم «الباقات».",
+        "The free plan includes 2 crew members. Remove or pause one to add another, or upgrade: 4 crew members with Prime or 10 with Elite, from Account, then Plans.")
     : myTier === "prime"
       ? L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد. أو انتقل لإيليت (10 موظفين) من «حسابي» ثم «الباقات».", "Your crew is full. Remove a task to hire a new one, or switch to Elite (10 crew members) from Account, then Plans.")
       : L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد.", "Your crew is full. Remove a task to hire a new one.");
@@ -2915,7 +2915,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   };
   $("#th-agents").onclick = () => { closeThreads(); go("crew"); };
   if (EN) {
-    [["#tab-crew", "Crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-ex", "For example: “Watch the iPhone 15 Pro price and tell me if it drops”, or “Tell me the Al Hilal score.”"], ["#ag-pl", "Prime: 3 crew members · Elite: 10"], ["#ag-add-t", "Add to your crew"],
+    [["#tab-crew", "Crew"], ["#ag-h2", "Working for you while you rest"], ["#ag-sub", "Each crew member works in the background and only messages you when it finds something worth it."], ["#ag-ex", "For example: “Watch the iPhone 15 Pro price and tell me if it drops”, or “Tell me the Al Hilal score.”"], ["#ag-pl", "Free: 2 · Prime: 4 crew members · Elite: 10"], ["#ag-add-t", "Add to your crew"],
      ["#agf-every-l", "How often should it check?"], ["#agf-at-l", "Starting at"], ["#agf-day-l", "Which day?"], ["#agf-back", "Back"], ["#agf-go", "Add to crew"], ["#th-ag-t", "Your crew"]].forEach(([q, t]) => { $(q).textContent = t; });
   }
 
@@ -3782,7 +3782,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("تذكيرات جديدة بالشهر", "New reminders a month"), TX("10"), TX(L("بلا حد", "Unlimited")), TX(L("بلا حد", "Unlimited")))}
       ${row(L("المكالمة الصوتية مع فزعة", "Voice calls with Fazaa"), TX("70", L("رد بالشهر", "replies a month")), CK, CK)}
       ${row(L("صناعة الصور وتعديلها", "Creating and editing images"), TX("3", L("بالشهر", "a month")), TX("20", L("بالشهر", "a month")), TX("40", L("بالشهر", "a month")))}
-      ${row(L("طاقم عملك (24/7)", "Your crew (24/7)"), TX("1"), TX("3"), TX("10"))}
+      ${row(L("طاقم عملك (24/7)", "Your crew (24/7)"), TX("2"), TX("4"), TX("10"))}
       ${row(L("كتابة وبحث وسعرات", "Writing, search and calories"), CK, CK, CK)}
       ${row(L("موجز يومك كل صباح", "Daily morning brief"), CK, CK, CK)}
       ${row(L("ربط تقويمك وبرامجك", "Connect your calendar and apps"), CK, CK, CK)}

@@ -3534,7 +3534,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   function calLinks(u) {
     const ua = navigator.userAgent, isIos = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1), isAnd = /android/i.test(ua);
     const B = {
-      ios: `<a class="btn {c}" href="${u.webcal}"><svg><use href="#a-icloud"/></svg>${L("أضف لتقويم الآيفون", "Add to iPhone Calendar")}</a>`,
+      ios: `<a class="btn {c}" href="${u.webcal}" target="_blank" rel="noopener"><svg><use href="#a-icloud"/></svg>${L("أضف لتقويم الآيفون", "Add to iPhone Calendar")}</a>`,
       google: `<a class="btn {c}" href="https://calendar.google.com/calendar/r?cid=${encodeURIComponent(u.webcal)}" target="_blank" rel="noopener"><svg><use href="#a-cal"/></svg>${L("أضف لتقويم قوقل", "Add to Google Calendar")}</a>`,
       outlook: `<a class="btn {c}" href="https://outlook.live.com/calendar/0/addfromweb?url=${encodeURIComponent(u.url)}&name=${encodeURIComponent(L("فزعة", "Fazaa"))}" target="_blank" rel="noopener"><svg><use href="#a-outlook"/></svg>${L("أضف لأوت لوك", "Add to Outlook")}</a>`,
       copy: `<button class="btn {c}" type="button" data-cal-copy>${L("انسخ الرابط (لأي تقويم ثاني)", "Copy link (for any other calendar)")}</button>`
@@ -4160,7 +4160,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v56".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v57".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

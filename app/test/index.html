@@ -144,6 +144,8 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .card-in i{flex:none;width:30px;height:30px;border-radius:9px;background:var(--red);display:grid;place-items:center;font-style:normal}
 .typing{align-self:flex-end;display:flex;gap:4px;padding:14px 16px;border-radius:20px;background:var(--s2)}
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:dot 1s infinite}
+.typing .stopb{margin-inline-start:10px;height:26px;padding:0 12px;border-radius:13px;background:var(--s1);border:1px solid var(--line);color:var(--ink);font-size:12.5px;align-self:center}
+.m.me .gimg img{max-width:220px;max-height:260px;border-radius:14px;display:block}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes dot{50%{opacity:.25;transform:translateY(-3px)}}
 .composer{flex:none;padding:8px 12px 10px}
@@ -1608,12 +1610,12 @@ html.i18n-wait body{visibility:hidden}
   function bubble(m) {
     const el = document.createElement("div");
     el.className = "m " + (m.me ? "me" : "bot");
-    const pics = m.me ? [] : imgsOf(m.text);
+    const pics = m.me ? (m.img ? [m.img] : []) : imgsOf(m.text);
     const pk = m.me ? "" : ((m.text || "").match(/⟦pick:(date|time|datetime)⟧/) || [])[1] || "";
-    const txt = (m.text || "").replace(PICK_RE, "\n").trim();
+    const txt = (m.me && m.img ? (m.text || "").replace(/^📷\s*(صورة|Photo)\s*/, "") : (m.text || "")).replace(PICK_RE, "\n").trim();
     const rest = pics.length ? txt.replace(IMG_RE, "").replace(/\n{3,}/g, "\n\n").trim() : txt;
     msgs.querySelectorAll(".pickb").forEach(b => b.remove());      // العجلة بس لآخر سؤال
-    el.innerHTML = pics.map(u => `<button type="button" class="gimg" data-img="${esc(u)}"><img src="${esc(u)}" alt="${esc(L("صورة من فزعة", "Image from Fazaa"))}" loading="lazy"></button>`).join("")
+    el.innerHTML = pics.map(u => `<button type="button" class="gimg" data-img="${esc(u)}"><img src="${esc(u)}" alt="${esc(m.me ? L("الصورة اللي أرسلتها", "The photo you sent") : L("صورة من فزعة", "Image from Fazaa"))}" loading="lazy"></button>`).join("")
       + (rest ? linkify(rest) : "") + (!m.me && rest
         ? `<div class="mf"><time>${fmtTime(new Date(m.ts))}</time><button type="button" class="cp" aria-label="${L("انسخ الرد", "Copy reply")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>${L("نسخ", "Copy")}</span></button></div>`
         : `<time>${fmtTime(new Date(m.ts))}</time>`);
@@ -1862,6 +1864,13 @@ html.i18n-wait body{visibility:hidden}
   setInterval(poll, 20000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) poll(); });
   let busy = false;
+  // «وقّف»: لو أرسل شي بالغلط يوقف فزعة وهو يفكر، والرسالة ما تنحسب عليه
+  function typingEl(onStop) {
+    const ty = document.createElement("div"); ty.className = "typing";
+    ty.innerHTML = `<i></i><i></i><i></i><button type="button" class="stopb">${L("وقّف", "Stop")}</button>`;
+    ty.querySelector(".stopb").onclick = onStop; msgs.appendChild(ty); return ty;
+  }
+  const newCid = () => "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   async function submit(text) {
     text = (text || inp.value).trim(); if (!text || busy) return;
     if (/(اقرب|أقرب|وين)\s.{0,14}(مستشفى|مستوصف|طوارئ)|nearest\s+(hospital|clinic|er\b|emergency)/i.test(text)) {
@@ -1872,11 +1881,17 @@ html.i18n-wait body{visibility:hidden}
     $("#empty").style.display = "none";
     const me = { me: true, text, ts: Date.now() }; S.msgs.push(me); bubble(me); save();
     $$("#msgs .qr").forEach(x => x.remove()); syncSugg();
-    const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
+    const cid = newCid(), ac = new AbortController(); let stopped = false;
+    const ty = typingEl(() => {
+      if (stopped) return; stopped = true; ac.abort(); api("/chat/stop", { method: "POST", body: JSON.stringify({ cid }) }).catch(() => {});
+      ty.remove(); const i = S.msgs.lastIndexOf(me); if (i >= 0) S.msgs.splice(i, 1); save(); renderChat();
+      inp.value = text; grow(); syncSend(); busy = false; toast(L("وقّفته ✋ وما انحسبت عليك رسالة", "Stopped ✋ — it won't count as a message"));
+    });
     msgs.scrollTop = msgs.scrollHeight;
     const t0 = Date.now(), before = new Set(reminders.map(x => String(x.id)));
     try {
-      const r = await api("/chat", { method: "POST", body: JSON.stringify({ text, name: S.name || "", client: PLAT, thread: S.thread }) });
+      const r = await api("/chat", { method: "POST", signal: ac.signal, body: JSON.stringify({ text, name: S.name || "", client: PLAT, thread: S.thread, cid }) });
+      if (stopped || r.stopped) return;
       setTimeout(loadNotices, 400);
       ty.remove();
       worked(Date.now() - t0);
@@ -1888,6 +1903,7 @@ html.i18n-wait body{visibility:hidden}
       lastId = Math.max(lastId, r.last || 0); save();
       if (r.draft) emailCard(r.draft); else enrich(bot.text, before);
     } catch (e) {
+      if (stopped) return;
       ty.remove(); toast(errText(e));
       S.msgs.pop(); save(); renderChat(); inp.value = text; grow(); syncSend();
     }
@@ -1912,6 +1928,13 @@ html.i18n-wait body{visibility:hidden}
       return await new Promise(r => cv.toBlob(b => r(b || file), "image/jpeg", 0.82));
     } catch { return file; }
   }
+  async function thumbOf(blob) {
+    try {
+      const bmp = await createImageBitmap(blob), k = Math.min(1, 480 / Math.max(bmp.width, bmp.height));
+      const cv = document.createElement("canvas"); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+      cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height); return cv.toDataURL("image/jpeg", 0.72);
+    } catch { return ""; }
+  }
   async function sendMedia(kind, blob, label) {
     if (busy) return;
     if (blob.size > 5_000_000) { toast(errText(new Error("size"))); return; }
@@ -1919,18 +1942,26 @@ html.i18n-wait body{visibility:hidden}
     const caption = kind === "image" ? inp.value.trim() : "";
     if (caption) { inp.value = ""; grow(); syncSend(); }
     $("#empty").style.display = "none";
-    const me = { me: true, text: label + (caption ? " " + caption : ""), ts: Date.now() }; S.msgs.push(me); bubble(me); save();
-    const ty = document.createElement("div"); ty.className = "typing"; ty.innerHTML = "<i></i><i></i><i></i>"; msgs.appendChild(ty);
+    const img = kind === "image" && /^image\//.test(blob.type || "image/") && label.startsWith("📷") ? await thumbOf(blob) : "";
+    const me = { me: true, text: label + (caption ? " " + caption : ""), ts: Date.now(), ...(img ? { img } : {}) }; S.msgs.push(me); bubble(me); save();
+    const cid = newCid(), ac = new AbortController(); let stopped = false;
+    const ty = typingEl(() => {
+      if (stopped) return; stopped = true; ac.abort(); api("/chat/stop", { method: "POST", body: JSON.stringify({ cid }) }).catch(() => {});
+      ty.remove(); const i = S.msgs.lastIndexOf(me); if (i >= 0) S.msgs.splice(i, 1); save(); renderChat();
+      if (caption) { inp.value = caption; grow(); syncSend(); } busy = false; toast(L("وقّفته ✋ وما انحسبت عليك رسالة", "Stopped ✋ — it won't count as a message"));
+    });
     msgs.scrollTop = msgs.scrollHeight;
     try {
       const data = await toB64(blob);
-      const r = await api(kind === "image" ? "/image" : "/voice", { method: "POST", body: JSON.stringify({ [kind === "image" ? "image" : "audio"]: data, text: caption, name: S.name || "", client: PLAT, thread: S.thread }) });
+      const r = await api(kind === "image" ? "/image" : "/voice", { method: "POST", signal: ac.signal, body: JSON.stringify({ [kind === "image" ? "image" : "audio"]: data, text: caption, name: S.name || "", client: PLAT, thread: S.thread, cid }) });
+      if (stopped || r.stopped) return;
       ty.remove();
       const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
       S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(r.draft ? { ...bot, text: L("جهزت لك الإيميل، راجعه 👇", "Here's the email, take a look 👇") } : bot);
       lastId = Math.max(lastId, r.last || 0); save();
       if (r.draft) emailCard(r.draft);
     } catch (e) {
+      if (stopped) return;
       ty.remove(); toast(errText(e)); S.msgs.pop(); save(); renderChat();
       if (caption) { inp.value = caption; grow(); syncSend(); }
     }
@@ -4276,7 +4307,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v81".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v82".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

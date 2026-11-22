@@ -111,6 +111,7 @@ body.kb .tabs,body.kb .demo-note{display:none}
 .wp-acts{display:flex;gap:10px;margin-top:14px}.wp-acts .btn{flex:1}
 .tbtn{width:100%;height:52px;padding:0 16px;border-radius:16px;background:var(--s1);border:1px solid var(--line);font-size:16px;color:var(--ink);text-align:start}
 .tbtn:disabled{opacity:.45}
+#ap-end-b.ph{color:var(--muted)}#ap-dur:disabled{opacity:1;color:var(--muted)}#ap-dur.bad{color:#e0213b}
 .crop{position:fixed;inset:0;z-index:120;background:#000;display:flex;flex-direction:column;padding:calc(var(--top,0px) + 8px) 0 calc(var(--bot,0px) + 16px)}
 .crop-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px}.crop-bar b{color:#fff;font-size:16px}
 .crop-bar button{color:#fff;font-size:16px;padding:8px 6px}.crop-bar .ok{background:#fff;color:#000;border-radius:999px;padding:8px 18px;font-weight:800}
@@ -1071,6 +1072,10 @@ html.i18n-wait body{visibility:hidden}
     <div class="row2">
       <div class="field"><span id="ap-l-d">اليوم</span><input id="ap-date" type="hidden"><button type="button" class="tbtn" id="ap-date-b"></button></div>
       <div class="field"><span id="ap-l-h">الساعة</span><input id="ap-time" type="hidden" value="09:00"><button type="button" class="tbtn" id="ap-time-b">9 ص</button></div>
+    </div>
+    <div class="row2" id="ap-end-w">
+      <div class="field"><span id="ap-l-e">ينتهي الساعة</span><input id="ap-end" type="hidden"><button type="button" class="tbtn" id="ap-end-b">اختر متى ينتهي</button></div>
+      <div class="field"><span id="ap-l-dur">المدة</span><button type="button" class="tbtn" id="ap-dur" disabled>—</button></div>
     </div>
     <div class="ap-quick" id="ap-quick" hidden></div>
     <div class="row2">
@@ -3118,10 +3123,27 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#ap-repeat").innerHTML = REPEAT.map(([v, n]) => `<option value="${v}">${n}</option>`).join("");
   let apKind = "appt", apEdit = 0;
   const syncApTime = () => { const [h, m] = ($("#ap-time").value || "09:00").split(":").map(Number); const d = new Date(); d.setHours(h, m, 0, 0); $("#ap-time-b").textContent = fmtTime(d); };
+  // «ينتهي الساعة» للموعد: إجباري، والمستخدم يختار أي وقت (مو مدد جاهزة)، والمدة تنحسب لحالها
+  const apMins = v => { const [h, m] = (v || "").split(":").map(Number); return Number.isFinite(h) ? h * 60 + (m || 0) : null; };
+  const syncApEnd = () => {
+    const e = $("#ap-end").value, s0 = apMins($("#ap-time").value), e0 = apMins(e);
+    if (!e) { $("#ap-end-b").textContent = L("اختر متى ينتهي", "Pick when it ends"); $("#ap-end-b").classList.add("ph"); $("#ap-dur").textContent = "—"; return; }
+    const d = new Date(); d.setHours(Math.floor(e0 / 60), e0 % 60, 0, 0); $("#ap-end-b").textContent = fmtTime(d); $("#ap-end-b").classList.remove("ph");
+    const m = e0 - s0;
+    $("#ap-dur").textContent = m <= 0 ? L("قبل البداية!", "Before the start!") : m < 60 ? (EN ? `${m} min` : `${m} دقيقة`)
+      : (EN ? `${Math.floor(m / 60)} h` : Math.floor(m / 60) === 1 ? "ساعة" : Math.floor(m / 60) === 2 ? "ساعتين" : `${Math.floor(m / 60)} ساعات`) + (m % 60 ? (EN ? ` ${m % 60} min` : ` و${m % 60} دقيقة`) : "");
+    $("#ap-dur").classList.toggle("bad", m <= 0);
+  };
+  $("#ap-end-b").onclick = async () => {
+    const base = apMins($("#ap-end").value) ?? (apMins($("#ap-time").value) || 540) + 60;
+    const d0 = new Date(); d0.setHours(Math.floor(base / 60) % 24, base % 60, 0, 0);
+    const d = await wheelPick("time", d0, 5); if (!d) return;
+    $("#ap-end").value = pad2(d.getHours()) + ":" + pad2(d.getMinutes()); syncApEnd();
+  };
   $("#ap-time-b").onclick = async () => {
     const [h, m] = ($("#ap-time").value || "09:00").split(":").map(Number); const d0 = new Date(); d0.setHours(h, m, 0, 0);
     const d = await wheelPick("time", d0, 5); if (!d) return;
-    $("#ap-time").value = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); syncApTime();
+    $("#ap-time").value = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); syncApTime(); syncApEnd();
   };
   function apQuick() {
     const t = new Date(), days = [[0, L("اليوم", "Today")], [1, L("بكرة", "Tomorrow")], [2, L("بعد بكرة", "Day after")], [7, L("بعد أسبوع", "In a week")]];
@@ -3149,6 +3171,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#ap-time").value = pre.time || (kind === "appt" ? "09:00" : pad2(Math.min(23, new Date().getHours() + 1)) + ":00");
     befSel = pre.befores ? [...pre.befores] : [pre.before != null ? pre.before : kind === "appt" ? 60 : 0]; befExtra = befSel.filter(m => !BEFORE.some(([v]) => v === m)); syncBefore(); syncApTime();
     $("#ap-repeat").value = pre.repeat || "none";
+    $("#ap-l-h").textContent = kind === "appt" ? L("يبدأ الساعة", "Starts at") : L("الساعة", "Time");
+    $("#ap-end-w").hidden = kind !== "appt"; $("#ap-end").value = pre.end || ""; syncApEnd();
     apQuick(); apCal();
     if (calLinked === null && signedIn()) api("/connections").then(r => { calLinked = !!r.calendar; apCal(); }).catch(() => {});
     openSheet("s-appt");
@@ -3164,9 +3188,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const locRaw = $("#ap-loc").value.trim(), loc = (locRaw.match(/https?:\/\/\S+/) || [""])[0];
     if (apKind === "appt" && locRaw && !loc) { toast(L("الصق رابط الموقع من قوقل ماب (يبدأ بـ https)", "Paste the location link from Google Maps (starts with https)")); $("#ap-loc").focus(); return; }
     const place = apKind === "appt" ? [$("#ap-place").value.replace(/https?:\/\/\S+/g, "").trim(), loc].filter(Boolean).join(" ") : "";
+    const end = apKind === "appt" ? $("#ap-end").value : "";
+    if (apKind === "appt" && !end) { toast(L("اختر متى ينتهي الموعد", "Pick when the appointment ends")); $("#ap-end-b").click(); return; }
+    if (apKind === "appt" && apMins(end) <= apMins(tm)) { toast(L("وقت النهاية لازم يكون بعد وقت البداية", "The end time must be after the start time")); return; }
     const b = $("#ap-go"); b.disabled = true;
     try {
-      await api(apEdit ? "/reminders/" + apEdit : "/reminders", { method: apEdit ? "PATCH" : "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: Math.max(...befSel), befores: [...befSel].sort((x, y) => y - x), repeat: rep, place }) });
+      await api(apEdit ? "/reminders/" + apEdit : "/reminders", { method: apEdit ? "PATCH" : "POST", body: JSON.stringify({ title, when: d + "T" + tm, before: Math.max(...befSel), befores: [...befSel].sort((x, y) => y - x), repeat: rep, place, kind: apKind, ...(end ? { end } : {}) }) });
       const n = SHS.length; closeSheets(); if (n) history.go(-n);
       toast(apEdit ? L(`انعدّل ✅ ${fmtWhen(when)}`, `Updated ✅ ${fmtWhen(when)}`) : L(`انحفظ ✅ ${fmtWhen(when)}`, `Saved ✅ ${fmtWhen(when)}`));
       try { reminders = (await api("/reminders")).reminders || []; } catch {}
@@ -3215,7 +3242,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   $("#pap-back").onclick = () => { const back = papFrom; papFrom = false; go("tasks"); if (back) setTimeout(() => openSheet("s-remopts"), 60); };
   if (EN) {
     [["#tab-rm", "Reminders"], ["#rm-h", "My reminders"], ["#rm-sub", "Your appointments and reminders in one place."], ["#rm-appt-t", "Appointment"], ["#rm-appt-s", "Pick the day and time, and I'll remind you before"],
-     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-p", "Place name (optional)"], ["#ap-l-loc", "Location (optional)"], ["#ap-l-h", "Time"], ["#ap-l-b", "Remind me"], ["#bp-t", "Remind me"], ["#bp-sub", "You can pick more than one"], ["#bp-x", "Cancel"], ["#bp-ok", "Done"], ["#ap-l-r", "Repeats"],
+     ["#rm-rem-t", "Reminder"], ["#rm-rem-s", "Documents, medicines, bills and more"], ["#pap-back-t", "My reminders"], ["#ap-l-d", "Day"], ["#ap-l-p", "Place name (optional)"], ["#ap-l-loc", "Location (optional)"], ["#ap-l-h", "Time"], ["#ap-l-e", "Ends at"], ["#ap-l-dur", "Duration"], ["#ap-l-b", "Remind me"], ["#bp-t", "Remind me"], ["#bp-sub", "You can pick more than one"], ["#bp-x", "Cancel"], ["#bp-ok", "Done"], ["#ap-l-r", "Repeats"],
      ["#ro-h", "Reminder"], ["#ro-sub", "What should I remind you about?"]].forEach(([q, t]) => { $(q).textContent = t; });
     $("#ap-place").placeholder = "e.g. Smile Dental Clinic"; $("#ap-loc").placeholder = "Paste the Google Maps link";
     $("#v-tasks").setAttribute("aria-label", "My reminders"); $("#s-appt").setAttribute("aria-label", "New appointment"); $("#s-remopts").setAttribute("aria-label", "Reminder");
@@ -3302,7 +3329,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   function editRem(x) {
     if (!x) return;
     const d = new Date(x.at), bf = x.befores && x.befores.length ? x.befores : [0], sp = splitPlace(x.note);
-    openAppt(sp.name || sp.url || Math.max(...bf) > 0 ? "appt" : "rem", { id: x.id, title: x.title, place: sp.name, loc: sp.url, date: ymd(d), time: pad2(d.getHours()) + ":" + pad2(d.getMinutes()), befores: bf, repeat: x.repeat && x.repeat !== "none" ? x.repeat : "none" });
+    openAppt(x.dur || sp.name || sp.url || Math.max(...bf) > 0 ? "appt" : "rem", { id: x.id, title: x.title, place: sp.name, loc: sp.url, date: ymd(d), time: pad2(d.getHours()) + ":" + pad2(d.getMinutes()), end: x.dur ? (e => pad2(e.getHours()) + ":" + pad2(e.getMinutes()))(new Date(d.getTime() + x.dur * 60000)) : "", befores: bf, repeat: x.repeat && x.repeat !== "none" ? x.repeat : "none" });
   }
   async function renderTasks() {
     drawTasks();
@@ -4185,7 +4212,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v72".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v73".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

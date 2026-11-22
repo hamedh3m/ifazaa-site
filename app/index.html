@@ -2327,7 +2327,7 @@ html.i18n-wait body{visibility:hidden}
     holdT = setTimeout(() => { held = true; stopBuzz(); rAct.classList.remove("holding"); try { if (navigator.vibrate) navigator.vibrate([18, 40, 18]); else [0, 90].forEach(t => setTimeout(tick.fire, t)); } catch {} crewRunAll(); }, 800); });
   ["pointerup", "pointerleave", "pointercancel"].forEach(ev => rAct.addEventListener(ev, () => { clearTimeout(holdT); stopBuzz(); rAct.classList.remove("holding"); }));
   rAct.addEventListener("contextmenu", e => e.preventDefault());
-  $("#r-act").onclick = () => { const d = RI[ri]; if (d.end) { if (held) { held = false; return; } closeRadar(); if (d.hold) go("crew"); return; }   // آخر صفحة: دايم تودي «طاقم عملك» (مو الصفحة اللي كان فيها) if (d.run) { closeRadar(); d.run(); return; } if (d.next) { ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); return; } closeRadar(); if (d.go) go(d.go); else if (d.say) { go("chat"); submit(d.say); } };
+  $("#r-act").onclick = () => { const d = RI[ri]; if (d.end) { if (held) { held = false; return; } closeRadar(); if (d.hold) go("crew"); return; }   /* آخر صفحة: دايم تودي «طاقم عملك» */ if (d.run) { closeRadar(); d.run(); return; } if (d.next) { ri + 1 < RI.length ? showRadar(ri + 1) : closeRadar(); return; } closeRadar(); if (d.go) go(d.go); else if (d.say) { go("chat"); submit(d.say); } };
   (() => { let y0 = null; const r = $("#radar");
     r.addEventListener("touchstart", e => { y0 = e.touches[0].clientY; }, { passive: true });
     r.addEventListener("touchend", e => { if (y0 !== null && e.changedTouches[0].clientY - y0 > 90) closeRadar(); y0 = null; }, { passive: true });

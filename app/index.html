@@ -639,6 +639,7 @@ html{touch-action:manipulation}
 .st-sum{padding:16px 18px;border-radius:20px;background:var(--s1);border:1px solid var(--line);margin:4px 0 14px}.st-sum b{font-size:17px}.st-sum p{margin:6px 0 0;color:var(--muted);font-size:13.5px;line-height:1.7}
 .st-card{padding:16px 18px;border-radius:20px;background:var(--s1);border:1px solid var(--line);margin-bottom:12px}.st-card b{display:block;font-size:16.5px}
 .st-card .u{display:block;margin-top:4px;color:var(--muted);font-size:12.5px;word-break:break-all;text-align:start}.st-card .d{display:block;margin-top:2px;color:var(--muted);font-size:12px}
+.st-card .dupn{display:block;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--s2,rgba(255,255,255,.06));font-size:13px;line-height:1.6}
 .st-act{display:flex;gap:8px;margin-top:12px}.st-act a,.st-act button{flex:1;min-width:0;padding:0 6px;white-space:nowrap;height:40px;border-radius:12px;background:var(--s2);border:1px solid var(--line);color:var(--ink);font-size:14px;display:flex;align-items:center;justify-content:center;text-decoration:none}
 .st-act .del{flex:0 0 44px;color:#ff6b7e}.st-act .del svg{width:18px;height:18px}
 .st-empty{text-align:center;padding:30px 10px;color:var(--muted);line-height:1.8}
@@ -3942,14 +3943,15 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const sum = `<div class="st-sum"><b>${EN ? `${used} of ${lim} websites used` : `استخدمت ${AR(used)} من ${AR(lim)} مواقع`}</b><p>${left
       ? (EN ? `You can have ${left} more. ` : `تقدر تصمم ${AR(left)} ${left === 1 ? "موقع" : left === 2 ? "موقعين" : "مواقع"} بعد. `) : L("وصلت حد باقتك. ", "You've reached your plan's limit. ")}${L("تقدر تعدّل أي موقع من مواقعك وقت ما تبي. والموقع اللي تحذفه يبقى محسوب من الحد، يعني ما ينسوى بداله.", "You can edit any of your websites anytime. A deleted website still counts toward the limit, so it can't be replaced.")}</p></div>`;
     if (!r.sites.length) { box.innerHTML = sum + `<div class="st-empty">${L("ما عندك مواقع للحين.", "No websites yet.")}${left ? `<br><button class="btn btn-primary" type="button" id="st-new" style="margin-top:14px">${L("اطلب من فزعة يصمم موقعك", "Ask Fazaa to design one")}</button>` : ""}</div>`; }
-    else box.innerHTML = sum + r.sites.map(s => `<div class="st-card"><b>${esc(s.name || L("موقعك", "Your website"))}</b><span class="u" dir="ltr">${esc(s.url.replace(/^https:\/\//, ""))}</span><span class="d">${L("آخر تعديل ", "Last edited ")}${esc(fmtDate(new Date(s.updated || s.created)))}</span>
-      <div class="st-act"><a href="${esc(s.url)}" target="_blank" rel="noopener">${L("افتح الموقع", "Open")}</a><button type="button" data-stcopy="${esc(s.url)}">${L("انسخ الرابط", "Copy link")}</button><button type="button" data-stedit="${esc(s.name || "")}">${L("عدّله", "Edit")}</button><button type="button" class="del" data-stdel="${esc(s.slug)}" data-stname="${esc(s.name || "")}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("");
+    else box.innerHTML = sum + r.sites.map(s => `<div class="st-card"><b>${esc(s.name || L("موقعك", "Your website"))}</b><span class="u" dir="ltr">${esc(s.url.replace(/^https:\/\//, ""))}</span><span class="d">${L("آخر تعديل ", "Last edited ")}${esc(fmtDate(new Date(s.updated || s.created)))}</span>${s.dup ? `<span class="dupn">${L("عندك موقعين بنفس الاسم. احذف النسخة اللي ما تبيها، وحذفها ما ينحسب من حد باقتك.", "You have two websites with the same name. Delete the copy you don't need. Deleting it won't count toward your plan's limit.")}</span>` : ""}
+      <div class="st-act"><a href="${esc(s.url)}" target="_blank" rel="noopener">${L("افتح الموقع", "Open")}</a><button type="button" data-stcopy="${esc(s.url)}">${L("انسخ الرابط", "Copy link")}</button><button type="button" data-stedit="${esc(s.name || "")}">${L("عدّله", "Edit")}</button><button type="button" class="del" data-stdel="${esc(s.slug)}" data-stname="${esc(s.name || "")}" data-stdup="${s.dup ? 1 : ""}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div></div>`).join("");
     const nb = $("#st-new"); if (nb) nb.onclick = () => { const n = SHS.length; closeSheets(); if (n) history.go(-n); setTimeout(() => { go("chat"); cardSay(L("أبي موقع لمشروعي، ", "I'd like a website for my business, ")); }, 300); };
     $$("#sites-box [data-stcopy]").forEach(b => b.onclick = () => copyText(b.dataset.stcopy, b));
     $$("#sites-box [data-stedit]").forEach(b => b.onclick = () => { const n = SHS.length; closeSheets(); if (n) history.go(-n); setTimeout(() => { go("chat"); cardSay(L(`عدّل موقع «${b.dataset.stedit}»: `, `Edit the website “${b.dataset.stedit}”: `)); }, 300); });
     $$("#sites-box [data-stdel]").forEach(b => b.onclick = async () => {
       const ok = await ask(L(`تحذف «${b.dataset.stname}»؟`, `Delete “${b.dataset.stname}”?`),
-        L("الموقع ورابطه وصوره تنحذف نهائياً. والموقع يبقى محسوب من حد باقتك، يعني ما تقدر تسوي بداله.", "The website, its link and images are deleted for good. It still counts toward your plan's limit, so you can't make a replacement."),
+        b.dataset.stdup ? L("هذي نسخة مكررة: الموقع ورابطه وصوره تنحذف نهائياً، وحذفها ما ينحسب من حد باقتك. موقعك الثاني بنفس الاسم يبقى زي ما هو.", "This is a duplicate copy: the website, its link and images are deleted for good, and it won't count toward your plan's limit. Your other website with the same name stays as it is.")
+          : L("الموقع ورابطه وصوره تنحذف نهائياً. والموقع يبقى محسوب من حد باقتك، يعني ما تقدر تسوي بداله.", "The website, its link and images are deleted for good. It still counts toward your plan's limit, so you can't make a replacement."),
         L("احذفه", "Delete"));
       if (!ok) return;
       try { await api("/sites/" + encodeURIComponent(b.dataset.stdel), { method: "DELETE" }); toast(L("انحذف الموقع", "Website deleted")); drawSites(); loadLimits(); }
@@ -4415,7 +4417,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v85".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v86".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

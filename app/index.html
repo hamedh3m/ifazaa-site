@@ -1427,7 +1427,7 @@ html.i18n-wait body{visibility:hidden}
     if (signedIn()) return false;
     closeSheetsSafe(); go("me", true);
     setTimeout(() => { const g = $("#g-in"); if (!g) return; g.scrollIntoView({ behavior: "smooth", block: "center" }); g.classList.add("pulse"); setTimeout(() => g.classList.remove("pulse"), 1800); }, 250);
-    toast(why || L("سجّل دخولك بقوقل أو أبل عشان تستخدم هذي الميزة 🔐", "Sign in with Google or Apple to use this 🔐"));
+    toast(noApple(why || L("سجّل دخولك بقوقل أو أبل عشان تستخدم هذي الميزة 🔐", "Sign in with Google or Apple to use this 🔐")));
     return true;
   }
   const closeSheetsSafe = () => $$(".sheet.on").forEach(x => x.classList.remove("on"));
@@ -1484,6 +1484,7 @@ html.i18n-wait body{visibility:hidden}
   const CAP = window.Capacitor, NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
   const NP = NATIVE ? (CAP.Plugins || {}) : {};
   const PLAT = NATIVE && CAP.getPlatform ? CAP.getPlatform() : "web";       // ios | android | web
+  const noApple = t => PLAT === "android" ? t.replace(/ أو أبل| or Apple/g, "") : t;   // الأندرويد: ما فيه دخول بأبل
   // «شارك لفزعة»: إضافة المشاركة في الآيفون تحتاج مفتاح الجلسة، فنحفظه في سلسلة المفاتيح المشتركة (Keychain) عن طريق التطبيق
   let nativeTok = "";
   window.__fzSync = () => { const P = NP.FazaaShared; if (!P || !P.setSession) return;
@@ -4171,7 +4172,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     if (outcome === "accepted") { history.back(); }
   };
 
-  if (NATIVE) { const gp = $("#g-in p"); if (gp) gp.textContent = L("ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.", "Sign in with Google or Apple so you never lose your chats and reminders, and can open them from any device."); }
+  if (NATIVE) { const gp = $("#g-in p"); if (gp) gp.textContent = noApple(L("ادخل بحساب قوقل أو أبل عشان ما تضيع محادثاتك وتذكيراتك، وتفتحها من أي جهاز.", "Sign in with Google or Apple so you never lose your chats and reminders, and can open them from any device.")); }
   // ---------- boot ----------
   if (!S.onb) showOnb();
   updateHello(); renderChat(); renderMe(); loadHistory(); refreshDay(); loadThreads(); syncHead("chat");
@@ -4181,7 +4182,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v69".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v70".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

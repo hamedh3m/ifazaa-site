@@ -855,7 +855,7 @@ html.i18n-wait body{visibility:hidden}
 .pap .left{font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(37,211,102,.12);color:#6fe6a5;white-space:nowrap}
 .pap .left.warn{background:rgba(255,184,0,.14);color:#ffc94d}.pap .left.bad{background:rgba(224,33,59,.16);color:#ff6b7e}
 .pap button{color:var(--muted);padding:6px}.pap button svg{width:18px;height:18px}
-.native:not(.iap-on) #buy,.native #sms-buy,.native #fam-buy,.native #pap-buy,.native #open-install,.native [data-sheet="s-plans"] small,.native .g-slot,.native #biz,.native .tier .pr,.native .pc .pr,.native #push-note{display:none!important}
+.native:not(.iap-on) #buy,.native #sms-buy,.native #fam-buy,.native #pap-buy,.native #open-install,.native [data-sheet="s-plans"] small,.native .g-slot,.native #biz,.native .tier .pr,.native .pc:not(.has-iap) .pr,.native .pc:not(.has-iap) .was,.native .pc.no-launch .was,.native #push-note{display:none!important}
 .safe li{position:relative;padding-inline-start:22px;color:#d8d8dc}
 .safe li::before{content:"✓";position:absolute;inset-inline-start:0;color:#6fe6a5;font-weight:800}
 .stp{margin-top:14px;padding:14px;border-radius:20px;background:var(--s1);border:1px solid var(--line)}
@@ -3971,7 +3971,19 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("شخص من أهلك معك بنفس الاشتراك", "A family member on the same plan"), NO, NO, CK)}
     </div>`;
   }
+  // التطبيق: السعر في البطاقة من متجر أبل نفسه (بعملة بلده). وسطر «سعر الافتتاح» يطلع بس لو السعر هو سعر الافتتاح بالريال
+  function fillIapPrices() {
+    const month = typeof billing !== "undefined" && billing === "month";
+    $$("#plans-top .pc[data-pick]").forEach(c => {
+      const t = c.dataset.pick, p = (typeof iapProducts !== "undefined" ? iapProducts : {})[t + (month ? "_m" : "")];
+      c.classList.toggle("has-iap", !!p);
+      if (!p) return;
+      const pr = c.querySelector(".pr"); if (pr) pr.innerHTML = `<b dir="ltr" class="sm">${esc(p.price)}</b><small>${month ? L("بالشهر", "a month") : L("بالسنة", "a year")}</small>`;
+      c.classList.toggle("no-launch", month || !String(p.price).includes(t === "elite" ? "299.99" : "199.99"));
+    });
+  }
   function syncBuy() {
+    if (NATIVE) fillIapPrices();
     const b = $("#buy"); if (!b) return;
     const owned = (planPick === "prime" && (myTier === "prime" || myTier === "elite" || myTier === "family")) || (planPick === "elite" && (myTier === "elite" || myTier === "family"));
     b.hidden = owned;
@@ -4226,7 +4238,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v76".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v77".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

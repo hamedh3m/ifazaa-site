@@ -521,6 +521,9 @@ a.il{display:inline-block;margin:2px 4px;padding:2px 9px;border-radius:999px;bac
 .attbar .ab-imgs{display:flex;gap:6px;flex:none}.attbar .ab-im{position:relative;width:46px;height:46px}.attbar .ab-im img{width:46px;height:46px}
 .attbar .ab-rm{position:absolute;top:-5px;inset-inline-end:-5px;width:20px;height:20px;border-radius:50%;background:#000;border:1px solid var(--line);display:grid;place-items:center}.attbar .ab-rm svg{width:11px;height:11px;color:#fff}
 .attbar .ab-add{width:46px;height:46px;border-radius:10px;border:1.5px dashed var(--line);background:none;display:grid;place-items:center;color:var(--muted)}.attbar .ab-add svg{width:18px;height:18px}
+.attbar .ab-im.vid::after,.m.me .gimg.vid::after{content:"▶";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:14px;text-shadow:0 1px 4px #000;pointer-events:none}
+.m.me .gimg.vid{position:relative}.attbar .ab-im .ab-doc{width:46px;height:46px;flex-direction:column;font-size:18px;line-height:1}.attbar .ab-im .ab-doc small{font-size:8.5px;color:var(--muted);margin-top:2px}
+.m.me .mfile{display:flex;width:fit-content;align-items:center;gap:6px;max-width:100%;padding:8px 12px;margin:0 0 6px;border-radius:12px;background:rgba(0,0,0,.06);font-size:13.5px}.m.me .mfile span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .m.me .mimgs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;width:min(240px,62vw)}.m.me .mimgs .gimg img{width:100%;max-width:100%;height:110px;object-fit:cover}.m.me .mimgs .gimg:nth-child(3):last-child{grid-column:1/-1}
 .attbar .ab-doc{width:46px;height:46px;border-radius:10px;background:var(--s2);display:grid;place-items:center;font-size:22px;flex:none}
 .attbar .ab-t{flex:1;min-width:0}.attbar .ab-t b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.attbar .ab-t small{display:block;font-size:12px;color:var(--muted)}
@@ -973,7 +976,7 @@ html.i18n-wait body{visibility:hidden}
         <div class="attbar" id="attbar" hidden></div>
         <div class="comp">
           <button class="send att" id="att" type="button" aria-label="أرفق صورة أو ملف"><svg><use href="#i-plus"/></svg></button>
-          <input id="file" type="file" accept="image/*,application/pdf" multiple hidden>
+          <input id="file" type="file" accept="image/*,video/*,application/pdf,.pdf,.docx,.xlsx,.pptx,.txt,.csv,.md,.json" multiple hidden>
           <textarea id="inp" rows="1" enterkeyhint="enter" placeholder="وش تبي فزعة يسوي لك؟" aria-label="رسالتك"></textarea>
           <button class="send" id="send" type="button" aria-label="أرسل"><svg id="send-ic"><use href="#i-mic"/></svg></button>
         </div>
@@ -1537,7 +1540,7 @@ html.i18n-wait body{visibility:hidden}
   }
   const errText = e => e.message === "rate" ? L("شوي شوي 🙏 جرب بعد دقيقة", "Easy there 🙏 try again in a minute")
     : e.message === "size" ? L("الملف كبير، الحد 5 ميقا", "That file is too big (5 MB max)")
-    : e.message === "type" ? L("أقدر أقرا الصور وملفات PDF بس", "I can read photos and PDF files only")
+    : e.message === "type" ? L("أقدر أقرا الصور والفيديو وملفات PDF ووورد وإكسل وباوربوينت والنصوص", "I can read photos, videos, PDF, Word, Excel, PowerPoint and text files")
     : e.message === "mic" ? L("اسمح لفزعة يستخدم المايك من الإعدادات", "Allow Fazaa to use the microphone in Settings")
     : e.message === "offline" ? L("فزعة مو متصل الحين، جرب بعد شوي", "Fazaa isn't reachable right now, try again shortly")
     : L("صار خلل بسيط، جرب مرة ثانية", "Something went wrong, please try again");
@@ -1621,13 +1624,16 @@ html.i18n-wait body{visibility:hidden}
   function bubble(m) {
     const el = document.createElement("div");
     el.className = "m " + (m.me ? "me" : "bot");
-    const pics = m.me ? (m.imgs || (m.img ? [m.img] : [])) : imgsOf(m.text);
+    const att = m.me && Array.isArray(m.att) ? m.att : null;     // مرفقات مختلطة: [{t: img|vid|file, src, name}]
+    const pics = att ? att.filter(a => a.t !== "file" && a.src).map(a => a.src) : m.me ? (m.imgs || (m.img ? [m.img] : [])) : imgsOf(m.text);
     const pk = m.me ? "" : ((m.text || "").match(/⟦pick:(date|time|datetime)⟧/) || [])[1] || "";
-    const txt = (m.me && (m.img || m.imgs) ? (m.text || "").replace(/^📷\s*(صورة|Photo)\s*/, "") : (m.text || "")).replace(PICK_RE, "\n").trim();
+    const txt = (att ? (m.cap || "") : m.me && (m.img || m.imgs) ? (m.text || "").replace(/^📷\s*(صورة|Photo)\s*/, "") : (m.text || "")).replace(PICK_RE, "\n").trim();
     const rest = pics.length ? txt.replace(IMG_RE, "").replace(/\n{3,}/g, "\n\n").trim() : txt;
     msgs.querySelectorAll(".pickb").forEach(b => b.remove());      // العجلة بس لآخر سؤال
-    const picsH = pics.map(u => `<button type="button" class="gimg" data-img="${esc(u)}"><img src="${esc(u)}" alt="${esc(m.me ? L("الصورة اللي أرسلتها", "The photo you sent") : L("صورة من فزعة", "Image from Fazaa"))}" loading="lazy"></button>`).join("");
-    el.innerHTML = (m.me && pics.length > 1 ? `<div class="mimgs">${picsH}</div>` : picsH)
+    const vidSet = new Set(att ? att.filter(a => a.t === "vid").map(a => a.src) : []);
+    const fileH = att ? att.filter(a => a.t === "file").map(a => `<span class="mfile">📄 <span dir="auto">${esc(a.name || L("ملف", "File"))}</span></span>`).join("") : "";
+    const picsH = pics.map(u => `<button type="button" class="gimg${vidSet.has(u) ? " vid" : ""}" data-img="${esc(u)}"><img src="${esc(u)}" alt="${esc(m.me ? L("الصورة اللي أرسلتها", "The photo you sent") : L("صورة من فزعة", "Image from Fazaa"))}" loading="lazy"></button>`).join("");
+    el.innerHTML = (m.me && pics.length > 1 ? `<div class="mimgs">${picsH}</div>` : picsH) + fileH
       + (rest ? linkify(rest) : "") + (!m.me && rest
         ? `<div class="mf"><time>${fmtTime(new Date(m.ts))}</time><button type="button" class="cp" aria-label="${L("انسخ الرد", "Copy reply")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>${L("نسخ", "Copy")}</span></button></div>`
         : `<time>${fmtTime(new Date(m.ts))}</time>`);
@@ -1985,45 +1991,99 @@ html.i18n-wait body{visibility:hidden}
   const fileIn = $("#file");
   // المرفق ما ينرسل على طول: يطلع فوق خانة الكتابة، ويكتب معه طلبه لو يبي، وبعدين يضغط إرسال
   var pend = null;
-  const MAX_IMGS = 3;
-  // pend = { pdf: {blob, name} } أو { imgs: [{blob, url}] } (إلى ٣ صور)
+  const MAX_ATT = 3;
+  // المرفقات قبل الإرسال: إلى ٣ (صور أو فيديو أو ملفات أو خليط). pend = { items: [{ kind: image|video|file, blob, name, url, frames }] }
+  const OFFICE = /\.(docx|xlsx|pptx|txt|csv|md|json)$/i;
+  async function videoFrames(file, n = 4) {
+    const url = URL.createObjectURL(file), v = document.createElement("video");
+    v.muted = true; v.playsInline = true; v.preload = "auto"; v.src = url;
+    try {
+      await new Promise((res, rej) => { v.onloadedmetadata = res; v.onerror = rej; setTimeout(rej, 12000); });
+      const d = isFinite(v.duration) && v.duration > 0 ? v.duration : 1, out = [];
+      for (let i = 0; i < n; i++) {
+        v.currentTime = Math.min(d - 0.05, d * (i + 0.5) / n);
+        await new Promise((res, rej) => { v.onseeked = res; setTimeout(rej, 8000); });
+        const k = Math.min(1, 720 / Math.max(v.videoWidth || 1, v.videoHeight || 1));
+        const cv = document.createElement("canvas"); cv.width = Math.round((v.videoWidth || 320) * k); cv.height = Math.round((v.videoHeight || 240) * k);
+        cv.getContext("2d").drawImage(v, 0, 0, cv.width, cv.height);
+        out.push(await new Promise(r => cv.toBlob(r, "image/jpeg", 0.75)));
+      }
+      return out.filter(Boolean);
+    } finally { URL.revokeObjectURL(url); }
+  }
   function setPend(p) {
-    if (pend && pend.imgs) pend.imgs.forEach(x => { if (!p || !p.imgs || !p.imgs.includes(x)) URL.revokeObjectURL(x.url); });
+    if (pend && pend.items) pend.items.forEach(x => { if (x.url && (!p || !p.items || !p.items.includes(x))) URL.revokeObjectURL(x.url); });
     pend = p; const bar = $("#attbar");
-    if (!p || (p.imgs && !p.imgs.length)) { pend = null; bar.hidden = true; bar.innerHTML = ""; syncSend(); return; }
-    if (p.imgs) {
-      p.imgs.forEach(x => { if (!x.url) x.url = URL.createObjectURL(x.blob); });
-      const n = p.imgs.length;
-      bar.innerHTML = `<span class="ab-imgs">${p.imgs.map((x, i) => `<span class="ab-im"><img src="${x.url}" alt=""><button type="button" class="ab-rm" data-rm="${i}" aria-label="${L("شيل الصورة", "Remove photo")}"><svg><use href="#i-x"/></svg></button></span>`).join("")}${n < MAX_IMGS ? `<button type="button" class="ab-add" aria-label="${L("أضف صورة", "Add a photo")}"><svg><use href="#i-plus"/></svg></button>` : ""}</span>`
-        + `<span class="ab-t"><b>${n === 1 ? L("صورة جاهزة للإرسال", "Photo ready to send") : EN ? `${n} photos ready to send` : n === 2 ? "صورتين جاهزة للإرسال" : `${n} صور جاهزة للإرسال`}</b><small>${n < MAX_IMGS ? L(`تقدر تضيف إلى ${MAX_IMGS} صور`, `You can add up to ${MAX_IMGS} photos`) : L("اكتب طلبك معها لو تبي، أو اضغط إرسال", "Add a note if you like, or tap send")}</small></span>`
-        + `<button type="button" class="ab-x" aria-label="${L("شيل المرفقات", "Remove attachments")}"><svg><use href="#i-x"/></svg></button>`;
-      bar.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const k = +b.dataset.rm, gone = pend.imgs[k]; URL.revokeObjectURL(gone.url); setPend({ imgs: pend.imgs.filter((_, i) => i !== k) }); });
-      const ad = bar.querySelector(".ab-add"); if (ad) ad.onclick = () => fileIn.click();
-    } else {
-      bar.innerHTML = `<span class="ab-doc">📄</span><span class="ab-t"><b>${esc(p.pdf.name || L("ملف", "File"))}</b><small>${L("اكتب طلبك معها لو تبي، أو اضغط إرسال", "Add a note if you like, or tap send")}</small></span>`
-        + `<button type="button" class="ab-x" aria-label="${L("شيل المرفق", "Remove attachment")}"><svg><use href="#i-x"/></svg></button>`;
-    }
+    if (!p || !p.items || !p.items.length) { pend = null; bar.hidden = true; bar.innerHTML = ""; syncSend(); return; }
+    p.items.forEach(x => { if (!x.url && x.kind === "image") x.url = URL.createObjectURL(x.blob); if (!x.url && x.kind === "video" && x.frames && x.frames[0]) x.url = URL.createObjectURL(x.frames[0]); });
+    const n = p.items.length, kinds = new Set(p.items.map(x => x.kind));
+    const what = kinds.size > 1 ? (EN ? `${n} attachments` : n === 2 ? "مرفقين" : `${n} مرفقات`)
+      : kinds.has("image") ? (n === 1 ? L("صورة", "Photo") : EN ? `${n} photos` : n === 2 ? "صورتين" : `${n} صور`)
+      : kinds.has("video") ? (n === 1 ? L("فيديو", "Video") : EN ? `${n} videos` : `${n} فيديو`)
+      : (n === 1 ? L("ملف", "File") : EN ? `${n} files` : n === 2 ? "ملفين" : `${n} ملفات`);
+    bar.innerHTML = `<span class="ab-imgs">${p.items.map((x, i) => `<span class="ab-im${x.kind === "video" ? " vid" : ""}">${x.url ? `<img src="${x.url}" alt="">` : `<span class="ab-doc" title="${esc(x.name || "")}">📄<small>${esc(((x.name || "").split(".").pop() || "").slice(0, 4).toUpperCase())}</small></span>`}<button type="button" class="ab-rm" data-rm="${i}" aria-label="${L("شيل المرفق", "Remove attachment")}"><svg><use href="#i-x"/></svg></button></span>`).join("")}${n < MAX_ATT ? `<button type="button" class="ab-add" aria-label="${L("أضف مرفق", "Add an attachment")}"><svg><use href="#i-plus"/></svg></button>` : ""}</span>`
+      + `<span class="ab-t"><b>${esc(what)} ${EN ? "ready to send" : n === 1 && !kinds.has("image") ? "جاهز للإرسال" : "جاهزة للإرسال"}</b><small>${n < MAX_ATT ? L(`تقدر تضيف إلى ${MAX_ATT} مرفقات`, `You can add up to ${MAX_ATT}`) : L("اكتب طلبك معها لو تبي، أو اضغط إرسال", "Add a note if you like, or tap send")}</small></span>`
+      + `<button type="button" class="ab-x" aria-label="${L("شيل المرفقات", "Remove attachments")}"><svg><use href="#i-x"/></svg></button>`;
+    bar.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { const k = +b.dataset.rm; setPend({ items: pend.items.filter((_, i) => i !== k) }); });
+    const ad = bar.querySelector(".ab-add"); if (ad) ad.onclick = () => fileIn.click();
     bar.querySelector(".ab-x").onclick = () => setPend(null);
     bar.hidden = false; syncSend(); setTimeout(() => inp.focus(), 50);
   }
+  async function sendAtt(items) {
+    if (busy) return;
+    if (items.some(x => x.kind !== "video" && x.blob.size > 5_000_000)) { toast(errText(new Error("size"))); return; }
+    busy = true;
+    const caption = inp.value.trim(); if (caption) { inp.value = ""; grow(); syncSend(); }
+    $("#empty").style.display = "none";
+    const att = await Promise.all(items.map(async x => x.kind === "file" ? { t: "file", name: x.name } : { t: x.kind === "video" ? "vid" : "img", src: await thumbOf(x.kind === "video" ? x.frames[0] : x.blob) }));
+    const lab = att.map(a => a.t === "file" ? "📄" : a.t === "vid" ? "🎬" : "📷").join("");
+    const me = { me: true, text: lab + (caption ? " " + caption : ""), cap: caption, att, ts: Date.now() }; S.msgs.push(me); bubble(me); save();
+    const cid = newCid(), ac = new AbortController(); let stopped = false;
+    const ty = typingEl(() => {
+      if (stopped) return; stopped = true; ac.abort(); api("/chat/stop", { method: "POST", body: JSON.stringify({ cid }) }).catch(() => {});
+      ty.remove(); const i = S.msgs.lastIndexOf(me); if (i >= 0) S.msgs.splice(i, 1); save(); renderChat();
+      if (caption) { inp.value = caption; grow(); syncSend(); } busy = false; toast(L("وقّفته ✋ وما انحسبت عليك رسالة", "Stopped ✋ — it won't count as a message"));
+    });
+    msgs.scrollTop = msgs.scrollHeight;
+    try {
+      const files = await Promise.all(items.map(async x => x.kind === "video"
+        ? { kind: "video", name: x.name || "", frames: await Promise.all(x.frames.map(toB64)) }
+        : { kind: x.kind, name: x.name || "", data: await toB64(x.blob) }));
+      const r = await api("/image", { method: "POST", signal: ac.signal, body: JSON.stringify({ files, text: caption, name: S.name || "", client: PLAT, thread: S.thread, cid }) });
+      if (stopped || r.stopped) return;
+      ty.remove();
+      const bot = { me: false, text: r.reply || L("تمام 👍", "Done 👍"), ts: Date.now() };
+      S.msgs.push(bot); S.msgs = S.msgs.slice(-80); bubble(r.draft ? { ...bot, text: L("جهزت لك الإيميل، راجعه 👇", "Here's the email, take a look 👇") } : bot);
+      lastId = Math.max(lastId, r.last || 0); save();
+      if (r.draft) emailCard(r.draft);
+    } catch (e) {
+      if (stopped) return;
+      ty.remove(); toast(errText(e)); S.msgs.pop(); save(); renderChat();
+      if (caption) { inp.value = caption; grow(); syncSend(); }
+    }
+    busy = false; msgs.scrollTop = msgs.scrollHeight;
+  }
   function sendPend() {
     const p = pend; if (!p || busy) return; pend = null; $("#attbar").hidden = true; $("#attbar").innerHTML = "";
-    const job = p.imgs ? sendMedia("image", p.imgs.map(x => x.blob), "📷 " + L("صورة", "Photo")) : sendMedia("image", p.pdf.blob, "📄 " + L("ملف", "File"));
-    job.finally(() => { if (p.imgs) p.imgs.forEach(x => URL.revokeObjectURL(x.url)); syncSend(); });
+    sendAtt(p.items).finally(() => { p.items.forEach(x => { if (x.url) URL.revokeObjectURL(x.url); }); syncSend(); });
   }
-  $("#att").setAttribute("aria-label", L("أرفق صور أو ملف", "Attach photos or a file"));
+  $("#att").setAttribute("aria-label", L("أرفق صور أو فيديو أو ملفات", "Attach photos, videos or files"));
   $("#att").addEventListener("click", () => fileIn.click());
   fileIn.addEventListener("change", async () => {
     const files = [...(fileIn.files || [])]; fileIn.value = ""; if (!files.length) return;
-    const pdf = files.find(f => f.type === "application/pdf" || /\.pdf$/i.test(f.name));
-    if (pdf) { if (files.length > 1 || (pend && pend.imgs)) toast(L("الملف (PDF) ينرسل لحاله بدون صور", "A PDF is sent on its own, without photos")); return setPend({ pdf: { blob: pdf, name: pdf.name } }); }
-    const pics = files.filter(f => /^image\//.test(f.type) || /\.(heic|heif|jpe?g|png|webp|gif)$/i.test(f.name));
-    if (!pics.length) { toast(errText(new Error("type"))); return; }
-    const have = pend && pend.imgs ? pend.imgs : [];
-    const room = MAX_IMGS - have.length;
-    if (pics.length > room) toast(L(`الحد ${MAX_IMGS} صور في الرسالة الوحدة`, `Up to ${MAX_IMGS} photos per message`));
-    const add = await Promise.all(pics.slice(0, Math.max(0, room)).map(async f => ({ blob: await shrink(f) })));
-    setPend({ imgs: have.concat(add) });
+    const have = pend && pend.items ? pend.items : [], room = MAX_ATT - have.length;
+    if (files.length > room) toast(L(`الحد ${MAX_ATT} مرفقات في الرسالة الوحدة`, `Up to ${MAX_ATT} attachments per message`));
+    const add = [];
+    for (const f of files.slice(0, Math.max(0, room))) {
+      if (/^image\//.test(f.type) || /\.(heic|heif|jpe?g|png|webp|gif)$/i.test(f.name)) add.push({ kind: "image", blob: await shrink(f), name: f.name });
+      else if (/^video\//.test(f.type) || /\.(mp4|mov|m4v|webm|3gp)$/i.test(f.name)) {
+        try { const frames = await videoFrames(f); if (!frames.length) throw new Error("v"); add.push({ kind: "video", frames, name: f.name, blob: f }); }
+        catch { toast(L("ما قدرت أقرا هالفيديو، جرب فيديو ثاني", "Couldn't read that video, try another one")); }
+      }
+      else if (f.type === "application/pdf" || /\.pdf$/i.test(f.name) || OFFICE.test(f.name)) add.push({ kind: "file", blob: f, name: f.name });
+      else toast(L("أقدر أقرا الصور والفيديو وملفات PDF ووورد وإكسل وباوربوينت والنصوص", "I can read photos, videos, PDF, Word, Excel, PowerPoint and text files"));
+    }
+    if (add.length) setPend({ items: have.concat(add) });
   });
   let rec = null, recChunks = [], recT0 = 0, recTimer = null;
   async function startRec() {
@@ -4355,7 +4415,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v84".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v85".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

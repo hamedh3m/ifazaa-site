@@ -3933,8 +3933,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     top.innerHTML = `<h2 class="h2 pl-h">${L("اختر باقتك", "Choose your plan")}</h2>
       <div class="pl3">
         <div class="pc free" id="tier-free">${cur("free")}<b class="nm">${L("مجاني", "Free")}</b><div class="pr"><b class="sm">${L("بلا رسوم", "SAR 0")}</b><small>${L("دائماً", "forever")}</small></div><p class="tg">${L("للبداية وتنظيم يومك", "To get started")}</p></div>
-        <div class="pc prime${planPick === "prime" ? " sel" : ""}" id="tier-prime" data-pick="prime" role="button" tabindex="0">${cur("prime")}<b class="nm">${L("برايم", "Prime")}</b><div class="pr"><b dir="ltr">199<span class="dec">.99</span></b><small>${L("ريال بالسنة شامل الضريبة", "SAR a year, VAT included")}</small></div><span class="was">${L("سعر الافتتاح · بعدها 289.99", "Launch price · then 289.99")}</span><p class="tg">${L("كل شي تحتاجه لك", "Everything you need")}</p></div>
-        <div class="pc elite${planPick === "elite" ? " sel" : ""}" id="tier-elite" data-pick="elite" role="button" tabindex="0">${cur("elite")}${myTier === "elite" || myTier === "family" ? "" : `<span class="best">${L("الأكثر قيمة", "Best value")}</span>`}<b class="nm">${L("إيليت", "Elite")}</b><div class="pr"><b dir="ltr">299<span class="dec">.99</span></b><small>${L("ريال بالسنة شامل الضريبة", "SAR a year, VAT included")}</small></div><span class="was">${L("سعر الافتتاح · بعدها 399.99", "Launch price · then 399.99")}</span><p class="tg">${L("لك ولشخص من أهلك", "For you and a family member")}</p></div>
+        <div class="pc prime${planPick === "prime" ? " sel" : ""}" id="tier-prime" data-pick="prime" role="button" tabindex="0">${cur("prime")}<b class="nm">${L("برايم", "Prime")}</b><div class="pr"><b dir="ltr">199<span class="dec">.99</span></b><small>${L("ريال بالسنة شامل الضريبة", "SAR a year, VAT included")}</small></div><p class="tg">${L("كل شي تحتاجه لك", "Everything you need")}</p></div>
+        <div class="pc elite${planPick === "elite" ? " sel" : ""}" id="tier-elite" data-pick="elite" role="button" tabindex="0">${cur("elite")}${myTier === "elite" || myTier === "family" ? "" : `<span class="best">${L("الأكثر قيمة", "Best value")}</span>`}<b class="nm">${L("إيليت", "Elite")}</b><div class="pr"><b dir="ltr">299<span class="dec">.99</span></b><small>${L("ريال بالسنة شامل الضريبة", "SAR a year, VAT included")}</small></div><p class="tg">${L("لك ولشخص من أهلك", "For you and a family member")}</p></div>
       </div>`;
     top.querySelectorAll("[data-pick]").forEach(c => c.onclick = () => { planPick = c.dataset.pick; drawPlans(); syncBuy(); });
     const row = (h, a, b, c) => `<div class="f" role="row"><p role="rowheader">${h}</p><div class="v">${a}${b}${c}</div></div>`;
@@ -4226,7 +4226,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v79".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v80".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

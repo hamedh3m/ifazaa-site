@@ -2728,10 +2728,19 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
   setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
   // آخر تحديث على البطاقة (وقت آخر نتيجة جديدة)، مثل «آخر تحديث اليوم 2:36 م»
+  // كم صار له: دقايق، بعدها ساعات، وبعد ٢٤ ساعة أيام (عدّ تصاعدي، مو وقت الساعة)
+  const agoAr = (n, one, two, few, many) => n === 1 ? one : n === 2 ? two : n <= 10 ? `${AR(n)} ${few}` : `${AR(n)} ${many}`;
+  function sinceTxt(ms) {
+    const m = Math.floor(Math.max(0, ms) / 60000);
+    if (m < 1) return L("الحين", "just now");
+    if (m < 60) return EN ? `${m} min ago` : "قبل " + agoAr(m, "دقيقة", "دقيقتين", "دقائق", "دقيقة");
+    const h = Math.floor(m / 60);
+    if (h < 24) return EN ? `${h} h ago` : "قبل " + agoAr(h, "ساعة", "ساعتين", "ساعات", "ساعة");
+    const d = Math.floor(h / 24);
+    return EN ? (d === 1 ? "1 day ago" : `${d} days ago`) : "قبل " + agoAr(d, "يوم", "يومين", "أيام", "يوم");
+  }
   const agUpd = a => { const t = Date.parse(a.upd_at || ""); if (!t) return L("ما فيه تحديث للحين", "No updates yet");
-    const d = new Date(t), now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const diff = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - t0) / 864e5);
-    return L("آخر تحديث ", "Updated ") + (diff === 0 ? L("اليوم", "today") : diff === -1 ? L("أمس", "yesterday") : fmtDate(d)) + " " + fmtTime(d); };
+    return L("آخر تحديث ", "Updated ") + sinceTxt(Date.now() - t); };
   // تحديث جديد ما شافه: البطاقة توميض مرتين وعليها «جديد»، لين تنشاف على الشاشة أو يفتح تفاصيلها (يتذكرها هالجهاز بس)
   const AG_SEEN_KEY = "fz-ag-seen";
   let agSeen = null;
@@ -2809,13 +2818,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ? L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد. أو انتقل لإيليت (10 موظفين) من «حسابي» ثم «الباقات».", "Your crew is full. Remove a task to hire a new one, or switch to Elite (10 crew members) from Account, then Plans.")
       : L("طاقمك مكتمل. احذف واحد منهم عشان تضيف موظف جديد.", "Your crew is full. Remove a task to hire a new one.");
   // يبين إنه شغال لحاله: آخر فحص والفحص الجاي (ما يحتاج يضغط شي)
-  function agoTxt(ms) {
-    const m = Math.max(1, Math.round(ms / 60000));
-    if (m < 60) return EN ? `${m} min ago` : `قبل ${AR(m)} دقيقة`;
-    const h = Math.round(m / 60);
-    if (h < 24) return EN ? `${h} h ago` : h === 1 ? "قبل ساعة" : h === 2 ? "قبل ساعتين" : `قبل ${AR(h)} ساعات`;
-    return fmtWhen(new Date(Date.now() - ms));
-  }
+  const agoTxt = sinceTxt;
   function aliveTxt(a) {
     const last = Date.parse(a.last_at || ""), next = Date.parse(a.next_at || "");
     const parts = [L("✓ يشتغل لحاله", "✓ Runs on its own")];
@@ -4195,7 +4198,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v71".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v72".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

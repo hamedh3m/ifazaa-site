@@ -4017,7 +4017,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   // ---------- الدخول بحساب آبل (يظهر بعد ما نسجّل التطبيق عند آبل) ----------
   const APPLE_ID = "com.ifazaa.web";
-  $$("[data-apple]").forEach(b => { b.hidden = !APPLE_ID; b.onclick = onApple; });
+  $$("[data-apple]").forEach(b => { b.hidden = !APPLE_ID || PLAT === "android"; b.onclick = onApple; });   // الأندرويد: الدخول بقوقل أو الجوال (أبل ما ترجع للتطبيق هناك)
   let aReady = null;
   const loadApple = () => aReady || (aReady = new Promise((res, rej) => {
     const sc = document.createElement("script");
@@ -4181,7 +4181,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v68".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v69".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

@@ -809,7 +809,7 @@ html.i18n-wait body{visibility:hidden}
 .pc .nm{font-size:20px;font-weight:800;margin-top:6px}
 .pc.prime .nm{color:#ff8a99}
 .pc .pr{display:flex;flex-direction:column;align-items:center;line-height:1.15}
-.pc .pr b{font-size:30px;font-weight:800}.pc .pr b .dec{font-size:.55em;font-weight:700}.pc .pr b.sm{font-size:24px;padding:4px 0 2px}.pc .pr small{font-size:12.5px;color:var(--muted);margin-top:2px}
+.pc .pr b{font-size:30px;font-weight:800}.pc .pr b .dec{font-size:.55em;font-weight:700}.pc .pr b.sm{font-size:24px;padding:4px 0 2px}.pc .pr small{font-size:12.5px;color:var(--muted);margin-top:2px}.pc .pr small.apl{font-size:11.5px;margin-top:4px;opacity:.85}
 .pc .tg{font-size:12.5px;color:#c9c9cf;margin-top:2px}
 .pc .best,.pc .cur-b{position:absolute;top:-11px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px}
 .pc .best{background:var(--red2);color:#fff}
@@ -855,7 +855,7 @@ html.i18n-wait body{visibility:hidden}
 .pap .left{font-size:12px;font-weight:800;padding:5px 10px;border-radius:999px;background:rgba(37,211,102,.12);color:#6fe6a5;white-space:nowrap}
 .pap .left.warn{background:rgba(255,184,0,.14);color:#ffc94d}.pap .left.bad{background:rgba(224,33,59,.16);color:#ff6b7e}
 .pap button{color:var(--muted);padding:6px}.pap button svg{width:18px;height:18px}
-.native:not(.iap-on) #buy,.native #sms-buy,.native #fam-buy,.native #pap-buy,.native #open-install,.native [data-sheet="s-plans"] small,.native .g-slot,.native #biz,.native .tier .pr,.native .pc:not(.has-iap) .pr,.native .pc:not(.has-iap) .was,.native .pc.no-launch .was,.native #push-note{display:none!important}
+.native:not(.iap-on) #buy,.native #sms-buy,.native #fam-buy,.native #pap-buy,.native #open-install,.native [data-sheet="s-plans"] small,.native .g-slot,.native #biz,.native .tier .pr,.native .pc:not(.has-iap) .pr,.native .pc:not(.has-iap) .was,.native #push-note{display:none!important}
 .safe li{position:relative;padding-inline-start:22px;color:#d8d8dc}
 .safe li::before{content:"✓";position:absolute;inset-inline-start:0;color:#6fe6a5;font-weight:800}
 .stp{margin-top:14px;padding:14px;border-radius:20px;background:var(--s1);border:1px solid var(--line)}
@@ -3933,7 +3933,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const TX = (t, sub) => `<i class="tx" role="cell">${t}${sub ? `<small>${sub}</small>` : ""}</i>`;
   function priceHtml(t) {
     const m = billing === "month", n = PRICES[t][m ? 1 : 0];
-    const per = m ? L("ريال بالشهر", "SAR a month") : L("ريال بالسنة", "SAR a year");
+    const per = m ? L("ريال بالشهر شامل الضريبة", "SAR a month, VAT included") : L("ريال بالسنة شامل الضريبة", "SAR a year, VAT included");
     const sub = m ? L("تلغيه وقت ما تبي", "Cancel anytime") : (t === "prime" ? L("سعر الافتتاح · بعدها 289.99", "Launch price · then 289.99") : L("سعر الافتتاح · بعدها 399.99", "Launch price · then 399.99"));
     return `<div class="pr"><b dir="ltr">${n}<span class="dec">.99</span></b><small>${per}</small></div><span class="was">${sub}</span>`;
   }
@@ -3971,15 +3971,16 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("شخص من أهلك معك بنفس الاشتراك", "A family member on the same plan"), NO, NO, CK)}
     </div>`;
   }
-  // التطبيق: السعر في البطاقة من متجر أبل نفسه (بعملة بلده). وسطر «سعر الافتتاح» يطلع بس لو السعر هو سعر الافتتاح بالريال
+  // التطبيق: السعر في البطاقة دايماً سعرنا بالريال (199.99 / 299.99). ولو متجر أبل حق المستخدم بعملة ثانية، نكتب تحته سعر أبل له عشان يعرف وش بيندفع
   function fillIapPrices() {
     const month = typeof billing !== "undefined" && billing === "month";
     $$("#plans-top .pc[data-pick]").forEach(c => {
       const t = c.dataset.pick, p = (typeof iapProducts !== "undefined" ? iapProducts : {})[t + (month ? "_m" : "")];
       c.classList.toggle("has-iap", !!p);
+      const old = c.querySelector(".apl"); if (old) old.remove();
       if (!p) return;
-      const pr = c.querySelector(".pr"); if (pr) pr.innerHTML = `<b dir="ltr" class="sm">${esc(p.price)}</b><small>${month ? L("بالشهر", "a month") : L("بالسنة", "a year")}</small>`;
-      c.classList.toggle("no-launch", month || !String(p.price).includes(t === "elite" ? "299.99" : "199.99"));
+      const sar = month ? (t === "elite" ? "59.99" : "29.99") : (t === "elite" ? "299.99" : "199.99");
+      if (!String(p.price).includes(sar)) { const pr = c.querySelector(".pr"); if (pr) pr.insertAdjacentHTML("beforeend", `<small class="apl">${L("في متجر أبل حقك: ", "Your App Store: ")}<span dir="ltr">${esc(p.price)}</span></small>`); }
     });
   }
   function syncBuy() {
@@ -4238,7 +4239,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v78".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v79".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

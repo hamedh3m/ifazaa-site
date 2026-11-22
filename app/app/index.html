@@ -626,6 +626,9 @@ html{touch-action:manipulation}
 .pf-u.open .more{grid-template-rows:1fr}.pf-u .more p{margin:10px 0 0;font-size:14px;color:var(--muted);line-height:1.6}
 .pf-u .more .go{display:inline-block;margin-top:10px;padding:7px 14px;border-radius:999px;background:var(--ink);color:#111;font-size:13px;font-weight:700}
 .pf-u .pf-bar i{transform-origin:right;transition:width .7s cubic-bezier(.23,1,.32,1)}
+.past-btn{display:flex;align-items:center;gap:10px;width:100%;margin-top:16px;padding:14px 16px;border-radius:18px;background:var(--s1);border:1px solid var(--line);color:var(--ink);font-size:15px;text-align:start}.past-btn b{flex:1;font-weight:600}.past-btn .chev{width:16px;height:16px;color:var(--muted)}
+.past-m{margin:18px 2px 8px;color:var(--muted);font-size:13px;font-weight:700}
+.past-i{padding:12px 14px;border-radius:16px;background:var(--s1);border:1px solid var(--line);margin-bottom:8px}.past-i b{display:block;font-size:15px}.past-i span{display:block;color:var(--muted);font-size:12.5px;margin-top:3px}
 .st-sum{padding:16px 18px;border-radius:20px;background:var(--s1);border:1px solid var(--line);margin:4px 0 14px}.st-sum b{font-size:17px}.st-sum p{margin:6px 0 0;color:var(--muted);font-size:13.5px;line-height:1.7}
 .st-card{padding:16px 18px;border-radius:20px;background:var(--s1);border:1px solid var(--line);margin-bottom:12px}.st-card b{display:block;font-size:16.5px}
 .st-card .u{display:block;margin-top:4px;color:var(--muted);font-size:12.5px;word-break:break-all;text-align:start}.st-card .d{display:block;margin-top:2px;color:var(--muted);font-size:12px}
@@ -1014,6 +1017,7 @@ html.i18n-wait body{visibility:hidden}
       </div>
       <div id="task-list"></div>
       <div id="task-ideas" hidden></div>
+      <button type="button" class="past-btn" id="past-btn"><span>🕘</span><b id="past-t">المواعيد السابقة</b><svg class="chev"><use href="#i-chev"/></svg></button>
     </section>
 
     <section class="view" id="v-crew" aria-label="طاقم عملك">
@@ -1258,6 +1262,10 @@ html.i18n-wait body{visibility:hidden}
   </div>
 </section>
 
+<section class="sheet" id="s-past" aria-label="المواعيد السابقة">
+  <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="past-h">المواعيد السابقة</h1><span style="width:42px"></span></header>
+  <div class="body"><p class="sub" id="past-sub">كل موعد وتذكير عدّى وقته، محفوظ لك هنا.</p><div id="past-box"></div></div>
+</section>
 <section class="sheet" id="s-sites" aria-label="مواقعي">
   <header class="bar"><button class="icon-btn" data-close aria-label="رجوع"><svg><use href="#i-back"/></svg></button><h1 id="sites-h">مواقعي</h1><span style="width:42px"></span></header>
   <div class="body"><div id="sites-box"></div></div>
@@ -3812,6 +3820,31 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const sm = $("#fam-small"); if (sm) sm.textContent = f.role ? (f.partner || "") + L(" معك ✅", " is with you ✅") : L("معك بنفس اشتراك إيليت", "On the same Elite plan");
   }
   const loadFam = () => api("/family").then(r => { fam = r; syncFam(); }).catch(() => {});
+  // «المواعيد السابقة»: سجل كل موعد وتذكير عدّى وقته (ينحفظ في السيرفر، حتى لو انحذف الموعد بعدين)
+  let pastNext = "";
+  async function drawPast(more) {
+    const box = $("#past-box"); if (!box) return;
+    $("#past-h").textContent = L("المواعيد السابقة", "Past appointments");
+    $("#past-sub").textContent = L("كل موعد وتذكير عدّى وقته، محفوظ لك هنا.", "Every appointment and reminder that has passed, kept here for you.");
+    if (!more) { pastNext = ""; box.innerHTML = '<div class="skel" style="height:64px;border-radius:16px"></div>'; }
+    let r; try { r = await api("/reminders/history" + (more && pastNext ? "?before=" + encodeURIComponent(pastNext) : "")); } catch (e) { box.innerHTML = `<p class="sub">${esc(errText(e))}</p>`; return; }
+    const items = r.items || [];
+    if (!more) box.innerHTML = "";
+    $("#past-more") && $("#past-more").remove();
+    if (!items.length && !more) { box.innerHTML = `<p class="sub" style="text-align:center;padding:24px 0">${L("ما فيه مواعيد سابقة للحين.", "No past appointments yet.")}</p>`; return; }
+    let lastM = box.dataset.m || "";
+    const MN = (d) => EN ? d.toLocaleString("en", { month: "long", year: "numeric" }) : `${MONS[d.getMonth()]} ${AR(d.getFullYear())}`;
+    box.insertAdjacentHTML("beforeend", items.map(x => {
+      const d = new Date(x.at), m = MN(d), sp = splitPlace(x.note || "");
+      const end = x.dur ? fmtTime(new Date(d.getTime() + x.dur * 60000)) : "";
+      const head = m !== lastM ? `<p class="past-m">${esc(m)}</p>` : ""; lastM = m;
+      return head + `<div class="past-i"><b>${esc(x.title)}</b><span>${esc(fmtDate(d))} · ${esc(fmtTime(d))}${end ? " – " + esc(end) : ""}${sp.name ? " · 📍 " + esc(sp.name) : ""}${x.repeat && x.repeat !== "none" ? " · 🔁" : ""}</span></div>`;
+    }).join(""));
+    box.dataset.m = lastM;
+    if (items.length >= 60) { pastNext = items[items.length - 1].at; box.insertAdjacentHTML("beforeend", `<button type="button" class="btn" id="past-more" style="margin-top:8px">${L("اعرض الأقدم", "Show older")}</button>`); $("#past-more").onclick = () => drawPast(true); }
+  }
+  $("#past-btn").onclick = () => { if (needSignin()) return; const b = $("#past-box"); if (b) b.dataset.m = ""; openSheet("s-past"); drawPast(false); };
+  $("#past-t").textContent = L("المواعيد السابقة", "Past appointments");
   // «مواقعي»: المواقع اللي صممها فزعة للمستخدم. الحذف ما يفضّي مكان (المحذوف يبقى محسوب من الحد)
   async function drawSites() {
     const box = $("#sites-box"); if (!box) return;
@@ -4307,7 +4340,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v82".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v83".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

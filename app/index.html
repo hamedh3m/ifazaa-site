@@ -4099,14 +4099,14 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   let apnsWired = false;
   async function nativePush(test) {
-    const P = PLAT === "ios" ? NP.PushNotifications : null; if (!P) throw new Error("push");   // أندرويد: التنبيهات بعد ربط Firebase
+    const P = (PLAT === "ios" || PLAT === "android") ? NP.PushNotifications : null; if (!P) throw new Error("push");   // الآيفون عن طريق أبل، والأندرويد عن طريق Firebase
     let perm = (await P.checkPermissions()).receive;
     if (perm === "prompt" || perm === "prompt-with-rationale") perm = (await P.requestPermissions()).receive;
     if (perm !== "granted") { S.pushDenied = true; save(); throw new Error("denied"); }
     S.pushDenied = false; S.pushOn = true; save();
     if (!apnsWired) {
       apnsWired = true;
-      P.addListener("registration", t => { api("/push/apns", { method: "POST", body: JSON.stringify({ token: t.value, name: S.name || "", test: !!S.pushTest, lang: L("ar", "en") }) }).catch(() => {}); S.pushTest = false; });
+      P.addListener("registration", t => { api(PLAT === "android" ? "/push/fcm" : "/push/apns", { method: "POST", body: JSON.stringify({ token: t.value, name: S.name || "", test: !!S.pushTest, lang: L("ar", "en") }) }).catch(() => {}); S.pushTest = false; });
       P.addListener("pushNotificationActionPerformed", a => { const u = String((a && a.notification && a.notification.data && a.notification.data.url) || ""); const i = u.indexOf("#"); openTarget(i >= 0 ? u.slice(i) : ""); });
     }
     S.pushTest = !!test; await P.register();
@@ -4182,7 +4182,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v70".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v71".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

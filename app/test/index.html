@@ -3962,7 +3962,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       ${row(L("ربط تقويمك وبرامجك", "Connect your calendar and apps"), CK, CK, CK)}
       ${row(L("إدارة مستنداتك وبطايقك", "Manage your documents and cards"), CK, CK, CK)}
       ${row(L("سجل أدويتك", "Medicine log"), CK, CK, CK)}
-      ${row(L("موقع إلكتروني لمشروعك", "A website for your business"), TX(L("موقع واحد", "1 site"), L("3 صور بالشهر", "3 images a month")), TX(L("موقع واحد", "1 site"), L("20 صورة بالشهر", "20 images a month")), TX(L("3 مواقع", "3 sites"), L("40 صورة بالشهر", "40 images a month")))}
+      ${row(L("موقع إلكتروني لمشروعك", "A website for your business"), TX(L("موقع واحد", "1 site"), L("3 صور بالشهر", "3 images a month")), TX(L("موقعين", "2 sites"), L("20 صورة بالشهر", "20 images a month")), TX(L("3 مواقع", "3 sites"), L("40 صورة بالشهر", "40 images a month")))}
       ${row(L("أماكنك المحفوظة", "Your saved places"), NO, CK, CK)}
       ${row(L("الطوارئ: أقرب المراكز الصحية وجهة اتصال الطوارئ", "Emergency: nearest health centers and an emergency contact"), NO, CK, CK)}
       ${row(L("مصاريفك ومواعيدك من رسائل الجوال (قريباً)", "Spending and appointments from your texts (soon)"), NO, TX(L("قريباً", "Soon")), TX(L("قريباً", "Soon")))}
@@ -4225,7 +4225,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v73".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v74".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

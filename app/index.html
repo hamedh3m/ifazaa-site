@@ -2581,7 +2581,8 @@ html.i18n-wait body{visibility:hidden}
       if (!spoke && now - t0 < 400) { floor = (floor * n + lv) / (++n); requestAnimationFrame(tick); return; }   // نقيس هدوء المكان أول
       const thr = Math.max(0.025, floor * 3);
       if (lv > thr) { loud += 1; if (loud > 3) spoke = spoke || now; quietSince = 0; } else { loud = 0; if (spoke && !quietSince) quietSince = now; }
-      if ((spoke && quietSince && now - quietSince > 1800) || (spoke && now - spoke > 40000) || (!spoke && now - t0 > 15000))   // سكتة ١٫٨ ثانية = خلص كلامه (أقل من كذا يقطع جملته لو وقف يفكر) { $("#c-orb").style.transform = ""; try { rec.stop(); } catch {} return; }
+      const need = spoke && quietSince && quietSince - spoke < 1500 ? 700 : 1500;   // كلمة قصيرة («ألو»، «مرحبا») يرد بعد سكتة قصيرة، والكلام الطويل ننتظر شوي لو وقف يفكر
+      if ((spoke && quietSince && now - quietSince > need) || (spoke && now - spoke > 40000) || (!spoke && now - t0 > 15000)) { $("#c-orb").style.transform = ""; try { rec.stop(); } catch {} return; }
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -2589,12 +2590,15 @@ html.i18n-wait body{visibility:hidden}
   async function think(blob) {
     if (!CALL.on) return;
     cStatus(L("فزعة يفكر…", "Fazaa is thinking…")); $("#c-orb").classList.add("think");
+    const slow = setTimeout(() => { if (CALL.on && !CALL.play) cStatus(L("لحظة، أدوّر لك…", "One moment, looking it up…")); }, 4000);
     let reply = "";
     try {
       const r = await api("/voice", { method: "POST", body: JSON.stringify({ audio: await toB64(blob), name: S.name || "", client: PLAT, thread: S.thread, call: true }) });
       reply = r.reply || ""; lastId = Math.max(lastId, 0); loadHistory();
-    } catch (e) { if (!CALL.on) return; cStatus(errText(e)); setTimeout(listen, 1500); return; }
+    } catch (e) { clearTimeout(slow); if (!CALL.on) return; cStatus(errText(e)); setTimeout(listen, 1500); return; }
+    clearTimeout(slow);
     if (!CALL.on) return;
+    if (!reply.trim()) { listen(); return; }
     $("#c-line").textContent = reply.replace(/\s+/g, " ").slice(0, 160);
     try {
       const r = await fetch(API + "/speak", { method: "POST", headers: { "Authorization": "Bearer " + S.token, "Content-Type": "application/json" }, body: JSON.stringify({ text: reply }) });
@@ -4417,7 +4421,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v87".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v88".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

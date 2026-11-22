@@ -786,6 +786,7 @@ html.i18n-wait body{visibility:hidden}
 .cmp td:last-child{background:rgba(224,33,59,.06)}
 .pl-h{font-size:24px;text-align:center;margin-bottom:16px}
 .pl2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bill{display:flex;gap:4px;padding:4px;margin:4px auto 10px;border-radius:999px;background:var(--s1);border:1px solid var(--line);width:max-content;max-width:100%}.bill button{border:0;background:none;color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:8px 18px;border-radius:999px;cursor:pointer;display:flex;flex-direction:column;align-items:center;line-height:1.2}.bill button small{font-size:11px;font-weight:600;color:#3ecf7a}.bill button[aria-selected="true"]{background:var(--ink,#f5f5f2);color:var(--bg,#09090a)}.bill button[aria-selected="true"] small{color:#1c9a52}
 .pl3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
 .pl3 .pc{padding:16px 6px 12px;cursor:pointer;transition:transform 140ms var(--ease),border-color 140ms}
 .pl3 .pc:active{transform:scale(.97)}
@@ -1202,7 +1203,7 @@ html.i18n-wait body{visibility:hidden}
     <div id="plans-top"></div>
     <button class="btn btn-red" id="buy">اشترك في برايم</button>
     <div class="iap-legal">
-      <p>اشتراك سنوي يتجدد تلقائياً بنفس السعر، إلا لو ألغيته قبل نهاية المدة بـ24 ساعة على الأقل من إعدادات حساب أبل. الدفع يكون من حساب أبل حقك.</p>
+      <p id="iap-renew">اشتراك سنوي يتجدد تلقائياً بنفس السعر، إلا لو ألغيته قبل نهاية المدة بـ24 ساعة على الأقل من إعدادات حساب أبل. الدفع يكون من حساب أبل حقك.</p>
       <p><a href="https://ifazaa.com/terms.html" target="_blank" rel="noopener">الشروط</a> · <a href="https://ifazaa.com/privacy.html" target="_blank" rel="noopener">الخصوصية</a> · <button type="button" class="linkish" id="iap-restore">استرجاع المشتريات</button> · <button type="button" class="linkish" id="iap-manage">إدارة الاشتراك</button></p>
     </div>
     <p class="note" id="msg-def">تنحسب رسالة كل ما ترسل لفزعة شي: كتابة أو فويس أو صورة أو ملف. ردوده عليك وتذكيراتك ونتائج طاقم عملك ما تنحسب. وفي إيليت، رسايلك ورسايل الشخص اللي معك من أهلك تنحسب سوا.</p>
@@ -3866,13 +3867,14 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   };
   // ---------- الاشتراك: الموقع عن طريق واتساب، والآيفون بالدفع حق أبل ----------
   const IAP_ID = "com.ifazaa.app.prime.yearly", IAP_ELITE = "com.ifazaa.app.elite.yearly";
+  const IAP_IDS = { prime: IAP_ID, elite: IAP_ELITE, prime_m: "com.ifazaa.app.prime.monthly", elite_m: "com.ifazaa.app.elite.monthly" };
   const IAP = PLAT === "ios" && NP.FazaaStore ? NP.FazaaStore : null;
   let iapProduct = null;
   async function iapLoad() {
     if (!IAP) return;
     try {
-      const r = await IAP.products({ ids: [IAP_ID, IAP_ELITE] });
-      (r.products || []).forEach(p => { if (p.id === IAP_ID) iapProducts.prime = p; if (p.id === IAP_ELITE) iapProducts.elite = p; });
+      const r = await IAP.products({ ids: Object.values(IAP_IDS) });
+      (r.products || []).forEach(p => { for (const k in IAP_IDS) if (IAP_IDS[k] === p.id) iapProducts[k] = p; });
       iapProduct = iapProducts.prime || iapProducts.elite || null;
     } catch { iapProduct = null; }
     document.documentElement.classList.toggle("iap-on", !!iapProduct);
@@ -3880,7 +3882,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   const iapSend = list => { list = (list || []).filter(Boolean); return list.length ? api("/iap/apple", { method: "POST", body: JSON.stringify({ jws: list }) }) : Promise.resolve(null); };
   async function iapBuy() {
-    const prod = iapProducts[planPick];
+    const prod = iapProducts[pickKey()];
     if (!prod) { toast(L("الاشتراك من داخل التطبيق قريباً", "Subscribing in the app is coming soon")); return; }
     try {
       const { token } = await api("/iap/apple/token");
@@ -3890,21 +3892,31 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     } catch (e) { toast(e.message === "offline" ? errText(e) : L("ما تم الاشتراك، جرب مرة ثانية", "The subscription didn't go through, please try again")); }
   }
   // ---------- الباقات: مجاني، Prime، إيليت ----------
-  let planPick = "prime", myTier = "free";
+  let planPick = "prime", myTier = "free", billing = "year";
+  const pickKey = () => planPick + (billing === "month" ? "_m" : "");
+  const PRICES = { prime: ["199", "29"], elite: ["299", "59"] };
   const iapProducts = {};
   const CK = '<i class="ck" role="cell" aria-label="✓"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></i>';
   const NO = '<i class="no" role="cell" aria-label="—">—</i>';
   const TX = (t, sub) => `<i class="tx" role="cell">${t}${sub ? `<small>${sub}</small>` : ""}</i>`;
+  function priceHtml(t) {
+    const m = billing === "month", n = PRICES[t][m ? 1 : 0];
+    const per = m ? L("ريال بالشهر", "SAR a month") : L("ريال بالسنة", "SAR a year");
+    const sub = m ? L("تلغيه وقت ما تبي", "Cancel anytime") : (t === "prime" ? L("سعر الافتتاح · بعدها 289.99", "Launch price · then 289.99") : L("سعر الافتتاح · بعدها 399.99", "Launch price · then 399.99"));
+    return `<div class="pr"><b dir="ltr">${n}<span class="dec">.99</span></b><small>${per}</small></div><span class="was">${sub}</span>`;
+  }
   function drawPlans() {
     const top = $("#plans-top"), cmp = $("#plans-cmp"); if (!top || !cmp) return;
     const cur = t => (myTier === t || (t === "elite" && myTier === "family")) ? `<span class="cur-b">${L("باقتك الحالية", "Your plan")}</span>` : "";
     top.innerHTML = `<h2 class="h2 pl-h">${L("اختر باقتك", "Choose your plan")}</h2>
+      <div class="bill" role="tablist" aria-label="${L("مدة الاشتراك", "Billing")}"><button type="button" role="tab" data-bill="year" aria-selected="${billing === "year"}">${L("سنوي", "Yearly")}<small>${L("وفّر حتى 50%", "Save up to 50%")}</small></button><button type="button" role="tab" data-bill="month" aria-selected="${billing === "month"}">${L("شهري", "Monthly")}</button></div>
       <div class="pl3">
         <div class="pc free" id="tier-free">${cur("free")}<b class="nm">${L("مجاني", "Free")}</b><div class="pr"><b class="sm">${L("بلا رسوم", "SAR 0")}</b><small>${L("دائماً", "forever")}</small></div><p class="tg">${L("للبداية وتنظيم يومك", "To get started")}</p></div>
-        <div class="pc prime${planPick === "prime" ? " sel" : ""}" id="tier-prime" data-pick="prime" role="button" tabindex="0">${cur("prime")}<b class="nm">${L("برايم", "Prime")}</b><div class="pr"><b dir="ltr">199<span class="dec">.99</span></b><small>${L("ريال بالسنة", "SAR a year")}</small></div><span class="was">${L("سعر الافتتاح · بعدها 289.99", "Launch price · then 289.99")}</span><p class="tg">${L("كل شي تحتاجه لك", "Everything you need")}</p></div>
-        <div class="pc elite${planPick === "elite" ? " sel" : ""}" id="tier-elite" data-pick="elite" role="button" tabindex="0">${cur("elite")}${myTier === "elite" || myTier === "family" ? "" : `<span class="best">${L("الأكثر قيمة", "Best value")}</span>`}<b class="nm">${L("إيليت", "Elite")}</b><div class="pr"><b dir="ltr">299<span class="dec">.99</span></b><small>${L("ريال بالسنة", "SAR a year")}</small></div><span class="was">${L("سعر الافتتاح · بعدها 399.99", "Launch price · then 399.99")}</span><p class="tg">${L("لك ولشخص من أهلك", "For you and a family member")}</p></div>
+        <div class="pc prime${planPick === "prime" ? " sel" : ""}" id="tier-prime" data-pick="prime" role="button" tabindex="0">${cur("prime")}<b class="nm">${L("برايم", "Prime")}</b>${priceHtml("prime")}<p class="tg">${L("كل شي تحتاجه لك", "Everything you need")}</p></div>
+        <div class="pc elite${planPick === "elite" ? " sel" : ""}" id="tier-elite" data-pick="elite" role="button" tabindex="0">${cur("elite")}${myTier === "elite" || myTier === "family" ? "" : `<span class="best">${L("الأكثر قيمة", "Best value")}</span>`}<b class="nm">${L("إيليت", "Elite")}</b>${priceHtml("elite")}<p class="tg">${L("لك ولشخص من أهلك", "For you and a family member")}</p></div>
       </div>`;
     top.querySelectorAll("[data-pick]").forEach(c => c.onclick = () => { planPick = c.dataset.pick; drawPlans(); syncBuy(); });
+    top.querySelectorAll("[data-bill]").forEach(c => c.onclick = () => { billing = c.dataset.bill; drawPlans(); syncBuy(); });
     const row = (h, a, b, c) => `<div class="f" role="row"><p role="rowheader">${h}</p><div class="v">${a}${b}${c}</div></div>`;
     cmp.innerHTML = `<div class="cmp3 c3" role="table" aria-label="${L("قارن الباقات", "Compare plans")}">
       <div class="hd" role="row"><span role="columnheader">${L("مجاني", "Free")}</span><span role="columnheader" class="p">${L("برايم", "Prime")}</span><span role="columnheader" class="e">${L("إيليت", "Elite")}</span></div>
@@ -3931,8 +3943,9 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const b = $("#buy"); if (!b) return;
     const owned = (planPick === "prime" && (myTier === "prime" || myTier === "elite" || myTier === "family")) || (planPick === "elite" && (myTier === "elite" || myTier === "family"));
     b.hidden = owned;
-    const pr = iapProducts[planPick];
-    b.textContent = pr ? L(`اشترك في ${planPick === "elite" ? "إيليت" : "برايم"} بـ `, `Get ${planPick === "elite" ? "Elite" : "Prime"} for `) + pr.price + L(" بالسنة", " a year")
+    const pr = iapProducts[pickKey()], m = billing === "month";
+    const rn = $("#iap-renew"); if (rn) rn.textContent = m ? L("اشتراك شهري يتجدد تلقائياً بنفس السعر كل شهر، إلا لو ألغيته قبل نهاية الشهر بـ24 ساعة على الأقل من إعدادات حساب أبل. الدفع يكون من حساب أبل حقك.", "A monthly subscription that renews automatically at the same price every month unless you cancel at least 24 hours before the month ends, in your Apple account settings. Payment is charged to your Apple account.") : L("اشتراك سنوي يتجدد تلقائياً بنفس السعر، إلا لو ألغيته قبل نهاية المدة بـ24 ساعة على الأقل من إعدادات حساب أبل. الدفع يكون من حساب أبل حقك.", "A yearly subscription that renews automatically at the same price unless you cancel at least 24 hours before it ends, in your Apple account settings. Payment is charged to your Apple account.");
+    b.textContent = pr ? L(`اشترك في ${planPick === "elite" ? "إيليت" : "برايم"} بـ `, `Get ${planPick === "elite" ? "Elite" : "Prime"} for `) + pr.price + (m ? L(" بالشهر", " a month") : L(" بالسنة", " a year"))
       : planPick === "elite" ? (myTier === "prime" ? L("انتقل لإيليت", "Switch to Elite") : L("اشترك في إيليت", "Get Elite")) : L("اشترك في برايم", "Get Prime");
   }
   drawPlans();

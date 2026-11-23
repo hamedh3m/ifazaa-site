@@ -1045,6 +1045,7 @@ html.i18n-wait body{visibility:hidden}
       <div id="agf-fields"></div>
       <div class="row2">
         <label class="field"><span id="agf-every-l">كم مرة يشيّك لك؟</span><select id="agf-every"></select></label>
+        <p class="note" id="agf-every-hint" hidden></p>
         <div class="field"><span id="agf-at-l">يبدأ الساعة</span><input id="agf-at" type="hidden" value="09:00"><button type="button" class="tbtn" id="agf-at-b">9 ص</button></div>
       </div>
       <label class="field" id="agf-day-w" hidden><span id="agf-day-l">أي يوم؟</span><select id="agf-day"></select></label>
@@ -1533,7 +1534,7 @@ html.i18n-wait body{visibility:hidden}
     try {
       r = await fetch(API + path, { ...opt, headers: { "Authorization": "Bearer " + S.token, ...(opt.body ? { "Content-Type": "application/json" } : {}) } });
     } catch { throw new Error("offline"); }
-    if (r.status === 429) throw new Error("rate");
+    if (r.status === 429) { const e = new Error("rate"); try { e.info = await r.json(); } catch {} throw e; }
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
@@ -2397,14 +2398,14 @@ html.i18n-wait body{visibility:hidden}
     const act = AG.filter(a => a.active); closeRadar(); if (!act.length) return;
     go("crew");                          // يشوف طاقمه وهو يدوّر، بدل ما يرجع لأي صفحة كان فيها
     toast(L("طاقمك يدوّر لك الحين… ⏳", "Your crew is searching now… ⏳"));
-    let sent = 0, rate = 0;
+    let sent = 0, rate = 0, rateInfo = null;
     for (const a of act) {
       try { const r = await api(`/agents/${a.id}/run`, { method: "POST" }); if (r.agent) AG = AG.map(x => x.id === r.agent.id ? r.agent : x); if (r.sent) sent++; }
-      catch (e) { if (e.message === "rate") rate++; }
+      catch (e) { if (e.message === "rate") { rate++; rateInfo = rateInfo || e.info; } }
     }
     drawAgents();
     toast(sent ? L("طاقمك جاب لك شي جديد، شوفه في «طاقم عملك» 📜", "Your crew found something new, see “Your crew” 📜")
-      : rate === act.length ? L("طاقمك دوّر قبل شوي، جرب بعد ساعة", "Your crew searched recently, try again in an hour") : L("ما لقوا شي جديد للحين", "Nothing new yet"));
+      : rate === act.length ? (rateInfo && rateInfo.last_at ? rateMsg(rateInfo) : L("طاقمك دوّر قبل شوي، جرب بعد ساعة", "Your crew searched recently, try again in an hour")) : L("ما لقوا شي جديد للحين", "Nothing new yet"));
   }
   function showRadar(i) {
     ri = Math.max(0, Math.min(i, RI.length - 1)); const d = RI[ri]; if (!d) return closeRadar();
@@ -3027,6 +3028,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   try { navigator.serviceWorker && navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.type === "fz-open") openTarget(e.data.hash); }); } catch {}
   if (/^#crew-\d+$/.test(location.hash)) setTimeout(() => openTarget(location.hash), 400);
   const redrawHomeCards = () => drawHome();
+  const fmtT = iso => { try { const d = new Date(iso), h = d.getHours(), m = String(d.getMinutes()).padStart(2, "0"), h12 = h % 12 || 12;
+    return EN ? `${h12}:${m} ${h < 12 ? "AM" : "PM"}` : `${h12}:${m} ${h < 12 ? "صباحاً" : "مساءً"}`; } catch { return ""; } };
+  // محدّث قبل شوي: نقول له متى سوينا آخر تحديث ومتى يقدر يحدّث (مرة بالساعة، عشان نخفف التكلفة)
+  const rateMsg = i => i && i.last_at && i.retry_at
+    ? L(`سوّيناها اليوم الساعة ${fmtT(i.last_at)}، والتحديث القادم بيكون الساعة ${fmtT(i.retry_at)}`, `We updated it at ${fmtT(i.last_at)}. The next update will be at ${fmtT(i.retry_at)}`)
+    : L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour");
   async function agAct(id, action) {
     if (action === "run") toast(L("يدوّر لك الحين… ⏳", "Searching now… ⏳"));
     try {
@@ -3035,7 +3042,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       else if (r.agent) AG = AG.map(a => a.id === r.agent.id ? r.agent : a);
       drawAgents();
       if (action === "run") toast(r.sent ? L("جاب لك شي جديد، اضغط للتفاصيل 📜", "Found something new, tap for details 📜") : L("ما لقى شي جديد للحين", "Nothing new yet"));
-    } catch (e) { toast(e.message === "rate" ? L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour") : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
+    } catch (e) { if (e.message === "rate" && e.info && e.info.agent) { AG = AG.map(a => a.id === e.info.agent.id ? e.info.agent : a); drawAgents(); }
+      toast(e.message === "rate" ? rateMsg(e.info) : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
   }
   const AG_PER_KIND = 2, AG_UNCAPPED = new Set(["custom"]);   // كل نوع بحد أقصى 2، و«أي شي يتكرر» إلى حد الباقة
   const kindFullMsg = () => L("وصلت الحد: موظفين اثنين من هالنوع. احذف واحد منهم لو تبي تضيف غيره، أو استخدم «أي شي يتكرر».", "You've reached the limit of 2 for this type. Remove one to add another, or use “Anything, on repeat”.");
@@ -3164,9 +3172,23 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("#agf-fields .city input").forEach(wireCity);
     $$("[data-dbtn]").forEach(b => { const i = $(`[data-agf="${b.dataset.dbtn}"]`); i.min = ymd(new Date()); dateBtn(i, b); });
     const trip = $('[data-agf="trip"]'); if (trip) trip.onchange = () => { const w = $("[data-backw]"); if (w) w.hidden = trip.value !== "round"; };
-    let evOk = AG_RULES && AG_RULES.allowed ? AG_RULES.allowed.filter(k => EVN[k]) : Object.keys(EVN);   // الخيارات اللي تسمح فيها باقته
-    if (AG_RULES && AG_RULES.fast_slots != null && AG.filter(a => a.active && a.every.startsWith("hours:") && (!ag || a.id !== ag.id)).length >= AG_RULES.fast_slots) evOk = evOk.filter(k => !k.startsWith("hours:"));
-    $("#agf-every").innerHTML = evOk.map(k => `<option value="${k}">${EVN[k]}</option>`).join("");
+    // كل الخيارات ظاهرة. اللي ما تسمح فيها باقته (أو وصل حد الموظفين السريعين) تظهر مقفلة: يشوفها ويعرف إنها بالاشتراك، بس ما يقدر يختارها
+    const EV_ALL = ["daily", "weekly", "hours:12", "hours:6"], tier = (AG_RULES && AG_RULES.tier) || myTier || "free";
+    const evAllowed = AG_RULES && AG_RULES.allowed ? AG_RULES.allowed.filter(k => EVN[k]) : EV_ALL;
+    const slots = AG_RULES && AG_RULES.fast_slots != null ? AG_RULES.fast_slots : null;
+    const slotsFull = slots != null && AG.filter(a => a.active && a.every.startsWith("hours:") && (!ag || a.id !== ag.id)).length >= slots;
+    const evOk = EV_ALL.filter(k => evAllowed.includes(k) && !(k.startsWith("hours:") && slotsFull));
+    const locked = EV_ALL.filter(k => !evOk.includes(k));
+    $("#agf-every").innerHTML = EV_ALL.map(k => `<option value="${k}"${evOk.includes(k) ? "" : " disabled"}>${EVN[k]}${evOk.includes(k) ? "" : " 🔒"}</option>`).join("");
+    const hint = $("#agf-every-hint");
+    if (hint) {
+      const why = !locked.length ? "" : slotsFull && tier === "elite" ? L(`وصلت للحد الأقصى: ${slots} من طاقم العمل في نفس الوقت (التحديث كل 6 أو 12 ساعة)`, `You've reached the maximum: ${slots} crew members updating every 6 or 12 hours at the same time`)
+        : slotsFull && tier === "family" ? L(`وصلت للحد الأقصى: ${slots} من طاقم العمل في نفس الوقت`, `You've reached the maximum: ${slots} crew members at the same time`)
+        : slotsFull ? L(`وصلت للحد الأقصى: ${slots} من طاقم العمل بتحديث كل 12 ساعة. اشترك في إيليت عشان تحصل على 4 بتحديث كل 6 أو 12 ساعة`, `You've reached the maximum: ${slots} crew members updating every 12 hours. Subscribe to Elite for 4 updating every 6 or 12 hours`)
+        : tier === "free" ? L("التحديث كل 12 ساعة أو كل 6 ساعات متاح بالاشتراك: برايم لموظفين، وإيليت لـ 4", "Updating every 12 or 6 hours comes with a subscription: Prime for 2 crew members, Elite for 4")
+        : L("التحديث كل 6 ساعات متاح في إيليت", "Updating every 6 hours comes with Elite");
+      hint.textContent = why; hint.hidden = !why;
+    }
     let evW = ag ? ag.every : v[4]; if (!evOk.includes(evW)) evW = evW.startsWith("hours:") && evOk.includes("hours:12") ? "hours:12" : "daily";
     $("#agf-every").value = evW; $("#agf-at").value = ag ? ag.at : v[5]; $("#agf-day").value = ag ? String(ag.day) : "3";
     if (ag) { const c = ag.config || {}; $$("[data-agf]").forEach(el => { if (el.type === "checkbox") el.checked = !!c[el.dataset.agf]; else if (c[el.dataset.agf] != null) el.value = c[el.dataset.agf]; }); if (trip) trip.onchange(); }
@@ -4439,7 +4461,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v92".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v93".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

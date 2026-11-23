@@ -3,9 +3,9 @@
 > Fazaa is a smart personal assistant for people in Saudi Arabia and the Gulf, in Arabic (Saudi dialect by default, other dialects on request) and English. People talk to it in plain language by text, voice or photo on the Fazaa app (https://ifazaa.com/app/) or Telegram. It saves appointments and reminders, tracks document expiry dates (Istimara, Iqama, passport, license), writes messages and emails, searches the web with sources, plans trips and budgets, estimates meal calories from photos, and runs background agents (morning brief, price and flight tracking). Businesses can get an assistant on WhatsApp that answers customers and takes bookings.
 
 ## Plans
-- Free forever, no card: 100 messages and 10 reminders a month, 3 AI images, 70 voice-call replies, document expiry tracking and a medicine log.
-- Prime: SAR 199 a year (launch price, then 290). 300 messages a month, unlimited reminders, 20 AI images a month (creation and editing, with correct Arabic text), 3 crew members, a designed website for your business, saved places, emergency tools (nearest hospital and a contact), and Gmail reading.
-- Elite: SAR 299 a year (launch price, then 399). Everything in Prime, plus 600 messages a month shared with one family member on the same plan, 40 AI images a month, 10 crew members (helpers that work in the background), and 3 websites.
+- Free forever, no card: 100 messages and 10 appointments and reminders a month, 3 AI images, 70 voice-call replies, 2 crew members, 1 website, document expiry tracking and a medicine log.
+- Prime: SAR 199.99 a year or SAR 29.99 a month. 300 messages a month, unlimited reminders, 20 AI images a month (creation and editing, with correct Arabic text), 4 crew members, 2 designed websites for your business, saved places, emergency tools (nearest hospital and a contact), and Gmail reading.
+- Elite: SAR 299.99 a year or SAR 59.99 a month. Everything in Prime, plus 600 messages a month shared with one family member on the same plan, 40 AI images a month, 8 crew members (helpers that work in the background; split 4 and 4 when shared with the family member), and 4 websites.
 
 ## Privacy
 - Chats are locked to the user; no one on the team reads them. Data is not sold, not used for ads, and not used to train AI models. Users delete everything themselves at any time.

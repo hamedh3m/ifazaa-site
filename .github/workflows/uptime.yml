@@ -1,4 +1,4 @@
-# فحص كل ٥ دقايق: فزعة، أبو محمد، والموقع، والنسخة الاحتياطية برا السيرفر (تنبيه لو تأخرت أكثر من يومين). لو واحد ما رد ٣ مرات ورا بعض، الفحص يفشل
+# فحص كل ٥ دقايق: فزعة، أبو محمد، والموقع، وموقع نابيكس ولوحتها، والنسخة الاحتياطية برا السيرفر (تنبيه لو تأخرت أكثر من يومين). لو واحد ما رد ٣ مرات ورا بعض، الفحص يفشل
 # وGitHub يرسل لحامد إيميل وتنبيه على جواله (تطبيق GitHub).
 # اختياري: لو انضاف ALERT_TELEGRAM_TOKEN و ALERT_TELEGRAM_CHAT في Secrets يوصل التنبيه على تيليجرام بعد.
 name: uptime
@@ -31,6 +31,8 @@ jobs:
           check https://api.ifazaa.com/health '"running":true' || down="$down فزعة"
           check https://h3m.tail450117.ts.net/health '"ok":true' || down="$down أبو-محمد"
           check https://ifazaa.com/ 'ifazaa' || down="$down الموقع"
+          check https://nabix.sa/ 'Nabix' || down="$down موقع-نابيكس"
+          check https://panel.nabix.sa/ 'X-Panel' || down="$down لوحة-نابيكس"
           # النسخة الاحتياطية برا السيرفر: لو آخر نسخة وصلت قبل أكثر من يومين، ننبّه
           age=$(curl -fsS -m 15 https://api.ifazaa.com/health 2>/dev/null | python3 -c "import sys,json;a=json.load(sys.stdin).get('backup_age_days');print('' if a is None else a)" 2>/dev/null || true)
           if [ -n "$age" ] && [ "$age" -gt 2 ]; then down="$down النسخ-الاحتياطية(آخر-نسخة-قبل-${age}-يوم)"; fi

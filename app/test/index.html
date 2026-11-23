@@ -2350,7 +2350,7 @@ html.i18n-wait body{visibility:hidden}
     conflicts().slice(0, 2).forEach(([a, b]) => R.push({ key: "c" + a.id + "-" + b.id, t: "t-red", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("مواعيدك", "Your schedule"), h: L("عندك موعدين بنفس الوقت", "You have two things at the same time"),
       list: [[a.title, fmtWhen(new Date(a.t)), splitPlace(a.note).url], [b.title, fmtTime(new Date(b.t)), splitPlace(b.note).url]], act: L("رتّبهم مع فزعة", "Sort it out with Fazaa"), say: L(`عندي «${a.title}» و«${b.title}» بنفس الوقت، ساعدني أرتبهم`, `I have “${a.title}” and “${b.title}” at the same time, help me sort them out`) }));
     const td = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && startOf(x.t) === startOf(now)).sort((a, b) => a.t - b.t);
-    if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("اليوم", "Today"), h: EN ? `You have ${td.length} ${td.length === 1 ? "thing" : "things"} left today` : `باقي عندك ${AR(td.length)} ${td.length === 1 ? "شي" : td.length <= 10 ? "أشياء" : "شي"} اليوم`,
+    if (td.length) R.push({ key: "t" + td.map(x => x.id).join("."), t: "t-blue", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("اليوم", "Today"), h: L("هذا اللي باقي عليك اليوم", "Here’s what’s left for you today"),
       list: td.slice(0, 4).map(x => [x.title, fmtTime(new Date(x.t)), splitPlace(x.note).url]), act: L("افتح تذكيراتي", "Open reminders"), go: "tasks" });
     if (!td.length) { const nx = reminders.map(x => ({ ...x, t: Date.parse(x.at) })).filter(x => x.t > now && x.t < now + 7 * DAY).sort((a, b) => a.t - b.t);
       if (nx.length) R.push({ key: "n" + nx.slice(0, 3).map(x => x.id).join("."), t: "t-blue", cat: L("مواعيدك وتذكيراتك", "Your schedule"), k: L("الجاي", "Coming up"), h: L("أقرب مواعيدك", "Your next appointments"),
@@ -4435,7 +4435,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v89".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v90".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

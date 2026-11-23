@@ -1538,7 +1538,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "dup_label") { const e = new Error("dup_label"); e.info = j; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "not_live") { const e = new Error("not_live"); e.info = j; throw e; } if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "dup_label") { const e = new Error("dup_label"); e.info = j; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -2398,14 +2398,14 @@ html.i18n-wait body{visibility:hidden}
     const act = AG.filter(a => a.active); closeRadar(); if (!act.length) return;
     go("crew");                          // يشوف طاقمه وهو يدوّر، بدل ما يرجع لأي صفحة كان فيها
     toast(L("طاقمك يدوّر لك الحين… ⏳", "Your crew is searching now… ⏳"));
-    let sent = 0, rate = 0, rateInfo = null;
+    let sent = 0, rate = 0, rateInfo = null, off = 0, offInfo = null;
     for (const a of act) {
       try { const r = await api(`/agents/${a.id}/run`, { method: "POST" }); if (r.agent) AG = AG.map(x => x.id === r.agent.id ? r.agent : x); if (r.sent) sent++; }
-      catch (e) { if (e.message === "rate") { rate++; rateInfo = rateInfo || e.info; } }
+      catch (e) { if (e.message === "rate") { rate++; rateInfo = rateInfo || e.info; } else if (e.message === "not_live") { off++; offInfo = offInfo || e.info; } }
     }
     drawAgents();
     toast(sent ? L("طاقمك جاب لك شي جديد، شوفه في «طاقم عملك» 📜", "Your crew found something new, see “Your crew” 📜")
-      : rate === act.length ? (rateInfo && rateInfo.last_at ? rateMsg(rateInfo) : L("طاقمك دوّر قبل شوي، جرب بعد ساعة", "Your crew searched recently, try again in an hour")) : L("ما لقوا شي جديد للحين", "Nothing new yet"));
+      : off === act.length ? liveMsg(offInfo) : rate + off === act.length ? (rateInfo && rateInfo.last_at ? rateMsg(rateInfo) : L("طاقمك دوّر قبل شوي، جرب بعد ساعة", "Your crew searched recently, try again in an hour")) : L("ما لقوا شي جديد للحين", "Nothing new yet"));
   }
   function showRadar(i) {
     ri = Math.max(0, Math.min(i, RI.length - 1)); const d = RI[ri]; if (!d) return closeRadar();
@@ -3031,6 +3031,13 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const fmtT = iso => { try { const d = new Date(iso), h = d.getHours(), m = String(d.getMinutes()).padStart(2, "0"), h12 = h % 12 || 12;
     return EN ? `${h12}:${m} ${h < 12 ? "AM" : "PM"}` : `${h12}:${m} ${h < 12 ? "صباحاً" : "مساءً"}`; } catch { return ""; } };
   // محدّث قبل شوي: نقول له متى سوينا آخر تحديث ومتى يقدر يحدّث (مرة بالساعة، عشان نخفف التكلفة)
+  // موظف يتحدث بوقته بس: ما نشغّله، ونقول له موعده الجاي، ومين يقدر يحدّث بنفسه
+  const liveMsg = i => { const d = i && i.next_at ? new Date(i.next_at) : null, td = new Date(), tm = new Date(Date.now() + 864e5), t = i && i.tier;
+    const day = !d ? "" : d.toDateString() === td.toDateString() ? L("اليوم ", "today ") : d.toDateString() === tm.toDateString() ? L("بكرة ", "tomorrow ") : L(`يوم ${d.getDate()}/${d.getMonth() + 1} `, `on ${d.getDate()}/${d.getMonth() + 1} `);
+    const nx = d ? day + fmtT(i.next_at) : "";
+    const when = nx ? L(`يتحدث بوقته: ${nx}.`, `It updates on its schedule: ${nx}.`) : L("يتحدث بوقته.", "It updates on its schedule.");
+    return t === "free" ? when + " " + L("التحديث بنفسك متاح بالاشتراك: برايم لموظفين، وإيليت لـ 4.", "Refreshing it yourself comes with a subscription: Prime for 2 crew members, Elite for 4.")
+      : when + " " + L(`تقدر تحدّث بنفسك ${i.live} من طاقمك بس (السريعين أول، وبعدهم الأقدم).`, `You can refresh ${i.live} of your crew yourself (fast ones first, then the oldest).`); };
   const rateMsg = i => i && i.last_at && i.retry_at
     ? L(`سوّيناها اليوم الساعة ${fmtT(i.last_at)}، والتحديث القادم بيكون الساعة ${fmtT(i.retry_at)}`, `We updated it at ${fmtT(i.last_at)}. The next update will be at ${fmtT(i.retry_at)}`)
     : L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour");
@@ -3043,7 +3050,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       drawAgents();
       if (action === "run") toast(r.sent ? L("جاب لك شي جديد، اضغط للتفاصيل 📜", "Found something new, tap for details 📜") : L("ما لقى شي جديد للحين", "Nothing new yet"));
     } catch (e) { if (e.message === "rate" && e.info && e.info.agent) { AG = AG.map(a => a.id === e.info.agent.id ? e.info.agent : a); drawAgents(); }
-      toast(e.message === "rate" ? rateMsg(e.info) : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
+      toast(e.message === "rate" ? rateMsg(e.info) : e.message === "not_live" ? liveMsg(e.info) : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
   }
   const AG_PER_KIND = 2, AG_UNCAPPED = new Set(["custom"]);   // كل نوع بحد أقصى 2، و«أي شي يتكرر» إلى حد الباقة
   const kindFullMsg = () => L("وصلت الحد: موظفين اثنين من هالنوع. احذف واحد منهم لو تبي تضيف غيره، أو استخدم «أي شي يتكرر».", "You've reached the limit of 2 for this type. Remove one to add another, or use “Anything, on repeat”.");
@@ -4461,7 +4468,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v93".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v94".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

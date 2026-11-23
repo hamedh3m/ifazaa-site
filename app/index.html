@@ -2864,7 +2864,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   $("#me-care").addEventListener("click", () => { drawCare(); });
   syncCareSmall();
-  let AG = [], agKind = "", agOpen = 0;   // agOpen: البطاقة المفتوحة كاملة (والباقي مصغّر)
+  let AG = [], AG_RULES = null, agKind = "", agOpen = 0;   // AG_RULES: كل كم يشتغل حسب الباقة (من السيرفر)   // agOpen: البطاقة المفتوحة كاملة (والباقي مصغّر)
   const agCollapse = () => { if (!agOpen) return; agOpen = 0; drawAgents(); };
   document.addEventListener("click", e => { if (agOpen && !e.target.closest("#ag-list .ag, #ag-pop")) agCollapse(); });
   document.addEventListener("keydown", e => { if (agOpen && e.key === "Escape") agCollapse(); });
@@ -2875,7 +2875,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const agDoing = a => { const c = a.config || {}, s_ = String((EN ? c.status_en : c.status) || "").trim(); return s_ ? s_.slice(0, 28) : (AGDO[a.kind] || AGDO.custom)[EN ? 1 : 0]; };
   const agBadge = a => /^(https:\/\/api\.ifazaa\.com\/fz-app\/api\/badge\/\d+\.png|data:image\/png;base64,[A-Za-z0-9+\/=]+)$/.test(a.badge || "") ? a.badge : "";
   // نعرف من البداية إذا فيه مساعدين شغالين علشان الرادار يلف أسرع
-  setTimeout(() => api("/agents").then(r => { AG = r.agents || []; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
+  setTimeout(() => api("/agents").then(r => { AG = r.agents || []; AG_RULES = r.every || AG_RULES; syncBusy(); redrawHomeCards(); }).catch(() => {}), 1200);
   // آخر تحديث على البطاقة (وقت آخر نتيجة جديدة)، مثل «آخر تحديث اليوم 2:36 م»
   // كم صار له: دقايق، بعدها ساعات، وبعد ٢٤ ساعة أيام (عدّ تصاعدي، مو وقت الساعة)
   const agoAr = (n, one, two, few, many) => n === 1 ? one : n === 2 ? two : n <= 10 ? `${AR(n)} ${few}` : `${AR(n)} ${many}`;
@@ -3013,7 +3013,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   let agLoaded = false;
   let agWant = 0;   // بطاقة لازم تنفتح أول ما يوصل الطاقم (من ضغطة تنبيه)
-  async function loadAgents() { try { AG = (await api("/agents")).agents || []; agLoaded = true; } catch {}
+  async function loadAgents() { try { const r = await api("/agents"); AG = r.agents || []; AG_RULES = r.every || AG_RULES; agLoaded = true; } catch {}
     if (agWant && AG.some(a => a.id === agWant)) { agOpen = agWant; agMarkSeen(agWant); } agWant = 0;
     drawAgents(); syncBusy(); drawStarters(); }
   // ضغطة تنبيه من موظف في الطاقم: يفتح «طاقم عملك» وبطاقة الموظف نفسه (مو المحادثة)
@@ -3163,7 +3163,11 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("#agf-fields .city input").forEach(wireCity);
     $$("[data-dbtn]").forEach(b => { const i = $(`[data-agf="${b.dataset.dbtn}"]`); i.min = ymd(new Date()); dateBtn(i, b); });
     const trip = $('[data-agf="trip"]'); if (trip) trip.onchange = () => { const w = $("[data-backw]"); if (w) w.hidden = trip.value !== "round"; };
-    $("#agf-every").value = ag ? ag.every : v[4]; $("#agf-at").value = ag ? ag.at : v[5]; $("#agf-day").value = ag ? String(ag.day) : "3";
+    let evOk = AG_RULES && AG_RULES.allowed ? AG_RULES.allowed.filter(k => EVN[k]) : Object.keys(EVN);   // الخيارات اللي تسمح فيها باقته
+    if (AG_RULES && AG_RULES.fast_slots != null && AG.filter(a => a.active && a.every.startsWith("hours:") && (!ag || a.id !== ag.id)).length >= AG_RULES.fast_slots) evOk = evOk.filter(k => !k.startsWith("hours:"));
+    $("#agf-every").innerHTML = evOk.map(k => `<option value="${k}">${EVN[k]}</option>`).join("");
+    let evW = ag ? ag.every : v[4]; if (!evOk.includes(evW)) evW = evW.startsWith("hours:") && evOk.includes("hours:12") ? "hours:12" : "daily";
+    $("#agf-every").value = evW; $("#agf-at").value = ag ? ag.at : v[5]; $("#agf-day").value = ag ? String(ag.day) : "3";
     if (ag) { const c = ag.config || {}; $$("[data-agf]").forEach(el => { if (el.type === "checkbox") el.checked = !!c[el.dataset.agf]; else if (c[el.dataset.agf] != null) el.value = c[el.dataset.agf]; }); if (trip) trip.onchange(); }
     $("#agf-every").onchange();
     $("#ag-main").hidden = true; $("#ag-form").hidden = false; $("#v-crew").scrollTop = 0;
@@ -4422,7 +4426,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v90".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v91".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

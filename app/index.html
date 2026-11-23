@@ -1537,7 +1537,7 @@ html.i18n-wait body{visibility:hidden}
     if (r.status === 402) throw new Error("prime");
     if (r.status === 413) throw new Error("size");
     if (r.status === 415) throw new Error("type");
-    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "not_live") { const e = new Error("not_live"); e.info = j; throw e; } if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "dup_label") { const e = new Error("dup_label"); e.info = j; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
+    if (r.status === 400 || r.status === 409) { let j = {}; try { j = await r.json(); } catch {} if (j.error === "not_live" || j.error === "hold") { const e = new Error(j.error); e.info = j; throw e; } if (j.error === "limit" || j.error === "soon" || j.error === "kind_full" || j.error === "label") throw new Error(j.error); if (j.error === "bad" && j.field) { const e = new Error("bad"); e.field = j.field; throw e; } if (j.error === "dup_label") { const e = new Error("dup_label"); e.info = j; throw e; } if (j.error === "no_airport" || j.error === "same_airport") { const e = new Error(j.error); e.info = j; throw e; } }
     if (!r.ok) throw new Error(r.status === 503 ? "offline" : "server");
     return r.json();
   }
@@ -2400,7 +2400,7 @@ html.i18n-wait body{visibility:hidden}
     let sent = 0, rate = 0, rateInfo = null, off = 0, offInfo = null;
     for (const a of act) {
       try { const r = await api(`/agents/${a.id}/run`, { method: "POST" }); if (r.agent) AG = AG.map(x => x.id === r.agent.id ? r.agent : x); if (r.sent) sent++; }
-      catch (e) { if (e.message === "rate") { rate++; rateInfo = rateInfo || e.info; } else if (e.message === "not_live") { off++; offInfo = offInfo || e.info; } }
+      catch (e) { if (e.message === "rate") { rate++; rateInfo = rateInfo || e.info; } else if (e.message === "not_live" || e.message === "hold") { off++; offInfo = offInfo || e.info; } }
     }
     drawAgents();
     toast(sent ? L("طاقمك جاب لك شي جديد، شوفه في «طاقم عملك» 📜", "Your crew found something new, see “Your crew” 📜")
@@ -3008,7 +3008,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $$("[data-agrun]").forEach(b => b.onclick = () => agAct(b.dataset.agrun, "run"));
     $$("[data-agedit]").forEach(b => b.onclick = () => { const a = AG.find(x => String(x.id) === b.dataset.agedit); agCollapse(); if (a) openAgForm(a.kind, a); });
     $$("[data-agtog]").forEach(b => b.onclick = () => agAct(b.dataset.agtog, AG.find(a => String(a.id) === b.dataset.agtog).active ? "pause" : "resume"));
-    $$("[data-agdel]").forEach(b => b.onclick = async () => { agCollapse(); if (await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
+    $$("[data-agdel]").forEach(b => b.onclick = async () => { agCollapse(); const g = AG.find(a => String(a.id) === String(b.dataset.agdel)), ran = g && (g.last_at || (g.config && g.config.hold));
+      if (await ask(L("متأكد؟", "Are you sure?"), ran ? L("هذا الموظف اشتغل. لو حذفته، اللي تضيفه بداله ما يبدأ يتحدث إلا بعد 24 ساعة.", "This crew member has already run. If you remove it, the one you add instead won't start updating for 24 hours.") : "", L("احذف", "Delete"))) agAct(b.dataset.agdel, "delete"); });
     syncTpl();
     if ($("#ag-small")) $("#ag-small").textContent = AG.length ? (EN ? `${AG.filter(a => a.active).length} working for you` : `${AR(AG.filter(a => a.active).length)} شغّالين عنك`) : L("طاقمك اللي يشتغل عنك بالخلفية", "Your crew, working in the background");
   }
@@ -3037,6 +3038,10 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const when = nx ? L(`يتحدث بوقته: ${nx}.`, `It updates on its schedule: ${nx}.`) : L("يتحدث بوقته.", "It updates on its schedule.");
     return t === "free" ? when + " " + L("التحديث بنفسك متاح بالاشتراك: برايم لموظفين، وإيليت لـ 4.", "Refreshing it yourself comes with a subscription: Prime for 2 crew members, Elite for 4.")
       : when + " " + L(`تقدر تحدّث بنفسك ${i.live} من طاقمك بس (السريعين أول، وبعدهم الأقدم).`, `You can refresh ${i.live} of your crew yourself (fast ones first, then the oldest).`); };
+  const fmtDT = iso => { const d = new Date(iso), td = new Date(), tm = new Date(Date.now() + 864e5);
+    const day = d.toDateString() === td.toDateString() ? L("اليوم ", "today ") : d.toDateString() === tm.toDateString() ? L("بكرة ", "tomorrow ") : L(`يوم ${d.getDate()}/${d.getMonth() + 1} `, `on ${d.getDate()}/${d.getMonth() + 1} `);
+    return day + fmtT(iso); };
+  const holdMsg = i => i && i.until ? L(`هذا انضاف بدل موظف حذفته، فيبدأ يتحدث ${fmtDT(i.until)}.`, `This replaced a crew member you removed, so it starts updating ${fmtDT(i.until)}.`) : L("يبدأ يتحدث بعد 24 ساعة من الحذف.", "It starts updating 24 hours after the removal.");
   const rateMsg = i => i && i.last_at && i.retry_at
     ? L(`سوّيناها اليوم الساعة ${fmtT(i.last_at)}، والتحديث القادم بيكون الساعة ${fmtT(i.retry_at)}`, `We updated it at ${fmtT(i.last_at)}. The next update will be at ${fmtT(i.retry_at)}`)
     : L("شغّلته قبل شوي، جرب بعد ساعة", "You ran it recently, try again in an hour");
@@ -3049,7 +3054,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       drawAgents();
       if (action === "run") toast(r.sent ? L("جاب لك شي جديد، اضغط للتفاصيل 📜", "Found something new, tap for details 📜") : L("ما لقى شي جديد للحين", "Nothing new yet"));
     } catch (e) { if (e.message === "rate" && e.info && e.info.agent) { AG = AG.map(a => a.id === e.info.agent.id ? e.info.agent : a); drawAgents(); }
-      toast(e.message === "rate" ? rateMsg(e.info) : e.message === "not_live" ? liveMsg(e.info) : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
+      toast(e.message === "rate" ? rateMsg(e.info) : e.message === "not_live" ? liveMsg(e.info) : e.message === "hold" ? holdMsg(e.info) : e.message === "prime" || e.message === "limit" ? crewLimitMsg() : errText(e)); }
   }
   const AG_PER_KIND = 2, AG_UNCAPPED = new Set(["custom"]);   // كل نوع بحد أقصى 2، و«أي شي يتكرر» إلى حد الباقة
   const kindFullMsg = () => L("وصلت الحد: موظفين اثنين من هالنوع. احذف واحد منهم لو تبي تضيف غيره، أو استخدم «أي شي يتكرر».", "You've reached the limit of 2 for this type. Remove one to add another, or use “Anything, on repeat”.");
@@ -4455,7 +4460,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v94".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v96".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

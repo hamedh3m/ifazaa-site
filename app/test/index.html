@@ -1247,13 +1247,13 @@ html.i18n-wait body{visibility:hidden}
       <div class="pf-pick"><button type="button" class="btn btn-ghost" id="pf-photo">أرفق صورة</button><button type="button" class="pf-rm" id="pf-rm" hidden>شيل الصورة</button></div>
       <input type="file" id="pf-file" accept="image/*" hidden></div>
     <label class="field"><span id="pf-l-name">الاسم</span><input id="pf-name" autocomplete="given-name" maxlength="30"></label>
-    <div class="field"><span id="pf-l-g">الجنس <b class="req">*</b></span><div class="plat" role="group" aria-labelledby="pf-l-g" style="margin-top:0"><button type="button" data-g="m" id="pf-gm">ذكر</button><button type="button" data-g="f" id="pf-gf">أنثى</button></div></div>
-    <label class="field"><span id="pf-l-ph">رقم الجوال <b class="req">*</b></span><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="05xxxxxxxx" dir="ltr"></label>
-    <div class="field"><span id="pf-l-b">تاريخ الميلاد <b class="req">*</b></span><button type="button" class="pf-date" id="pf-birth"></button></div>
+    <div class="field"><span id="pf-l-g">الجنس (اختياري)</span><div class="plat" role="group" aria-labelledby="pf-l-g" style="margin-top:0"><button type="button" data-g="m" id="pf-gm">ذكر</button><button type="button" data-g="f" id="pf-gf">أنثى</button></div></div>
+    <label class="field"><span id="pf-l-ph">رقم الجوال (اختياري)</span><input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="05xxxxxxxx" dir="ltr"></label>
+    <div class="field"><span id="pf-l-b">تاريخ الميلاد (اختياري)</span><button type="button" class="pf-date" id="pf-birth"></button></div>
     <label class="field"><span id="pf-l-e">البريد الإلكتروني (اختياري)</span><input id="pf-email" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="name@example.com" dir="ltr"></label>
     <button class="btn btn-red" type="button" id="pf-save" style="margin-top:22px">احفظ</button>
     <button class="pf-edit" type="button" id="pf-edit" hidden>✏️ تعديل</button>
-    <p class="note" id="pf-note">فزعة يناديك باسمك ويخاطبك حسب جنسك. الجوال والميلاد والإيميل لك بس، ما نشاركها مع أحد، وتنحذف مع حسابك.</p>
+    <p class="note" id="pf-note">كل الخانات اختيارية. فزعة يناديك باسمك، ولو اخترت جنسك يخاطبك صح. الجوال والميلاد والإيميل لك بس، ما نشاركها مع أحد، وتنحذف مع حسابك.</p>
     <p class="sec-t" id="pf-acc-t" style="margin-top:26px">الحساب</p>
       <div class="gbox g-out" id="g-out" hidden><span id="g-email"></span><button type="button" id="g-signout">تسجيل خروج</button></div>
   </div>
@@ -1638,8 +1638,8 @@ html.i18n-wait body{visibility:hidden}
     const fileH = att ? att.filter(a => a.t === "file").map(a => `<span class="mfile">📄 <span dir="auto">${esc(a.name || L("ملف", "File"))}</span></span>`).join("") : "";
     const picsH = pics.map(u => `<button type="button" class="gimg${vidSet.has(u) ? " vid" : ""}" data-img="${esc(u)}"><img src="${esc(u)}" alt="${esc(m.me ? L("الصورة اللي أرسلتها", "The photo you sent") : L("صورة من فزعة", "Image from Fazaa"))}" loading="lazy"></button>`).join("");
     el.innerHTML = (m.me && pics.length > 1 ? `<div class="mimgs">${picsH}</div>` : picsH) + fileH
-      + (rest ? linkify(rest) : "") + (!m.me && rest
-        ? `<div class="mf"><time>${fmtTime(new Date(m.ts))}</time><button type="button" class="cp" aria-label="${L("انسخ الرد", "Copy reply")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>${L("نسخ", "Copy")}</span></button></div>`
+      + (rest ? linkify(rest) : "") + (!m.me && (rest || pics.length)
+        ? `<div class="mf"><time>${fmtTime(new Date(m.ts))}</time>${rest ? `<button type="button" class="cp" aria-label="${L("انسخ الرد", "Copy reply")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span>${L("نسخ", "Copy")}</span></button>` : ""}<button type="button" class="cp rp" aria-label="${L("بلّغ عن هالرد", "Report this reply")}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"/><path d="M4 4h13l-2 4 2 4H4"/></svg><span>${L("بلّغ", "Report")}</span></button></div>`
         : `<time>${fmtTime(new Date(m.ts))}</time>`);
     if (pics.length && !rest) el.classList.add("imgonly");
     if (m.me && pics.length > 1) el.classList.add("multi");
@@ -1649,8 +1649,10 @@ html.i18n-wait body{visibility:hidden}
       pb.innerHTML = (pk === "time" ? "🕒 " + L("اختر الوقت", "Pick a time") : pk === "date" ? "📅 " + L("اختر التاريخ", "Pick a date") : "📅 " + L("اختر التاريخ والوقت", "Pick date and time"));
       pb.onclick = () => pickAndSend(pk); el.appendChild(pb);
     }
-    const cp = el.querySelector(".cp");
+    const cp = el.querySelector(".cp:not(.rp)");
     if (cp) cp.onclick = () => copyText(rest, cp);
+    const rp = el.querySelector(".cp.rp");
+    if (rp) rp.onclick = () => reportReply(rest || pics.join("\n"), rp);
     if (!m.me) medButton(el, m);
     msgs.appendChild(el);
     return el;
@@ -1894,11 +1896,50 @@ html.i18n-wait body{visibility:hidden}
     ty.querySelector(".stopb").onclick = onStop; msgs.appendChild(ty); return ty;
   }
   const newCid = () => "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  // ---------- المتاجر: موافقة قبل إرسال أي شي للذكاء الاصطناعي (أبل 5.1.2) + «بلّغ عن هالرد» (قوقل) ----------
+  const AIOK_K = "fz_ai_ok_v1";
+  function fzDialog(title, html, btns) {
+    return new Promise(done => {
+      if (!document.getElementById("fzd-css")) {
+        const st = document.createElement("style"); st.id = "fzd-css";
+        st.textContent = ".fzd{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);display:grid;place-items:end center;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}.fzd-c{width:100%;max-width:440px;background:var(--s1,#151517);color:var(--ink,#f5f5f2);border:1px solid var(--line,#2a2a2e);border-radius:22px;padding:20px 18px 16px}.fzd-c h2{font-size:19px;margin:0 0 10px}.fzd-c p{font-size:15px;line-height:1.7;margin:0 0 10px;color:var(--muted,#b9b9bf)}.fzd-c a{color:inherit;text-decoration:underline}.fzd-b{display:grid;gap:8px;margin-top:14px}.fzd-b button{font:inherit;font-weight:700;font-size:16px;padding:13px;border-radius:14px;border:1px solid var(--line,#2a2a2e);background:var(--s2,#1f1f22);color:inherit;cursor:pointer}.fzd-b button.pri{background:var(--red,#e0213b);border-color:transparent;color:#fff}";
+        document.head.appendChild(st);
+      }
+      const w = document.createElement("div"); w.className = "fzd"; w.setAttribute("role", "dialog"); w.setAttribute("aria-modal", "true");
+      w.innerHTML = `<div class="fzd-c"><h2>${title}</h2>${html}<div class="fzd-b">${btns.map((b, i) => `<button type="button" data-i="${i}"${b.pri ? ' class="pri"' : ""}>${b.t}</button>`).join("")}</div></div>`;
+      const end = v => { w.remove(); done(v); };
+      w.querySelectorAll("[data-i]").forEach(b => b.onclick = () => end(btns[+b.dataset.i].v));
+      w.onclick = e => { if (e.target === w) end(null); };
+      document.body.appendChild(w); const f = w.querySelector(".pri") || w.querySelector("button"); if (f) f.focus();
+    });
+  }
+  async function aiOk() {
+    try { if (localStorage.getItem(AIOK_K) === "1") return true; } catch {}
+    const pp = EN ? "/en/privacy.html" : "/privacy.html";
+    const v = await fzDialog(L("قبل ما تبدأ", "Before you start"),
+      `<p>${L("عشان يفهمك فزعة ويرد عليك، اللي ترسله (الكلام والصور والملفات والصوت) ينرسل لشركات ذكاء اصطناعي تعالجه نيابة عنا:", "To understand you and reply, what you send (text, photos, files and voice) is sent to AI companies that process it on our behalf:")}</p>`
+      + `<p>• Anthropic: ${L("يفهم رسايلك ويكتب الرد", "understands your messages and writes replies")}<br>• ElevenLabs: ${L("يحوّل الصوت لكلام والرد لصوت", "turns voice into text and replies into speech")}<br>• OpenAI: ${L("يسوي الصور لما تطلب", "creates images when you ask")}</p>`
+      + `<p>${L("ما يستخدمونها لتدريب نماذجهم، وفريق فزعة ما يقرا محادثاتك، وتقدر تحذف كل شي من «حسابي».", "They don't use it to train their models, the Fazaa team doesn't read your chats, and you can delete everything from Account.")} <a href="${pp}" target="_blank" rel="noopener">${L("سياسة الخصوصية", "Privacy policy")}</a></p>`,
+      [{ t: L("أوافق، كمّل", "I agree, continue"), v: 1, pri: true }, { t: L("مو الحين", "Not now"), v: 0 }]);
+    if (v !== 1) { toast(L("فزعة يحتاج موافقتك عشان يرد عليك", "Fazaa needs your OK to reply")); return false; }
+    try { localStorage.setItem(AIOK_K, "1"); } catch {}
+    return true;
+  }
+  async function reportReply(text, btn) {
+    const why = await fzDialog(L("بلّغ عن هالرد", "Report this reply"),
+      `<p>${L("وش المشكلة؟ يوصلنا هالرد بس (مو محادثتك كلها) عشان نراجعه.", "What's wrong? We receive only this reply (not your whole chat) to review it.")}</p>`,
+      [{ t: L("مسيء أو غير لائق", "Offensive or inappropriate"), v: "offensive" }, { t: L("معلومة غلط", "Wrong information"), v: "wrong" },
+       { t: L("خطير أو ضار", "Unsafe or harmful"), v: "unsafe" }, { t: L("شي ثاني", "Something else"), v: "other" }, { t: L("إلغاء", "Cancel"), v: null }]);
+    if (!why) return;
+    try { await api("/report", { method: "POST", body: JSON.stringify({ text: String(text || "").slice(0, 4000), reason: why }) }); if (btn) btn.classList.add("ok"); toast(L("وصلنا بلاغك، شكراً لك 🙏", "Report received, thank you 🙏")); }
+    catch (x) { toast(errText(x)); }
+  }
   async function submit(text) {
     text = (text || inp.value).trim(); if (!text || busy) return;
     if (/(اقرب|أقرب|وين)\s.{0,14}(مستشفى|مستوصف|طوارئ)|nearest\s+(hospital|clinic|er\b|emergency)/i.test(text)) {
       inp.value = ""; grow(); syncSend(); openSheet("s-care"); drawCare(); if (S.locOk) getLoc(false); return;
     }
+    if (!(await aiOk())) return;                                  // بعد الطوارئ: أقرب مستشفى ما ينتظر الموافقة
     busy = true;
     inp.value = ""; grow(); syncSend();
     $("#empty").style.display = "none";
@@ -1960,6 +2001,7 @@ html.i18n-wait body{visibility:hidden}
   }
   async function sendMedia(kind, blob, label) {
     if (busy) return;
+    if (!(await aiOk())) return;
     const blobs = Array.isArray(blob) ? blob : [blob];          // الصور: وحدة أو إلى ٣ في رسالة وحدة
     if (blobs.some(b => b.size > 5_000_000)) { toast(errText(new Error("size"))); return; }
     busy = true;
@@ -2035,6 +2077,7 @@ html.i18n-wait body{visibility:hidden}
   }
   async function sendAtt(items) {
     if (busy) return;
+    if (!(await aiOk())) return;
     if (items.some(x => x.kind !== "video" && x.blob.size > 5_000_000)) { toast(errText(new Error("size"))); return; }
     busy = true;
     const caption = inp.value.trim(); if (caption) { inp.value = ""; grow(); syncSend(); }
@@ -2554,6 +2597,7 @@ html.i18n-wait body{visibility:hidden}
   const CALL = { on: false, muted: false, stream: null, ctx: null, an: null, rec: null, t0: 0, timer: 0, play: null };
   const cStatus = t => { $("#c-status").textContent = t; };
   async function startCall() {
+    if (!(await aiOk())) return;
     if (!navigator.mediaDevices || !window.MediaRecorder || !(window.AudioContext || window.webkitAudioContext)) { toast(L("جوالك ما يدعم المكالمة هنا", "Calls aren't supported here")); return; }
     const AC = window.AudioContext || window.webkitAudioContext;
     CALL.ctx = new AC(); try { CALL.ctx.resume(); } catch {}          // لازم ينفتح الصوت داخل الضغطة نفسها (الآيفون)
@@ -3545,7 +3589,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     }).catch(() => {});
     syncGoogleUI();
   }
-  // ---------- الملف الشخصي: الصورة والاسم والجنس (لازم) والجوال والميلاد والإيميل (اختيارية) ----------
+  // ---------- الملف الشخصي: الصورة والاسم، والجنس والجوال والميلاد والإيميل (كلها اختيارية، أبل 5.1.1) ----------
   let PF = { gender: "", birth: "", avatar: "" };
   function drawAvatars() {
     const ch = (S.name || L("ف", "F")).trim()[0] || "ف", av = S.av || "";
@@ -3576,7 +3620,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
       $("#pf-phone").value = p.phone ? p.phone.replace(/^\+966/, "0") : ""; $("#pf-email").value = p.email || "";
       if ((p.avatar || "") !== (S.av || "")) { S.av = p.avatar || ""; save(); }
       pfBirthText(); pfGender(); drawAvatars();
-      pfMode(!!(p.gender && p.phone && p.birth));
+      pfMode(!!(p.gender || p.phone || p.birth));
     } catch {}
   }
   // ---------- عيد الميلاد: شاشة احتفال مرة وحدة بالسنة ----------
@@ -3652,8 +3696,8 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   }
   $("#me-limits").addEventListener("click", () => drawUsage());
   if (EN) [["#pf-h", "Your profile"], ["#pf-l-name", "Name"], ["#pf-gm", "Male"], ["#pf-gf", "Female"], ["#lim-h", "My limits"], ["#lang-l", "Language"], ["#lim-nt", "Notifications"], ["#pf-acc-t", "Account"], ["#pf-unote", "Monthly limits reset automatically on the 1st of every month."], ["#lim-mdef-a", "A message counts each time you send Fazaa something: text, voice, photo or file. Its replies, your reminders and your crew's results don't count."], ["#lim-mdef-e", " On Elite, your messages and your family member's count together."],["#pf-l-e", "Email (optional)"], ["#pf-save", "Save"], ["#pf-edit", "✏️ Edit"], ["#pf-rm", "Remove photo"], ["#me-fill", "Complete your profile"],
-    ["#pf-note", "Fazaa calls you by your name and addresses you correctly. Your phone, birth date and email are only for you, never shared, and are deleted with your account."]].forEach(([q, t]) => { $(q).textContent = t; });
-  if (EN) { $("#pf-l-g").innerHTML = 'Gender <b class="req">*</b>'; $("#pf-l-ph").innerHTML = 'Phone number <b class="req">*</b>'; $("#pf-l-b").innerHTML = 'Date of birth <b class="req">*</b>'; $("#pf-phone").placeholder = "+9665xxxxxxxx"; $("#av").setAttribute("aria-label", "Your photo and profile"); $("#pf-av").setAttribute("aria-label", "Change photo"); }
+    ["#pf-note", "Every field is optional. Fazaa calls you by your name, and addresses you correctly if you choose your gender. Your phone, birth date and email are only for you, never shared, and are deleted with your account."]].forEach(([q, t]) => { $(q).textContent = t; });
+  if (EN) { $("#pf-l-g").textContent = "Gender (optional)"; $("#pf-l-ph").textContent = "Phone number (optional)"; $("#pf-l-b").textContent = "Date of birth (optional)"; $("#pf-phone").placeholder = "+9665xxxxxxxx"; $("#av").setAttribute("aria-label", "Your photo and profile"); $("#pf-av").setAttribute("aria-label", "Change photo"); }
   ["#pf-name", "#pf-phone", "#pf-email"].forEach(q => $(q).addEventListener("input", () => $(q).closest(".field").classList.remove("bad")));
   $("#av").onclick = openProfile; $("#me-nm").onclick = openProfile; $("#me-fill").onclick = openProfile;
   $$("[data-g]").forEach(b => b.onclick = () => { PF.gender = b.dataset.g; pfGender(); b.closest(".field").classList.remove("bad"); });
@@ -3729,9 +3773,6 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const name = $("#pf-name").value.trim(), bad = q => $(q).closest(".field").classList.add("bad");
     $$("#s-profile .field").forEach(f => f.classList.remove("bad"));
     if (!name) { bad("#pf-name"); toast(L("اكتب اسمك", "Enter your name")); return; }
-    if (!PF.gender) { bad("#pf-gm"); toast(L("اختر الجنس: ذكر أو أنثى", "Choose your gender: male or female")); return; }
-    if (!$("#pf-phone").value.trim()) { bad("#pf-phone"); toast(L("اكتب رقم جوالك", "Enter your phone number")); return; }
-    if (!PF.birth) { bad("#pf-birth"); toast(L("اختر تاريخ ميلادك", "Pick your date of birth")); return; }
     const b = $("#pf-save"); b.disabled = true;
     try {
       const r = await api("/profile", { method: "POST", body: JSON.stringify({ name, gender: PF.gender, phone: $("#pf-phone").value.trim(), birth: PF.birth, email: $("#pf-email").value.trim() }) });
@@ -4469,7 +4510,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   if (NATIVE) { if (S.pushOn) nativePush(false).catch(() => {}); }
   else if (pushOK && Notification.permission === "granted") addEventListener("load", () => subscribePush(false).catch(() => {}));
   // التطبيق (آيفون/أندرويد) يفتح الصفحة من الكاش أحياناً: نتأكد من آخر نسخة ونحدّث لحالنا
-  const APPV = "fazaa-app-v95".slice(10);      // لازم يطابق رقم sw.js
+  const APPV = "fazaa-app-v96".slice(10);      // لازم يطابق رقم sw.js
   async function freshCheck() {
     try {
       const t = await (await fetch("sw.js?t=" + Date.now(), { cache: "no-store" })).text();

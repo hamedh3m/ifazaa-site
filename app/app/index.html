@@ -741,7 +741,9 @@ html{touch-action:manipulation}
 .note{font-size:14px;color:var(--muted);margin-top:14px;line-height:1.6}
 
 /* onboarding */
-.onb{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--top) + 40px) 22px calc(var(--bot) + 24px);overflow:hidden;max-width:560px;margin-inline:auto}
+.onb{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--top) + 40px) 22px calc(var(--bot) + 24px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;max-width:560px;margin-inline:auto}
+@media (max-height:820px){.onb{padding-top:calc(var(--top) + 24px)}.onb h1{font-size:36px;margin-top:18px}.onb p{margin-top:10px}}
+@media (max-height:680px){.onb h1{font-size:30px;margin-top:12px}.onb .logo-big{width:52px;height:52px}}
 .onb[hidden]{display:none}
 .onb::before{content:"";position:absolute;inset:-30% -30% 30%;z-index:0;background:radial-gradient(40% 35% at 70% 30%,rgba(224,33,59,.55),transparent 70%),radial-gradient(35% 30% at 25% 60%,rgba(37,211,102,.25),transparent 70%);filter:blur(40px);animation:drift 16s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate3d(-5%,4%,0) scale(1.1)}}
@@ -4378,6 +4380,22 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     let r;
     try { r = await api("/auth/google/start", { method: "POST" }); } catch (e) { toast(errText(e)); return; }
     S.gPending = Date.now(); save();
+    const BR = CAP && CAP.Plugins && CAP.Plugins.Browser;
+    if (BR && BR.open) {          // داخل التطبيق (نافذة Safari المدمجة): ما يطلع لمتصفح برا
+      try {
+        await BR.open({ url: r.url, presentationStyle: "fullscreen" });
+        const until = Date.now() + 10 * 60000;
+        const tick = async () => {
+          if (!S.gPending || Date.now() > until) return;
+          await checkGoogleReturn();
+          if (!S.gPending) { try { await BR.close(); } catch {} return; }
+          setTimeout(tick, 2000);
+        };
+        setTimeout(tick, 3000);
+        try { BR.addListener("browserFinished", () => checkGoogleReturn()); } catch {}
+        return;
+      } catch {}
+    }
     const w = open(r.url, "_blank"); if (!w) location.href = r.url;
   }
   async function checkGoogleReturn() {

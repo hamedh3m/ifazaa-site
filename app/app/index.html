@@ -4383,7 +4383,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const BR = CAP && CAP.Plugins && CAP.Plugins.Browser;
     if (BR && BR.open) {          // داخل التطبيق (نافذة Safari المدمجة): ما يطلع لمتصفح برا
       try {
-        await BR.open({ url: r.url, presentationStyle: "fullscreen" });
+        await BR.open({ url: r.url, presentationStyle: "popover" });   // popover: التطبيق يظل شغال تحت النافذة، فيحس بالدخول ويقفلها لحاله
         const until = Date.now() + 10 * 60000;
         const tick = async () => {
           if (!S.gPending || Date.now() > until) return;

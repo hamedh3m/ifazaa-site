@@ -409,6 +409,22 @@ html[dir="ltr"] .drawer .dp{--din:-100%}
 .mcnt{display:flex;gap:8px;flex-wrap:wrap}.mcnt button{min-width:52px;padding:9px 14px;border-radius:999px;border:1px solid var(--line);font-weight:700;color:var(--muted)}
 .mcnt button[aria-pressed="true"]{background:var(--ink);color:#111;border-color:var(--ink)}
 .mtimes{display:flex;gap:8px;flex-wrap:wrap}.mtimes .tbtn{width:auto;padding:0 16px}
+.msum{display:flex;align-items:center;gap:14px;padding:14px;border-radius:20px;background:var(--s2);border:1px solid var(--line);margin:4px 0 6px}
+.msum b{display:block;font-size:15px}.msum small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.mring{width:56px;height:56px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(#3ecf8e calc(var(--p)*360deg),rgba(255,255,255,.08) 0);position:relative}
+.mring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--bg)}.mring b{position:relative;font-size:14px}
+.mchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.mchip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#d4d4d8;white-space:nowrap}
+.mchip.c{background:rgba(245,177,76,.15);color:#f5c27a}
+.mbar{height:6px;border-radius:9px;background:rgba(255,255,255,.08);margin-top:12px;overflow:hidden}.mbar i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#f5b14c,#3ecf8e)}
+.mleft{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+.mstep{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin-top:18px}.mstep:first-child{margin-top:0}
+.mstep i{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#000;display:grid;place-items:center;font-style:normal;font-size:12px;flex:none}
+.mstep small{color:var(--muted);font-weight:400;font-size:12px}
+.mseg{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mseg button{padding:10px 14px;border-radius:999px;border:1px solid var(--line);background:var(--s2);font-weight:700;font-size:14px}
+.mseg button[aria-pressed="true"]{background:var(--ink);color:#000;border-color:var(--ink)}
+.mdays{width:90px;height:44px;border-radius:999px;border:1px solid var(--line);background:var(--s2);text-align:center;font:inherit;color:inherit}
 .mhist{margin-top:22px}.mhist summary{cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;padding:6px 2px}
 @media (prefers-reduced-motion:reduce){.mdose.on i{animation:none}}
 .medl .mt{flex:1;min-width:0}.medl b{display:block;font-size:15px}.medl small{color:var(--muted);font-size:12px}
@@ -2839,30 +2855,61 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     const b = $("#meds-body"); if (!b) return;
     const st = { taken: [L("أخذته", "Taken"), "ok"], pending: [L("ينتظر", "Waiting"), ""], skipped: [L("ما أخذته", "Skipped"), "no"], missed: [L("فاتك", "Missed"), "no"] };
     const day = d => DAYS[d.getDay()] + L("، ", ", ") + fmtDate(d);
-    const plans = MEDS.plans || [];
+    const all = MEDS.plans || [], plans = all.filter(p => !p.done), ended = all.filter(p => p.done);
     const check = '<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-    const planH = plans.map(p => {
-      const doses = p.times.length ? `<div class="mdoses">${p.doses.map(d => { const on = d.status === "taken";
+    const MEAL = { before: L("قبل الأكل", "Before food"), with: L("مع الأكل", "With food"), after: L("بعد الأكل", "After food") };
+    const times = n => EN ? `${n}× a day` : n === 1 ? "مرة باليوم" : n === 2 ? "مرتين باليوم" : `${AR(n)} مرات باليوم`;
+    // ملخص اليوم: كم جرعة من كم، والجرعة الجاية
+    const doses = plans.flatMap(p => p.doses.map(d => ({ ...d, name: p.name })));
+    const taken = doses.filter(d => d.status === "taken").length;
+    const next = doses.filter(d => d.status !== "taken").sort((x, y) => x.time.localeCompare(y.time))[0];
+    const sumH = doses.length ? `<div class="msum"><div class="mring" style="--p:${taken / doses.length}"><b>${AR(taken)}/${AR(doses.length)}</b></div>
+      <div><b>${taken === doses.length ? L("خلّصت جرعات اليوم 👏", "All of today's doses done 👏") : L("جرعات اليوم", "Today's doses")}</b>
+      <small>${next ? L("الجاية: ", "Next: ") + esc(next.name) + " · " + fmtTime(hm(next.time)) : L("ما باقي شي اليوم", "Nothing left today")}</small></div></div>` : "";
+    const card = p => {
+      const chips = [p.kind === "course" ? `<span class="mchip c">⏳ ${L(`اليوم ${AR(p.day_n)} من ${AR(p.days)}`, `Day ${p.day_n} of ${p.days}`)}</span>` : `<span class="mchip">🔁 ${L("مستمر", "Ongoing")}</span>`,
+        p.dose ? `<span class="mchip">${esc(p.dose)}</span>` : "", p.meal && MEAL[p.meal] ? `<span class="mchip">🍽️ ${MEAL[p.meal]}</span>` : "",
+        `<span class="mchip">${p.times.length ? times(p.times.length) : L("بدون وقت ثابت", "No fixed time")}</span>`].join("");
+      const bar = p.kind === "course" ? `<div class="mbar"><i style="width:${Math.round(p.day_n / p.days * 100)}%"></i></div><small class="mleft">${p.left ? L(`باقي ${AR(p.left)} ${p.left === 1 ? "يوم" : p.left === 2 ? "يومين" : p.left <= 10 ? "أيام" : "يوم"} · يخلص ${fmtDate(new Date(p.ends + "T12:00"))}`, `${p.left} day${p.left === 1 ? "" : "s"} left · ends ${fmtDate(new Date(p.ends + "T12:00"))}`) : L("اليوم آخر يوم 💪", "Last day today 💪")}</small>` : "";
+      const ds = p.times.length ? `<div class="mdoses">${p.doses.map(d => { const on = d.status === "taken";
           return `<button type="button" class="mdose ${on ? "on" : d.status === "due" || d.status === "pending" ? "due" : d.status === "missed" ? "miss" : ""}" data-dose="${p.id}" data-t="${d.time}" aria-pressed="${on}"><i>${check}</i><span><b>${fmtTime(hm(d.time))}</b><small>${on ? L("أخذتها ", "Taken ") + (d.taken_at ? fmtTime(new Date(d.taken_at)) : "") : d.status === "due" || d.status === "pending" ? L("حان وقتها", "Due now") : d.status === "missed" ? L("فاتتك", "Missed") : L("بعدين", "Later")}</small></span></button>`; }).join("")}</div>`
         : `<div class="mnow"><button type="button" class="btn btn-ghost" data-dosenow="${p.id}">💊 ${L("أخذته الحين", "Taken now")}</button>${p.taken_today.length ? `<small>${L("اليوم: ", "Today: ")}${p.taken_today.map(x => fmtTime(new Date(x.taken_at))).join("، ")}</small>` : ""}</div>`;
-      const done = p.times.length && p.doses.every(d => d.status === "taken");
-      return `<div class="mplan"><div class="mph"><span class="mpi">💊</span><div class="mpt"><b>${esc(p.name)}</b><small>${p.times.length ? (EN ? `${p.times.length}× a day` : p.times.length === 1 ? "مرة باليوم" : p.times.length === 2 ? "مرتين باليوم" : `${AR(p.times.length)} مرات باليوم`) + (done ? L(" · خلّصت جرعات اليوم 👏", " · all done today 👏") : "") : L("بدون أوقات ثابتة", "No fixed times")}</small></div><button type="button" class="mdel" data-mdel="${p.id}" aria-label="${L("احذف الدواء", "Delete medicine")}"><svg><use href="#i-trash"/></svg></button></div>${doses}</div>`;
-    }).join("");
-    const form = medNew ? `<div class="care-box mform"><label class="field" style="margin-top:0"><span>${L("اسم الدواء", "Medicine name")} <b class="req">*</b></span><input id="mn-name" maxlength="60" value="${esc(medNew.name)}" placeholder="${L("مثلاً: حبة الضغط", "e.g. blood pressure pill")}" autocomplete="off"></label>
-        <div class="mopt"${medNew.name.trim() ? "" : " hidden"}><p class="mot">${L("كم مرة باليوم؟", "How many times a day?")} <small>${L("(اختياري)", "(optional)")}</small></p>
-        <div class="mcnt">${[0, 1, 2, 3, 4].map(n => `<button type="button" data-mcnt="${n}" aria-pressed="${medNew.times.length === n}">${n ? AR(n) : L("بدون", "None")}</button>`).join("")}</div>
-        ${medNew.times.length ? `<p class="mot">${L("أوقاتها", "Times")} <small>${L("اضغط على الوقت تغيّره", "Tap a time to change it")}</small></p><div class="mtimes">${medNew.times.map((t, k) => `<button type="button" class="tbtn" data-mt="${k}">${fmtTime(hm(t))}</button>`).join("")}</div><p class="note" style="margin-top:8px">${L("بذكرك كل يوم بكل وقت وأسألك «أخذته؟».", "I'll remind you daily at each time and ask if you took it.")}</p>` : ""}</div>
-        <div class="acts" style="margin-top:14px"><button type="button" class="btn btn-ghost" id="mn-x">${L("إلغاء", "Cancel")}</button><button type="button" class="btn btn-primary" id="mn-save">${L("احفظ الدواء", "Save medicine")}</button></div></div>`
+      return `<div class="mplan"><div class="mph"><span class="mpi">${p.kind === "course" ? "⏳" : "💊"}</span><div class="mpt"><b>${esc(p.name)}</b><div class="mchips">${chips}</div></div><button type="button" class="mdel" data-mdel="${p.id}" aria-label="${L("احذف الدواء", "Delete medicine")}"><svg><use href="#i-trash"/></svg></button></div>${bar}${ds}</div>`;
+    };
+    const chronic = plans.filter(p => p.kind !== "course"), course = plans.filter(p => p.kind === "course");
+    const n = medNew;
+    const seg = (k, opts) => `<div class="mseg">${opts.map(([v, t]) => `<button type="button" data-${k}="${v}" aria-pressed="${String(n[k]) === String(v)}">${t}</button>`).join("")}</div>`;
+    const form = n ? `<div class="care-box mform">
+        <p class="mstep"><i>1</i>${L("وش اسم الدواء؟", "What's the medicine called?")} <b class="req">*</b></p>
+        <label class="field" style="margin-top:6px"><input id="mn-name" maxlength="60" value="${esc(n.name)}" placeholder="${L("مثلاً: حبة الضغط، أموكسيسيلين", "e.g. blood pressure pill, amoxicillin")}" autocomplete="off"></label>
+        <div class="mopt"${n.name.trim() ? "" : " hidden"}>
+        <p class="mstep"><i>2</i>${L("كم تاخذ كل مرة؟", "How much each time?")} <small>${L("(اختياري)", "(optional)")}</small></p>
+        <label class="field" style="margin-top:6px"><input id="mn-dose" maxlength="40" value="${esc(n.dose)}" placeholder="${L("مثلاً: حبة وحدة، 5 مل، إبرة 10 وحدات", "e.g. 1 tablet, 5 ml, 10 units")}" autocomplete="off"></label>
+        <p class="mstep"><i>3</i>${L("كم مرة باليوم؟", "How many times a day?")}</p>
+        <div class="mcnt">${[0, 1, 2, 3, 4].map(k => `<button type="button" data-mcnt="${k}" aria-pressed="${n.times.length === k}">${k ? AR(k) : L("بدون", "None")}</button>`).join("")}</div>
+        ${n.times.length ? `<div class="mtimes" style="margin-top:10px">${n.times.map((t, k) => `<button type="button" class="tbtn" data-mt="${k}">${fmtTime(hm(t))}</button>`).join("")}</div><p class="note" style="margin-top:6px">${L("اضغط على الوقت تغيّره. بذكرك بكل وقت وأسألك «أخذته؟».", "Tap a time to change it. I'll remind you and ask if you took it.")}</p>` : `<p class="note" style="margin-top:6px">${L("بدون: ما فيه تذكير، وتعلّم «أخذته» بنفسك.", "None: no reminder, you tick «taken» yourself.")}</p>`}
+        <p class="mstep"><i>4</i>${L("كم مدة الاستخدام؟", "For how long?")}</p>
+        ${seg("mdur", [[0, L("مستمر", "Ongoing")], [1, L("عدد أيام", "A number of days")]])}
+        <p class="note" style="margin-top:6px">${n.mdur ? L("مثل المضاد الحيوي: التذكير يوقف لحاله بعد آخر يوم.", "Like an antibiotic: reminders stop by themselves after the last day.") : L("مثل الضغط والسكر والكوليسترول: يذكّرك كل يوم بدون نهاية.", "Like blood pressure, diabetes or cholesterol: daily, no end date.")}</p>
+        ${n.mdur ? `<div class="mcnt" style="margin-top:10px">${[3, 5, 7, 10, 14].map(d => `<button type="button" data-mdays="${d}" aria-pressed="${n.days === d}">${AR(d)}</button>`).join("")}<input id="mn-days" class="mdays" type="number" inputmode="numeric" min="1" max="90" placeholder="${L("عدد ثاني", "Other")}" value="${[3, 5, 7, 10, 14].includes(n.days) ? "" : n.days || ""}"></div><p class="note" style="margin-top:6px">${n.days ? L(`${AR(n.days)} ${n.days <= 10 ? "أيام" : "يوم"} تبدأ من اليوم`, `${n.days} days starting today`) : L("اختر كم يوم", "Pick how many days")}</p>` : ""}
+        <p class="mstep"><i>5</i>${L("مع الأكل؟", "With food?")} <small>${L("(اختياري)", "(optional)")}</small></p>
+        ${seg("meal", [["before", MEAL.before], ["with", MEAL.with], ["after", MEAL.after], ["", L("ما يفرق", "Doesn't matter")]])}
+        </div>
+        <div class="acts" style="margin-top:16px"><button type="button" class="btn btn-ghost" id="mn-x">${L("إلغاء", "Cancel")}</button><button type="button" class="btn btn-primary" id="mn-save">${L("احفظ الدواء", "Save medicine")}</button></div></div>`
       : `<button type="button" class="btn btn-primary" id="mn-add" style="margin-top:14px"><svg><use href="#i-plus"/></svg>${L("أضف دواء", "Add a medicine")}</button>`;
     const pend = (MEDS.pending || []).filter(x => !plans.some(p => p.doses.some(d => d.log_id === x.id)));
     const pendH = pend.map(x => `<div class="medl"><div class="mt"><b>${esc(x.title)}</b><small>${L("موعده", "Due")} ${fmtTime(new Date(x.due_at))}</small></div><button type="button" class="btn btn-primary" data-med="${x.id}" style="padding:8px 14px">${L("أخذته", "Taken")}</button></div>`).join("");
     const rows = (MEDS.log || []).slice(0, 40).map(x => { const due = new Date(x.due_at), tk = x.taken_at ? new Date(x.taken_at) : null, s_ = st[x.status] || [x.status, ""];
       return `<div class="medl"><div class="mt"><b>${esc(String(x.title).replace(/^(دواء|Medicine): /, ""))}</b><small>${day(due)} · ${L("موعده", "Due")} ${fmtTime(due)}${tk ? ` · ${L("أخذته", "Taken")} ${fmtTime(tk)}` : ""}</small></div><span class="st ${s_[1]}">${s_[0]}</span></div>`; }).join("");
+    const endedH = ended.map(p => `<div class="medl"><div class="mt"><b>${esc(p.name)}</b><small>${L(`كورس ${AR(p.days)} ${p.days <= 10 ? "أيام" : "يوم"} · خلص ${fmtDate(new Date(p.ends + "T12:00"))}`, `${p.days}-day course · ended ${fmtDate(new Date(p.ends + "T12:00"))}`)}</small></div><button type="button" class="mdel" data-mdel="${p.id}" aria-label="${L("احذف", "Delete")}"><svg><use href="#i-trash"/></svg></button></div>`).join("");
     b.innerHTML = `<h2 class="h2">${L("أدويتك", "Your medicines")}</h2>
-      <p class="sub">${L("سجّل دواك، واختر أوقاته لو تبي فزعة يذكّرك. وكل ما أخذت جرعة علّم عليها صح.", "Add your medicine, and pick its times if you want reminders. Tick each dose when you take it.")}</p>
-      ${plans.length ? `<p class="sec-t">${L("اليوم", "Today")}</p>${planH}` : ""}
+      <p class="sub">${L("أضف دواك ومتى تاخذه، وفزعة يذكّرك. وكل ما أخذت جرعة علّم عليها صح.", "Add your medicine and when you take it, and Fazaa reminds you. Tick each dose when you take it.")}</p>
+      ${sumH}
+      ${chronic.length ? `<p class="sec-t">🔁 ${L("أدوية مستمرة", "Ongoing medicines")}</p>${chronic.map(card).join("")}` : ""}
+      ${course.length ? `<p class="sec-t">⏳ ${L("كورسات لها مدة", "Courses with an end date")}</p>${course.map(card).join("")}` : ""}
       ${form}
       ${pendH ? `<p class="sec-t" style="margin-top:22px">${L("ينتظر ردك", "Waiting for you")}</p><div class="care-box">${pendH}</div>` : ""}
+      ${endedH ? `<details class="mhist"><summary>${L("كورسات خلصت", "Finished courses")}</summary><div class="care-box">${endedH}</div></details>` : ""}
       ${rows ? `<details class="mhist"><summary>${L("السجل: وش أخذت ومتى بالضبط", "History: what you took and exactly when")}</summary><div class="care-box">${rows}</div></details>` : ""}`;
     const after = r => { if (r && r.plans) MEDS.plans = r.plans; drawMeds(); drawHome(); };
     b.querySelectorAll("[data-dose]").forEach(x => x.onclick = async () => {
@@ -2872,22 +2919,27 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     });
     b.querySelectorAll("[data-dosenow]").forEach(x => x.onclick = async () => { try { after(await api(`/meds/plan/${x.dataset.dosenow}/dose`, { method: "POST", body: JSON.stringify({ on: true }) })); toast(L("تم التسجيل ✅", "Logged ✅")); } catch (e) { toast(errText(e)); } });
     b.querySelectorAll("[data-mdel]").forEach(x => x.onclick = async () => {
-      const p = plans.find(q => String(q.id) === x.dataset.mdel);
       if (!(await ask(L("متأكد؟", "Are you sure?"), "", L("احذف", "Delete")))) return;
       try { after(await api(`/meds/plan/${x.dataset.mdel}/delete`, { method: "POST" })); toast(L("انحذف الدواء", "Medicine deleted")); } catch (e) { toast(errText(e)); }
     });
     b.querySelectorAll("[data-med]").forEach(x => x.onclick = async () => { try { await medTake("", +x.dataset.med); toast(L("تم التسجيل ✅", "Logged ✅")); } catch { toast(L("ما قدرت أسجله", "Couldn't log it")); } });
-    const add = $("#mn-add"); if (add) add.onclick = () => { medNew = { name: "", times: [] }; drawMeds(); setTimeout(() => $("#mn-name").focus(), 60); };
+    const add = $("#mn-add"); if (add) add.onclick = () => { medNew = { name: "", dose: "", times: [], mdur: 0, days: 0, meal: "" }; drawMeds(); setTimeout(() => $("#mn-name").focus(), 60); };
     const nm = $("#mn-name");
     if (nm) {
       nm.oninput = () => { medNew.name = nm.value; const o = b.querySelector(".mopt"); if (o) o.hidden = !nm.value.trim(); };
+      const ds = $("#mn-dose"); if (ds) ds.oninput = () => { medNew.dose = ds.value; };
       b.querySelectorAll("[data-mcnt]").forEach(x => x.onclick = () => { medNew.times = (MED_DEF[+x.dataset.mcnt] || []).slice(); drawMeds(); });
       b.querySelectorAll("[data-mt]").forEach(x => x.onclick = async () => { const k = +x.dataset.mt; const d = await wheelPick("time", hm(medNew.times[k]), 5); if (!d) return;
         medNew.times[k] = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); drawMeds(); });
+      b.querySelectorAll("[data-mdur]").forEach(x => x.onclick = () => { medNew.mdur = +x.dataset.mdur; if (medNew.mdur && !medNew.days) medNew.days = 7; drawMeds(); });
+      b.querySelectorAll("[data-mdays]").forEach(x => x.onclick = () => { medNew.days = +x.dataset.mdays; drawMeds(); });
+      b.querySelectorAll("[data-meal]").forEach(x => x.onclick = () => { medNew.meal = x.dataset.meal; drawMeds(); });
+      const dd = $("#mn-days"); if (dd) dd.onchange = () => { const v = Math.max(0, Math.min(90, parseInt(String(dd.value).replace(/[٠-٩]/g, c => "٠١٢٣٤٥٦٧٨٩".indexOf(c)), 10) || 0)); medNew.days = v; drawMeds(); };
       $("#mn-x").onclick = () => { medNew = null; drawMeds(); };
       $("#mn-save").onclick = async () => {
         if (!medNew.name.trim()) { nm.closest(".field").classList.add("bad"); toast(L("اكتب اسم الدواء", "Type the medicine name")); nm.focus(); return; }
-        try { const r = await api("/meds/plan", { method: "POST", body: JSON.stringify({ name: medNew.name.trim(), times: medNew.times }) }); medNew = null; after(r); toast(L("انضاف الدواء ✅", "Medicine added ✅")); }
+        if (medNew.mdur && !medNew.days) { toast(L("اختر كم يوم", "Pick how many days")); return; }
+        try { const r = await api("/meds/plan", { method: "POST", body: JSON.stringify({ name: medNew.name.trim(), times: medNew.times, dose: medNew.dose.trim(), days: medNew.mdur ? medNew.days : 0, meal: medNew.meal }) }); medNew = null; after(r); toast(L("انضاف الدواء ✅", "Medicine added ✅")); }
         catch (e) { toast(e.message === "limit" ? L("وصلت حد الأدوية", "You've reached the medicines limit") : errText(e)); }
       };
     }

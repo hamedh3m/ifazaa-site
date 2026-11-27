@@ -1094,6 +1094,7 @@ html.i18n-wait body{visibility:hidden}
         <label class="field"><span id="agf-every-l">كم مرة يشيّك لك؟</span><select id="agf-every"></select></label>
         <p class="note" id="agf-every-hint" hidden></p>
         <div class="field"><span id="agf-at-l">يبدأ الساعة</span><input id="agf-at" type="hidden" value="09:00"><button type="button" class="tbtn" id="agf-at-b">9 ص</button></div>
+        <p class="note" id="agf-at-hint" hidden></p>
       </div>
       <label class="field" id="agf-day-w" hidden><span id="agf-day-l">أي يوم؟</span><select id="agf-day"></select></label>
       <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">ضيفه للطاقم</button></div>
@@ -3162,7 +3163,12 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   syncTpl();
   $("#agf-every").innerHTML = Object.entries(EVN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
   $("#agf-day").innerHTML = WDAY.map((d, i) => `<option value="${i}">${d}</option>`).join("");
-  $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; $("#agf-at-l").textContent = e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة كم؟", "At what time?"); syncAt(); };
+  $("#agf-every").onchange = () => { const e = $("#agf-every").value; $("#agf-day-w").hidden = e !== "weekly"; $("#agf-at-b").disabled = false; const food = agKind === "nutrition";   // التغذية: الوقت = متى يجيه تقرير يومه
+    $("#agf-every-l").textContent = food ? L("كل كم يجيك التقرير؟", "How often do you want the report?") : L("كم مرة يشيّك لك؟", "How often should it check?");
+    $("#agf-at-l").textContent = food ? L("متى يجيك تقرير يومك؟", "When should your daily report arrive?") : e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة كم؟", "At what time?");
+    const ah = $("#agf-at-hint"); ah.hidden = !food;
+    if (food) ah.textContent = L("يوصلك فيه: كم سعرة وبروتين أكلت اليوم، وكم باقي على هدفك، ونصيحة لبكرة. الأفضل تخليه بعد آخر وجبة.", "It shows today's calories and protein, how far you are from your goal, and one tip for tomorrow. Best set after your last meal.");
+    syncAt(); };
   let agEdit = null;     // رقم الموظف لو يعدّل، وإلا null (إضافة جديدة)
   $$("[data-agk]").forEach(b => b.onclick = () => openAgForm(b.dataset.agk, null));
 

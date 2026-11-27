@@ -905,6 +905,34 @@ html.i18n-wait body{visibility:hidden}
 #sms-sum h4{font-size:15px;margin-bottom:8px}
 #sms-sum .bar2{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;border-top:1px solid var(--line)}
 .onb .lang-t{position:absolute;top:calc(var(--top) + 16px);inset-inline-end:20px;z-index:2;padding:7px 14px;border-radius:999px;border:1px solid rgba(245,245,242,.25);font-size:13px;font-weight:700}
+
+/* ===== iPad والشاشات العريضة: قائمة جانبية + محتوى في النص ===== */
+@media (min-width:740px) and (min-height:560px){
+  .app{max-width:none;display:grid;grid-template-columns:212px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);border-inline:0}
+  .bar{grid-column:1/-1;grid-row:1;padding-inline:20px;border-bottom:1px solid var(--line)}
+  .views{grid-column:2;grid-row:2}
+  .tabs{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:4px;padding:16px 12px calc(var(--bot) + 16px);border-top:0;border-inline-end:1px solid var(--line);background:var(--s1)}
+  #v-chat>:not(.msgs):not(.composer){margin-inline:max(12px,calc((100% - 776px)/2))}
+  .tab{flex-direction:row;justify-content:flex-start;gap:12px;padding:12px 14px;border-radius:14px;font-size:15px;position:relative;transition:background 160ms var(--ease)}
+  .tab:hover{background:rgba(255,255,255,.04)}
+  .tab[aria-current="page"]{background:var(--s2)}
+  .tab svg{width:22px;height:22px;flex:none}
+  .tab-dot{position:absolute;inset-inline-end:12px;top:50%;margin-top:-2px}
+  .view{padding:12px max(24px,calc((100% - 820px)/2)) 32px}
+  #v-chat{padding:0}
+  .msgs{padding:16px max(24px,calc((100% - 760px)/2)) 14px}
+  .composer{padding:10px max(16px,calc((100% - 776px)/2)) 16px}
+  .m{max-width:min(78%,560px)}
+  .sheet{max-width:680px;border-inline:1px solid var(--line);box-shadow:0 0 0 100vmax rgba(0,0,0,.5)}
+  .onb{max-width:none;padding-inline:max(22px,calc((100% - 520px)/2))}
+  .onb .lang-t{inset-inline-end:max(20px,calc((100% - 520px)/2))}
+  .drawer .dp{width:360px}
+  .dtiles{grid-template-columns:repeat(4,minmax(0,160px))}
+}
+@media (min-width:1024px) and (min-height:560px){
+  .app{grid-template-columns:248px minmax(0,1fr)}
+  #ag-list{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>

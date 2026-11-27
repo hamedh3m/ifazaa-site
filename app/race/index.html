@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="theme-color" content="#09090a">
+<title>سباق الطاقم · Crew Race</title>
+<style>
+:root{--bg:#09090a;--s1:#111114;--s2:#18181c;--line:#25252b;--ink:#f5f5f2;--muted:#9d9da4;
+  --c0:#e0213b;--c1:#25d366;--c2:#f2c230;--c3:#3b82f6;--ease:cubic-bezier(.2,.8,.2,1)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0}
+html,body{background:var(--bg);color:var(--ink);font-family:Almarai,-apple-system,system-ui,sans-serif;min-height:100%;overscroll-behavior:none}
+body{padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.glow{position:fixed;inset:-20% -20% auto;height:70vh;z-index:-1;pointer-events:none;
+  background:radial-gradient(40% 40% at 25% 30%,rgba(224,33,59,.28),transparent 70%),radial-gradient(35% 35% at 80% 20%,rgba(37,211,102,.16),transparent 70%);filter:blur(30px)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:620px;margin:12px auto 4px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:11px;background:var(--c0);display:grid;place-items:center;font-weight:800;font-size:20px;color:#fff;box-shadow:0 6px 18px rgba(224,33,59,.35)}
+.brand h1{font-size:19px;font-weight:800;line-height:1.1}
+.brand small{display:block;color:var(--muted);font-size:12px;font-weight:400}
+.pill{background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700}
+.tools{display:flex;gap:6px}
+
+/* ---------- الإعداد ---------- */
+.setup{max-width:620px;margin:0 auto;padding-bottom:28px}
+.hero{position:relative;margin:14px 0 12px;border-radius:24px;padding:22px 20px;overflow:hidden;background:linear-gradient(135deg,#1a0b0f,#0f1512);border:1px solid var(--line)}
+.hero h2{font-size:30px;font-weight:800;line-height:1.2}
+.hero p{color:#cfcfd3;font-size:15px;margin-top:8px;max-width:30ch;line-height:1.7}
+.hero h2,.hero p{position:relative;z-index:1;max-width:62%}
+.hero .mini{position:absolute;inset-inline-end:-26px;bottom:-26px;width:140px;opacity:.5;transform:rotate(-12deg)}
+@media (min-width:560px){.hero h2,.hero p{max-width:70%}.hero .mini{width:170px;opacity:.85}}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:16px;margin:10px 0}
+.card h3{font-size:15px;margin-bottom:12px}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{background:var(--s2);border:1px solid var(--line);border-radius:16px;padding:14px 10px;font-size:15px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:8px;transition:all .2s var(--ease)}
+.opt .dots{display:flex;gap:4px}.opt .dots i{width:10px;height:10px;border-radius:50%}
+.opt.on{border-color:var(--ink);background:#202026}
+.seat{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.seat:first-of-type{border-top:0;padding-top:0}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:16px;color:#fff;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.seat .nm{flex:1;font-weight:700}.seat .nm small{display:block;color:var(--muted);font-weight:400;font-size:12px}
+.tg{display:flex;background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:3px}
+.tg button{font-size:13px;padding:6px 12px;border-radius:999px;color:var(--muted);font-weight:700}
+.tg button.on{background:var(--ink);color:#000}
+.go{width:100%;margin-top:6px;border-radius:18px;padding:16px;font-size:18px;font-weight:800;background:var(--ink);color:#000;box-shadow:0 10px 30px rgba(245,245,242,.12);transition:transform .15s}
+.go:active{transform:scale(.98)}
+.rules{color:var(--muted);font-size:13px;line-height:1.8;margin-top:14px}
+
+/* ---------- اللعب ---------- */
+.game{max-width:620px;margin:0 auto;padding-bottom:20px}
+.stage{display:flex;flex-direction:column;gap:10px}
+.prow{display:grid;grid-template-columns:1fr 1fr;gap:10px;direction:ltr}
+.pp{direction:rtl;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:18px;background:var(--s1);border:1px solid var(--line);min-height:64px;transition:all .25s var(--ease);opacity:.55}
+html[dir=ltr] .pp{direction:ltr}
+.pp.empty{visibility:hidden}
+.pp.on{opacity:1;border-color:var(--pc);box-shadow:0 0 0 1px var(--pc) inset,0 8px 26px -8px var(--pc)}
+.pp .info{flex:1;min-width:0}.pp .info b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp .info small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.pp .homes{display:flex;gap:3px;margin-top:4px}.pp .homes i{width:7px;height:7px;border-radius:50%;background:#2c2c33}.pp .homes i.in{background:var(--pc)}
+.die{width:48px;height:48px;border-radius:13px;background:#fff;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:7px;flex:none;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18),0 4px 12px rgba(0,0,0,.4);visibility:hidden;transition:transform .2s}
+.pp.on .die{visibility:visible}
+.die i{width:8px;height:8px;border-radius:50%;background:#111;place-self:center;opacity:0}
+.die i.v{opacity:1}
+.die.ready{animation:nudge 1.3s ease-in-out infinite;cursor:pointer}
+.die.ready::after{content:"";position:absolute}
+.die.spin{animation:spin .55s var(--ease)}
+.die:disabled{cursor:default}
+@keyframes nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) rotate(-6deg)}}
+@keyframes spin{0%{transform:rotate(0) scale(1)}40%{transform:rotate(220deg) scale(.8)}100%{transform:rotate(360deg) scale(1)}}
+.boardw{position:relative;width:100%;aspect-ratio:1;border-radius:24px;padding:8px;background:linear-gradient(160deg,#1c1c22,#0d0d10);border:1px solid var(--line);box-shadow:0 30px 60px -30px rgba(0,0,0,.9)}
+#board{width:100%;height:100%;display:block;touch-action:manipulation;overflow:visible}
+.tok{transition:transform .17s var(--ease)}
+.tok.fly{transition:transform .55s var(--ease)}
+.tok .body{transform-box:fill-box;transform-origin:50% 100%}
+.tok.hop .body{animation:hop .17s ease-out}
+@keyframes hop{0%{transform:translateY(0)}50%{transform:translateY(-.22px) scale(1.06)}100%{transform:translateY(0)}}
+.tok.can{cursor:pointer}
+.tok.can .ring{animation:ring 1s ease-in-out infinite}
+@keyframes ring{0%,100%{opacity:.95;stroke-width:.07}50%{opacity:.35;stroke-width:.16}}
+.say{min-height:26px;text-align:center;font-size:15px;font-weight:700;color:#e9dcc2;transition:opacity .3s}
+.links{display:flex;justify-content:center;gap:8px}
+.links button{border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700}
+
+/* الفوز */
+.win{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;padding:20px;z-index:10;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.win.on{display:flex}
+.win .card{max-width:360px;width:100%;text-align:center;padding:26px 20px;animation:pop .4s var(--ease)}
+.win .big{font-size:60px;line-height:1}
+.win h2{font-size:24px;margin:12px 0 4px}
+.win p{color:var(--muted);font-size:14px;margin-bottom:16px}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+.conf{position:fixed;top:-12px;width:9px;height:14px;border-radius:2px;z-index:11;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+
+/* آيباد وشاشات عريضة: اللوحة على جنب واللاعبين جنبها */
+@media (min-width:900px) and (min-height:600px){
+  .top,.game{max-width:1040px}
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:auto 1fr auto;gap:12px 18px;align-items:start}
+  .boardw{grid-column:1;grid-row:1/4;width:min(100%,calc(100vh - 110px));margin-inline:auto}
+  .prow{grid-column:2;grid-template-columns:1fr;direction:inherit}
+  .say,.links{grid-column:2}
+}
+@media (prefers-reduced-motion:reduce){.tok,.tok.fly{transition:none}.die.ready,.tok.can .ring{animation:none}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<div class="top">
+  <div class="brand"><div class="logo">ف</div><h1 id="t-title"></h1></div>
+  <div class="tools"><button class="pill" id="snd" aria-label="sound"></button><button class="pill" id="lang"></button></div>
+</div>
+
+<div class="setup" id="setup">
+  <div class="hero">
+    <h2 id="t-hero"></h2><p id="t-sub"></p>
+    <svg class="mini" viewBox="0 0 15 15" aria-hidden="true" id="mini"></svg>
+  </div>
+  <div class="card">
+    <h3 id="t-players"></h3>
+    <div class="seg2">
+      <button class="opt" data-n="2" id="n2"><span class="dots"><i style="background:var(--c0)"></i><i style="background:var(--c2)"></i></span><span></span></button>
+      <button class="opt" data-n="4" id="n4"><span class="dots"><i style="background:var(--c0)"></i><i style="background:var(--c1)"></i><i style="background:var(--c2)"></i><i style="background:var(--c3)"></i></span><span></span></button>
+    </div>
+  </div>
+  <div class="card" id="seats"></div>
+  <button class="go" id="start"></button>
+  <p class="rules" id="t-rules"></p>
+</div>
+
+<div class="game" id="game" hidden>
+  <div class="stage">
+    <div class="prow" id="row-a"></div>
+    <div class="boardw"><svg id="board" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="prow" id="row-b"></div>
+    <div class="say" id="say"></div>
+    <div class="links"><button id="restart"></button><button id="menu"></button></div>
+  </div>
+</div>
+
+<div class="win" id="win"><div class="card"><div class="big" id="win-emoji">🏆</div><h2 id="win-text"></h2><p id="win-sub"></p><button class="go" id="again"></button></div></div>
+
+<script>
+(() => {
+"use strict";
+// ---------- النصوص ----------
+const T = {
+  ar: {title: "سباق الطاقم", hero: "طاقم فزعة يتسابق للبيت", sub: "وصّل قطعك الأربع لنص اللوحة قبل الكل. العب ضد طاقم فزعة أو مع أهلك على نفس الجهاز.",
+       players: "كم لاعب؟", two: "لاعبين", four: "4 لاعبين", you: "أنت", human: "شخص", bot: "فزعة يلعب",
+       bots: ["فزعة", "سند", "نخوة"], colors: ["الأحمر", "الأخضر", "الذهبي", "الأزرق"],
+       start: "يلا نبدأ", restart: "من جديد", menu: "الإعدادات", again: "جولة ثانية", lang: "English", on: "🔊", off: "🔇",
+       rules: "تحتاج 6 عشان تطلع قطعة. الـ6 تعطيك رمية ثانية، وإذا وقفت على قطعة خصم ترجعها لبيتها وتاخذ رمية. المربعات اللي عليها ★ ومربعات البداية آمنة. ثلاث ستات ورا بعض يروح عليك الدور.",
+       tap: "اضغط النرد", pick: "اختر قطعة", think: "يفكر…", wait: "ينتظر دوره", noMove: "ما فيه حركة", home: n => `${n}/4 وصلت`,
+       wins: n => n === "أنت" ? "فزت! 🎉" : `${n} فاز!`, winSub: p => p ? "الطاقم كله وصل البيت قبلك المرة هذي 😄" : "وصلت طاقمك كامل للبيت 👏",
+       quips: {cap: ["يا ساتر، رجّعته البيت! 😅", "آسفين يا طاقم 🏠", "اللعب لعب 😄"], six: ["ستة! 🔥", "ما شاء الله، ستة"], home: ["وحدة وصلت البيت ✅", "قربنا 💪"], three: ["ثلاث ستات… راح الدور 🙃"], none: ["ما فيه حركة، الدور يمشي"]}},
+  en: {title: "Crew Race", hero: "Race Fazaa's crew home", sub: "Get all four of your pieces to the centre first. Play Fazaa's crew, or family on the same device.",
+       players: "How many players?", two: "2 players", four: "4 players", you: "You", human: "Person", bot: "Fazaa plays",
+       bots: ["Fazaa", "Sanad", "Nakhwa"], colors: ["Red", "Green", "Gold", "Blue"],
+       start: "Let's go", restart: "Restart", menu: "Settings", again: "Play again", lang: "عربي", on: "🔊", off: "🔇",
+       rules: "Roll a 6 to bring a piece out. A 6 gives another roll, and landing on an opponent sends it home and gives you a roll. ★ squares and start squares are safe. Three sixes in a row loses your turn.",
+       tap: "Tap the dice", pick: "Pick a piece", think: "Thinking…", wait: "Waiting", noMove: "No move", home: n => `${n}/4 home`,
+       wins: n => n === "You" ? "You win! 🎉" : `${n} wins!`, winSub: p => p ? "The crew got home first this time 😄" : "Your whole crew made it home 👏",
+       quips: {cap: ["Sent home! 😅", "Sorry, crew 🏠", "It's just a game 😄"], six: ["A six! 🔥", "Nice, a six"], home: ["One piece home ✅", "Getting close 💪"], three: ["Three sixes… turn lost 🙃"], none: ["No move, next player"]}}
+};
+let lang = (new URLSearchParams(location.search).get("lang") || store("race-lang") || "ar") === "en" ? "en" : "ar";
+let sound = store("race-snd") !== "0";
+const t = () => T[lang];
+function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+
+// ---------- اللوحة ----------
+const COLORS = ["#e0213b", "#25d366", "#f2c230", "#3b82f6"], DARK = ["#7a0d1d", "#0f6e35", "#8a6a0b", "#163f86"];
+const TRACK = [[1,6],[2,6],[3,6],[4,6],[5,6],[6,5],[6,4],[6,3],[6,2],[6,1],[6,0],[7,0],[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],
+  [9,6],[10,6],[11,6],[12,6],[13,6],[14,6],[14,7],[14,8],[13,8],[12,8],[11,8],[10,8],[9,8],[8,9],[8,10],[8,11],[8,12],[8,13],[8,14],
+  [7,14],[6,14],[6,13],[6,12],[6,11],[6,10],[6,9],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8],[0,7],[0,6]];
+const START = [0, 13, 26, 39], SAFE = new Set([0, 8, 13, 21, 26, 34, 39, 47]);
+const HOME_COL = [[[1,7],[2,7],[3,7],[4,7],[5,7]], [[7,1],[7,2],[7,3],[7,4],[7,5]], [[13,7],[12,7],[11,7],[10,7],[9,7]], [[7,13],[7,12],[7,11],[7,10],[7,9]]];
+const YARD_POS = [[0,0],[9,0],[9,9],[0,9]];
+const YARD = YARD_POS.map(([x, y]) => [[x+2,y+2],[x+4,y+2],[x+2,y+4],[x+4,y+4]]);
+const FINISH = [[6.75,7.5],[7.5,6.75],[8.25,7.5],[7.5,8.25]];
+const LAST = 56;
+
+// ---------- الحالة ----------
+let nPlayers = 2, seats = seatsFor(2), G = null, timer = 0;
+function seatsFor(n) { return n === 2 ? [{c: 0, bot: false}, {c: 2, bot: true}] : [{c: 0, bot: false}, {c: 1, bot: true}, {c: 2, bot: true}, {c: 3, bot: true}]; }
+const rnd = () => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; };
+const pick = a => a[Math.floor(rnd() * a.length)];
+const $ = id => document.getElementById(id);
+const NS = "http://www.w3.org/2000/svg";
+const mk = (n, a, parent) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); if (parent) parent.appendChild(e); return e; };
+function nameOf(p) {
+  if (p.bot) { const bi = G ? G.players.filter(q => q.bot).indexOf(p) : 0; return t().bots[bi] || t().bots[0]; }
+  return G && G.multiHuman ? t().colors[p.c] : t().you;
+}
+const avatarOf = p => p.bot ? "ف" : (G && G.multiHuman ? "●" : "✦");
+
+// ---------- صوت خفيف ----------
+let AC = null;
+function beep(f, d = .06, type = "sine", v = .05) {
+  if (!sound) return;
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.value = f; g.gain.value = v; g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime + d);
+    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + d); } catch (e) {}
+}
+const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
+
+// ---------- الإعداد ----------
+function texts() {
+  $("t-title").textContent = t().title; $("t-hero").textContent = t().hero; $("t-sub").textContent = t().sub;
+  $("lang").textContent = t().lang; $("snd").textContent = sound ? t().on : t().off;
+  $("t-players").textContent = t().players; $("n2").lastElementChild.textContent = t().two; $("n4").lastElementChild.textContent = t().four;
+  $("start").textContent = t().start; $("t-rules").textContent = t().rules;
+  $("restart").textContent = t().restart; $("menu").textContent = t().menu; $("again").textContent = t().again;
+  document.documentElement.lang = lang; document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.title = t().title + (lang === "ar" ? " · Crew Race" : " · سباق الطاقم");
+}
+function renderSetup() {
+  texts();
+  $("n2").classList.toggle("on", nPlayers === 2); $("n4").classList.toggle("on", nPlayers === 4);
+  const box = $("seats"); box.innerHTML = "";
+  let bi = 0;
+  seats.forEach(s => {
+    const d = document.createElement("div"); d.className = "seat";
+    const humans = seats.filter(x => !x.bot).length;
+    const label = s.bot ? t().bots[bi++] : humans > 1 ? t().colors[s.c] : t().you;
+    d.innerHTML = `<span class="av" style="background:${COLORS[s.c]}">${s.bot ? "ف" : "✦"}</span><span class="nm">${label}<small>${t().colors[s.c]}</small></span>
+      <div class="tg"><button data-v="0" class="${s.bot ? "" : "on"}">${t().human}</button><button data-v="1" class="${s.bot ? "on" : ""}">${t().bot}</button></div>`;
+    d.querySelectorAll("button").forEach(b => b.onclick = () => { s.bot = b.dataset.v === "1"; beep(660); renderSetup(); });
+    box.appendChild(d);
+  });
+  if (G) { panels(); }
+}
+$("n2").onclick = () => { nPlayers = 2; seats = seatsFor(2); beep(660); renderSetup(); };
+$("n4").onclick = () => { nPlayers = 4; seats = seatsFor(4); beep(660); renderSetup(); };
+$("lang").onclick = () => { lang = lang === "ar" ? "en" : "ar"; store("race-lang", lang); renderSetup(); };
+$("snd").onclick = () => { sound = !sound; store("race-snd", sound ? "1" : "0"); texts(); beep(880); };
+$("start").onclick = () => newGame();
+$("restart").onclick = () => newGame();
+$("again").onclick = () => { $("win").classList.remove("on"); newGame(); };
+$("menu").onclick = () => { clearTimeout(timer); G = null; $("game").hidden = true; $("setup").hidden = false; renderSetup(); };
+
+// ---------- رسم اللوحة (مرة وحدة) ----------
+function drawStatic(svg, withDefs) {
+  svg.innerHTML = "";
+  if (withDefs) {
+    const defs = mk("defs", {}, svg);
+    COLORS.forEach((c, i) => {
+      const g = mk("radialGradient", {id: "pg" + i, cx: "35%", cy: "30%", r: "75%"}, defs);
+      mk("stop", {offset: "0", "stop-color": "#fff", "stop-opacity": ".9"}, g);
+      mk("stop", {offset: ".28", "stop-color": c}, g);
+      mk("stop", {offset: "1", "stop-color": DARK[i]}, g);
+      const y = mk("linearGradient", {id: "yg" + i, x1: "0", y1: "0", x2: "1", y2: "1"}, defs);
+      mk("stop", {offset: "0", "stop-color": c}, y); mk("stop", {offset: "1", "stop-color": DARK[i]}, y);
+    });
+  }
+  const P = mk("g", {}, svg);
+  mk("rect", {x: 0, y: 0, width: 15, height: 15, rx: .7, fill: "#121216"}, P);
+  YARD_POS.forEach(([x, y], c) => {
+    mk("rect", {x: x + .12, y: y + .12, width: 5.76, height: 5.76, rx: .7, fill: withDefs ? `url(#yg${c})` : COLORS[c]}, P);
+    mk("rect", {x: x + .9, y: y + .9, width: 4.2, height: 4.2, rx: .9, fill: "#0e0e11", opacity: .92}, P);
+    YARD[c].forEach(([a, b]) => { mk("circle", {cx: a, cy: b, r: .62, fill: COLORS[c], opacity: .14}, P); mk("circle", {cx: a, cy: b, r: .62, fill: "none", stroke: COLORS[c], "stroke-width": .06, opacity: .55}, P); });
+  });
+  TRACK.forEach(([x, y], i) => {
+    const sc = START.indexOf(i);
+    mk("rect", {x: x + .05, y: y + .05, width: .9, height: .9, rx: .2, fill: sc >= 0 ? COLORS[sc] : "#1f1f25"}, P);
+    if (sc >= 0) mk("path", {d: `M${x+.32} ${y+.5}h.36M${x+.5} ${y+.32}v.36`, stroke: "#fff", "stroke-width": .09, "stroke-linecap": "round", opacity: .9}, P);
+    else if (SAFE.has(i)) { const s = mk("text", {x: x + .5, y: y + .7, "text-anchor": "middle", "font-size": .56, fill: "#6b6b75"}, P); s.textContent = "★"; }
+  });
+  HOME_COL.forEach((col, c) => col.forEach(([x, y], k) => mk("rect", {x: x + .05, y: y + .05, width: .9, height: .9, rx: .2, fill: COLORS[c], opacity: .35 + k * .12}, P)));
+  [[[6,6],[6,9],0], [[6,6],[9,6],1], [[9,6],[9,9],2], [[6,9],[9,9],3]].forEach(([a, b, c]) =>
+    mk("polygon", {points: `${a} ${b} 7.5,7.5`, fill: COLORS[c], opacity: .9, stroke: "#121216", "stroke-width": .06}, P));
+  mk("circle", {cx: 7.5, cy: 7.5, r: .78, fill: "#0e0e11", stroke: "#fff", "stroke-opacity": .15, "stroke-width": .05}, P);
+  const f = mk("text", {x: 7.5, y: 7.86, "text-anchor": "middle", "font-size": 1, "font-weight": 800, fill: "#fff"}, P); f.textContent = "ف";
+  return mk("g", {id: withDefs ? "toks" : ""}, svg);
+}
+
+// ---------- القطع ----------
+let TOK = [];
+function buildTokens() {
+  const layer = drawStatic($("board"), true);
+  TOK = G.players.map((p, pi) => p.tok.map((_, k) => {
+    const g = mk("g", {class: "tok"}, layer);
+    const b = mk("g", {class: "body"}, g);
+    mk("ellipse", {cx: 0, cy: .3, rx: .3, ry: .1, fill: "#000", opacity: .45}, b);
+    mk("circle", {class: "ring", cx: 0, cy: 0, r: .46, fill: "none", stroke: "#fff", "stroke-width": 0}, b);
+    mk("circle", {cx: 0, cy: 0, r: .36, fill: `url(#pg${p.c})`, stroke: "#fff", "stroke-width": .07}, b);
+    mk("circle", {cx: 0, cy: 0, r: .14, fill: "#fff", opacity: .85}, b);
+    g.addEventListener("click", () => { if (G && G.phase === "move" && !G.busy && pi === G.turn && !cur().bot && G.moves.includes(k)) move(k); });
+    return g;
+  }));
+  place(true);
+}
+function cellOf(c, p, k) {
+  if (p < 0) return YARD[c][k];
+  if (p >= LAST) return FINISH[c];
+  if (p > 50) { const h = HOME_COL[c][p - 51]; return [h[0] + .5, h[1] + .5]; }
+  const s = TRACK[(START[c] + p) % 52]; return [s[0] + .5, s[1] + .5];
+}
+function place(instant, hopIdx) {
+  const spots = {};
+  G.players.forEach((p, pi) => p.tok.forEach((q, k) => { const [x, y] = cellOf(p.c, q, k); (spots[x + "," + y] = spots[x + "," + y] || []).push({pi, k, x, y}); }));
+  Object.values(spots).forEach(list => list.forEach((o, n) => {
+    const many = list.length > 1, off = many ? [[-.2,-.2],[.2,-.2],[-.2,.2],[.2,.2]][n % 4] : [0, 0], sc = many ? .72 : 1;
+    const g = TOK[o.pi][o.k];
+    if (instant) g.style.transition = "none";
+    g.style.transform = `translate(${o.x + off[0]}px,${o.y + off[1]}px) scale(${sc})`;
+    if (instant) { void g.getBBox(); g.style.transition = ""; }
+  }));
+  G.players.forEach((p, pi) => p.tok.forEach((_, k) => {
+    const g = TOK[pi][k], can = G.phase === "move" && pi === G.turn && !p.bot && G.moves.includes(k);
+    g.classList.toggle("can", can);
+    if (can) g.parentNode.appendChild(g);
+  }));
+  if (hopIdx) { const g = TOK[hopIdx[0]][hopIdx[1]]; g.parentNode.appendChild(g); g.classList.remove("hop"); void g.getBBox(); g.classList.add("hop"); }
+}
+
+// ---------- لوحات اللاعبين والنرد ----------
+const PIPS = {1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8]};
+function dieHTML() { return `<button class="die" aria-label="dice">${"<i></i>".repeat(9)}</button>`; }
+function setDie(el, n) { el.querySelectorAll("i").forEach((d, i) => d.classList.toggle("v", (PIPS[n] || []).includes(i))); }
+function panels() {
+  const byColor = {}; G.players.forEach((p, pi) => byColor[p.c] = pi);
+  const slot = c => {
+    const pi = byColor[c]; if (pi === undefined) return `<div class="pp empty"></div>`;
+    const p = G.players[pi];
+    return `<div class="pp" data-pi="${pi}" style="--pc:${COLORS[c]}"><span class="av" style="background:${COLORS[c]}">${avatarOf(p)}</span>
+      <div class="info"><b>${nameOf(p)}</b><small></small><div class="homes">${"<i></i>".repeat(4)}</div></div>${dieHTML()}</div>`;
+  };
+  $("row-a").innerHTML = slot(0) + slot(1);
+  $("row-b").innerHTML = slot(3) + slot(2);
+  document.querySelectorAll(".pp .die").forEach(d => d.onclick = () => { if (G && !cur().bot && G.phase === "roll" && !G.busy && +d.closest(".pp").dataset.pi === G.turn) doRoll(); });
+  status();
+}
+function status() {
+  if (!G) return;
+  document.querySelectorAll(".pp[data-pi]").forEach(el => {
+    const pi = +el.dataset.pi, p = G.players[pi], on = pi === G.turn && G.phase !== "over";
+    el.classList.toggle("on", on);
+    const done = p.tok.filter(q => q >= LAST).length;
+    el.querySelectorAll(".homes i").forEach((h, i) => h.classList.toggle("in", i < done));
+    el.querySelector("small").textContent = !on ? t().home(done) : p.bot ? t().think : G.phase === "roll" ? t().tap : G.phase === "move" ? t().pick : G.phase === "none" ? t().noMove : "";
+    const die = el.querySelector(".die");
+    setDie(die, on ? (G.dice || 6) : 0);
+    die.classList.toggle("ready", on && !p.bot && G.phase === "roll" && !G.busy);
+    die.disabled = !(on && !p.bot && G.phase === "roll");
+  });
+}
+const cur = () => G.players[G.turn];
+const curDie = () => document.querySelector(`.pp[data-pi="${G.turn}"] .die`);
+
+// ---------- اللعب ----------
+function newGame() {
+  clearTimeout(timer);
+  if (!seats.some(s => !s.bot)) seats[0].bot = false;
+  G = {players: seats.map(s => ({c: s.c, bot: s.bot, tok: [-1, -1, -1, -1]})), turn: 0, dice: 0, sixes: 0, busy: false, phase: "roll", moves: []};
+  G.multiHuman = G.players.filter(p => !p.bot).length > 1;
+  $("setup").hidden = true; $("game").hidden = false; $("say").textContent = "";
+  buildTokens(); panels(); maybeBot();
+}
+function legal(pl, d) {
+  const out = [];
+  pl.tok.forEach((p, k) => { if (p < 0) { if (d === 6) out.push(k); } else if (p < LAST && p + d <= LAST) out.push(k); });
+  return out;
+}
+const trackIdx = (c, p) => (p >= 0 && p <= 50) ? (START[c] + p) % 52 : -1;
+function later(f, ms) { G.busy = true; status(); timer = setTimeout(() => { if (G) { G.busy = false; f(); } }, ms); }
+
+function doRoll() {
+  const p = cur(), die = curDie(), d = 1 + Math.floor(rnd() * 6);
+  G.busy = true; status(); die.classList.remove("ready"); die.classList.remove("spin"); void die.offsetWidth; die.classList.add("spin");
+  let n = 0; const flick = setInterval(() => { setDie(die, 1 + Math.floor(rnd() * 6)); beep(300 + rnd() * 200, .03, "square", .02); if (++n > 7) clearInterval(flick); }, 60);
+  timer = setTimeout(() => {
+    if (!G) return;
+    clearInterval(flick); G.busy = false; G.dice = d; setDie(die, d); buzz(12);
+    if (d === 6) { G.sixes++; if (G.sixes === 3) { say(t().quips.three); G.phase = "none"; return later(nextTurn, 1000); } }
+    G.moves = legal(p, d);
+    if (!G.moves.length) { G.phase = "none"; status(); return later(() => (d === 6 ? again() : nextTurn()), 900); }
+    if (d === 6) say(t().quips.six);
+    G.phase = "move"; status(); place();
+    if (p.bot) later(() => move(botChoice(p, d)), 600);
+    else if (G.moves.length === 1 || new Set(G.moves.map(k => p.tok[k])).size === 1) later(() => move(G.moves[0]), 380);   // حركة وحدة بس
+  }, 520);
+}
+function again() { G.phase = "roll"; G.dice = 0; status(); place(); maybeBot(); }
+function nextTurn() { G.sixes = 0; G.turn = (G.turn + 1) % G.players.length; again(); }
+function maybeBot() { if (G && cur().bot && G.phase === "roll") later(doRoll, 650); }
+
+function move(k) {
+  const p = cur(), d = G.dice, pi = G.turn; G.phase = "anim"; G.moves = [];
+  const from = p.tok[k], to = from < 0 ? 0 : from + d;
+  const steps = from < 0 ? [0] : Array.from({length: d}, (_, i) => from + i + 1);
+  G.busy = true; status();
+  let i = 0;
+  const step = () => {
+    if (!G) return;
+    p.tok[k] = steps[i++]; place(false, [pi, k]); beep(520 + i * 40, .04, "triangle", .04);
+    if (i < steps.length) { timer = setTimeout(step, 175); return; }
+    timer = setTimeout(() => { if (G) { G.busy = false; land(p, pi, k, to, d); } }, 180);
+  };
+  step();
+}
+function land(p, pi, k, to, d) {
+  let bonus = d === 6, captured = false;
+  const ti = trackIdx(p.c, to);
+  if (ti >= 0 && !SAFE.has(ti)) G.players.forEach((o, oi) => { if (o === p) return; o.tok.forEach((q, j) => { if (trackIdx(o.c, q) === ti) { o.tok[j] = -1; captured = true; TOK[oi][j].classList.add("fly"); setTimeout(() => TOK[oi][j].classList.remove("fly"), 700); } }); });
+  if (captured) { bonus = true; say(t().quips.cap); beep(180, .25, "sawtooth", .05); buzz([20, 40, 20]); }
+  if (to === LAST) { bonus = true; say(t().quips.home); beep(880, .12); setTimeout(() => beep(1320, .15), 110); }
+  place(); status();
+  if (p.tok.every(q => q === LAST)) return win(p);
+  later(() => (bonus ? again() : nextTurn()), 420);
+}
+function win(p) {
+  G.phase = "over"; status();
+  $("win-text").textContent = t().wins(nameOf(p)); $("win-emoji").textContent = p.bot ? "🤝" : "🏆";
+  $("win-sub").textContent = t().winSub(p.bot);
+  $("win").classList.add("on");
+  if (!p.bot) { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, .18), i * 120)); confetti(); }
+}
+function confetti() {
+  for (let i = 0; i < 70; i++) {
+    const c = document.createElement("i"); c.className = "conf";
+    c.style.left = rnd() * 100 + "vw"; c.style.background = COLORS[i % 4];
+    c.style.animationDuration = 1.8 + rnd() * 1.6 + "s"; c.style.animationDelay = rnd() * .5 + "s";
+    document.body.appendChild(c); setTimeout(() => c.remove(), 4200);
+  }
+}
+let sayT = 0;
+function say(arr) { const s = $("say"); s.textContent = pick(arr); s.style.opacity = 1; clearTimeout(sayT); sayT = setTimeout(() => s.style.opacity = 0, 2200); }
+
+// ---------- فزعة يلعب ----------
+function botChoice(p, d) {
+  let best = G.moves[0], bestScore = -1e9;
+  for (const k of G.moves) {
+    const from = p.tok[k], to = from < 0 ? 0 : from + d, ti = trackIdx(p.c, to);
+    let s = to;
+    if (to === LAST) s += 1000;
+    if (from < 0) s += 400;
+    if (ti >= 0 && !SAFE.has(ti) && G.players.some(o => o !== p && o.tok.some(q => trackIdx(o.c, q) === ti))) s += 800;
+    if (ti >= 0 && SAFE.has(ti)) s += 120;
+    if (to > 50) s += 150;
+    if (ti >= 0 && !SAFE.has(ti) && danger(p, ti)) s -= 300;
+    if (from >= 0 && from <= 50 && danger(p, trackIdx(p.c, from))) s += 200;
+    s += rnd() * 30;
+    if (s > bestScore) { bestScore = s; best = k; }
+  }
+  return best;
+}
+function danger(p, ti) {
+  return G.players.some(o => o !== p && o.tok.some(q => { const oi = trackIdx(o.c, q); if (oi < 0) return false; const gap = (ti - oi + 52) % 52; return gap >= 1 && gap <= 6; }));
+}
+
+drawStatic($("mini"), false);
+renderSetup();
+})();
+</script>
+</body>
+</html>

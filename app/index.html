@@ -933,6 +933,24 @@ html.i18n-wait body{visibility:hidden}
   .app{grid-template-columns:248px minmax(0,1fr)}
   #ag-list{grid-template-columns:repeat(3,1fr)}
 }
+
+/* ===== شاشة الجوال المطوي من الداخل (iPhone Duo وأشباهه، عرض 600-739): شريط أيقونات على الجنب ===== */
+@media (min-width:600px) and (max-width:739.98px) and (min-height:560px){
+  .app{max-width:none;display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);border-inline:0}
+  .bar{grid-column:1/-1;grid-row:1;padding-inline:16px;border-bottom:1px solid var(--line)}
+  .views{grid-column:2;grid-row:2}
+  .tabs{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:6px;padding:14px 8px calc(var(--bot) + 14px);border-top:0;border-inline-end:1px solid var(--line);background:var(--s1)}
+  .tab{gap:4px;padding:10px 2px;border-radius:14px;font-size:10.5px;white-space:normal;text-align:center;line-height:1.25}
+  .tab[aria-current="page"]{background:var(--s2)}
+  .view{padding:10px max(18px,calc((100% - 600px)/2)) 28px}
+  #v-chat{padding:0}
+  .msgs{padding:14px max(16px,calc((100% - 600px)/2)) 12px}
+  .composer{padding:8px max(12px,calc((100% - 612px)/2)) 12px}
+  #v-chat>:not(.msgs):not(.composer){margin-inline:max(12px,calc((100% - 612px)/2))}
+  .m{max-width:min(80%,500px)}
+  .sheet{max-width:600px;border-inline:1px solid var(--line);box-shadow:0 0 0 100vmax rgba(0,0,0,.5)}
+  .onb{max-width:none;padding-inline:max(22px,calc((100% - 480px)/2))}
+}
 </style>
 </head>
 <body>

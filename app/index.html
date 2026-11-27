@@ -1146,6 +1146,7 @@ html.i18n-wait body{visibility:hidden}
         <p class="note" id="agf-every-hint" hidden></p>
         <div class="field"><span id="agf-at-l">يبدأ الساعة</span><input id="agf-at" type="hidden" value="09:00"><button type="button" class="tbtn" id="agf-at-b">9 ص</button></div>
         <p class="note" id="agf-at-hint" hidden></p>
+        <label class="chk" id="agf-health-w" hidden><input type="checkbox" id="agf-health"><span id="agf-health-t">👟 اربط خطواتك من تطبيق الصحة</span></label>
       </div>
       <label class="field" id="agf-day-w" hidden><span id="agf-day-l">أي يوم؟</span><select id="agf-day"></select></label>
       <div class="acts"><button class="btn btn-ghost" type="button" id="agf-back">رجوع</button><button class="btn btn-primary" type="button" id="agf-go">ضيفه للطاقم</button></div>
@@ -1623,6 +1624,16 @@ html.i18n-wait body{visibility:hidden}
   let lastId = 0, reminders = [];
   // تطبيق الآيفون (Capacitor): نفس الصفحة، مع تنبيهات ودخول أبل من الجوال نفسه
   const CAP = window.Capacitor, NATIVE = !!(CAP && CAP.isNativePlatform && CAP.isNativePlatform());
+  // ربط الخطوات (صحة أبل / Health Connect): بعد موافقة المستخدم نرسل مجموع اليوم بس (خطوات + سعرات محروقة)
+  const FH = NATIVE && CAP.Plugins && CAP.Plugins.FazaaHealth;
+  let healthAt = 0;
+  async function healthSync(force) {
+    if (!FH || !S.healthOn || !S.token || (!force && Date.now() - healthAt < 15 * 60000)) return;
+    healthAt = Date.now();
+    try { const d = await FH.today(); await api("/health/day", { method: "POST", body: JSON.stringify({ day: d.day, steps: d.steps, active_kcal: d.active_kcal, source: /Android/i.test(navigator.userAgent) ? "google" : "apple" }) }); } catch {}
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) healthSync(); });
+  setTimeout(() => healthSync(), 4000);
   const NP = NATIVE ? (CAP.Plugins || {}) : {};
   const PLAT = NATIVE && CAP.getPlatform ? CAP.getPlatform() : "web";       // ios | android | web
   const noApple = t => PLAT === "android" ? t.replace(/ أو أبل| or Apple/g, "") : t;   // الأندرويد: ما فيه دخول بأبل
@@ -3322,8 +3333,15 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     $("#agf-every-l").textContent = food ? L("كل كم يجيك التقرير؟", "How often do you want the report?") : L("كم مرة يشيّك لك؟", "How often should it check?");
     $("#agf-at-l").textContent = food ? L("متى يجيك تقرير يومك؟", "When should your daily report arrive?") : e.startsWith("hours:") ? L("يبدأ الساعة", "Starting at") : L("الساعة كم؟", "At what time?");
     const ah = $("#agf-at-hint"); ah.hidden = !food;
+    const hw = $("#agf-health-w"); hw.hidden = !(food && FH); if (FH) { $("#agf-health").checked = !!S.healthOn; $("#agf-health-t").textContent = L("👟 اربط خطواتك والسعرات المحروقة من تطبيق الصحة", "👟 Connect your steps and calories burned from the health app"); }
     if (food) ah.textContent = L("يوصلك فيه: كم سعرة وبروتين أكلت اليوم، وكم باقي على هدفك، ونصيحة لبكرة. الأفضل تخليه بعد آخر وجبة.", "It shows today's calories and protein, how far you are from your goal, and one tip for tomorrow. Best set after your last meal.");
     syncAt(); };
+  $("#agf-health").onchange = async e => {
+    if (!e.target.checked) { S.healthOn = false; save(); return; }
+    let ok = false; try { ok = (await FH.request()).ok; } catch {}
+    if (!ok) { e.target.checked = false; toast(L("ما انربط. اسمح لفزعة يقرا الخطوات من إعدادات تطبيق الصحة.", "Not connected. Allow Fazaa to read steps in the health app settings.")); return; }
+    S.healthOn = true; save(); healthSync(true); toast(L("انربط ✅ خطواتك بتطلع في تقرير يومك", "Connected ✅ your steps will show in your daily report"));
+  };
   let agEdit = null;     // رقم الموظف لو يعدّل، وإلا null (إضافة جديدة)
   $$("[data-agk]").forEach(b => b.onclick = () => openAgForm(b.dataset.agk, null));
 

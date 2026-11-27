@@ -1130,7 +1130,7 @@ html.i18n-wait body{visibility:hidden}
         <button data-sheet="s-connect"><span class="mi" style="background:rgba(42,171,238,.15);color:#5cc3f5"><svg><use href="#i-plug"/></svg></span><span class="lbl">ربط التطبيقات<br><small id="tg-small">اربط تيليجرام عشان يصير حساب واحد</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button type="button" id="me-intro"><span class="mi" style="background:rgba(230,57,70,.14);color:#ff6b7a"><svg viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="lbl">كيف يشتغل فزعة<br><small>فيديو دقيقة عن كل الخدمات</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-meds" id="me-meds" style="display:none"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5;font-size:17px">💊</span><span class="lbl">سجل أدويتي<br><small>وش أخذت ومتى بالضبط</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
-        <button data-sheet="s-money" id="me-money"><span class="mi" style="background:rgba(62,207,142,.13);color:#3ecf8e;font-size:17px">💰</span><span class="lbl">فلوسي<br><small>التزاماتك الشهرية ومصاريفك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
+        <button data-sheet="s-money" id="me-money" style="display:none"><span class="mi" style="background:rgba(62,207,142,.13);color:#3ecf8e;font-size:17px">💰</span><span class="lbl">فلوسي<br><small>التزاماتك الشهرية ومصاريفك</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-care" id="me-care"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e;font-size:17px">🚑</span><span class="lbl">الطوارئ<br><small id="care-small">أقرب المراكز الصحية وجهة اتصال الطوارئ (اختياري)</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-family"><span class="mi" style="background:rgba(37,211,102,.12);color:#6fe6a5"><svg><use href="#i-fam"/></svg></span><span class="lbl">فرد من العائلة<br><small id="fam-small">معك بنفس اشتراك إيليت</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
         <button data-sheet="s-invite"><span class="mi" style="background:rgba(224,33,59,.15);color:#ff6b7e"><svg><use href="#i-gift"/></svg></span><span class="lbl">ادعُ صاحبك وخذ شهر<br><small id="ref-small">0 من 3</small></span><svg class="chev"><use href="#i-chev"/></svg></button>
@@ -4192,6 +4192,7 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
     } catch {}
   }
   async function openSms() {
+    if (!moneyOn) { toast(L("رسائل الجوال قريباً، نجهّز لها طريقة أسهل 🙏", "Phone texts are coming soon 🙏")); return; }
     let r;
     try { r = await api("/sms", { method: "POST", body: "{}" }); }
     catch (e) {
@@ -4238,7 +4239,11 @@ const primeBox = (t) => `<div class="care-box"><h3>⭐ ${L("ميزة برايم"
   const catName = k => EN ? (CAT_EN[k] || k) : k;
   const SAR = v => `${AR(Math.round(+v || 0).toLocaleString("en"))} ${L("ريال", "SAR")}`;
   const nDays = n => EN ? `${n} day${n === 1 ? "" : "s"}` : n === 1 ? "يوم" : n === 2 ? "يومين" : n <= 10 ? `${AR(n)} أيام` : `${AR(n)} يوم`;
-  function openMoney() { billEdit = null; moneyMode = ""; openSheet("s-money"); drawMoney(); loadMoney(); }
+  let moneyOn = false;     // قبل الإطلاق: تطلع بس للمختبرين (السيرفر يرد 404 للباقين)
+  async function checkMoney() { try { MONEY = await api("/money"); moneyOn = true; $("#me-money").style.display = ""; } catch {} }
+  setTimeout(checkMoney, 1800);
+  function openMoney() {
+    if (!moneyOn) { toast(L("التزاماتك الشهرية قريباً 🙏 الحين تقدر تسجلها تذكير شهري", "Monthly commitments are coming soon 🙏 for now add them as a monthly reminder")); return; } billEdit = null; moneyMode = ""; openSheet("s-money"); drawMoney(); loadMoney(); }
   async function loadMoney() {
     try { MONEY = await api("/money"); }
     catch (e) { if (!MONEY) $("#money-body").innerHTML = `<p class="note" style="margin-top:30px;text-align:center">${esc(errText(e))}</p>`; return; }
